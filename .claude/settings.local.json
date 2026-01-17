@@ -1,0 +1,27 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl:*)",
+      "mcp__plugin_playwright_playwright__browser_navigate",
+      "mcp__plugin_playwright_playwright__browser_click",
+      "Bash(tasklist:*)",
+      "Bash(findstr:*)",
+      "mcp__plugin_supabase_supabase__list_projects",
+      "Bash(dir \"Z:\\\\Supplements MONEY MAKER\\\\luralab-next\\\\.env*\")",
+      "Bash(netstat:*)",
+      "Bash(taskkill:*)",
+      "Bash(npm run dev:*)",
+      "mcp__plugin_supabase_supabase__list_tables",
+      "mcp__plugin_supabase_supabase__apply_migration",
+      "mcp__plugin_supabase_supabase__get_advisors",
+      "mcp__plugin_supabase_supabase__list_migrations",
+      "mcp__plugin_supabase_supabase__get_project_url",
+      "mcp__plugin_supabase_supabase__get_publishable_keys",
+      "mcp__plugin_supabase_supabase__execute_sql",
+      "mcp__plugin_supabase_supabase__generate_typescript_types",
+      "Bash(tree:*)",
+      "Bash(git remote add:*)",
+      "Bash(git add:*)"
+    ]
+  }
+}

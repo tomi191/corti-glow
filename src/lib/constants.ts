@@ -1,0 +1,54 @@
+// Brand Colors
+export const COLORS = {
+  forest: "#2D4A3E",
+  sage: "#B2D8C6",
+  blush: "#FFC1CC",
+  cream: "#F4E3B2",
+  sand: "#F5F2EF",
+} as const;
+
+// Shipping
+export const SHIPPING_THRESHOLD = 160; // BGN for free shipping
+export const DELIVERY_DAYS = "1-2";
+export const CARRIERS = ["Спиди", "Еконт"] as const;
+
+// Company Info
+export const COMPANY = {
+  name: '"Лура Лаб" ЕООД',
+  address: 'гр. София, бул. "Витоша" 10',
+  email: "hello@luralab.eu",
+  eik: "207712345",
+} as const;
+
+// Social Links
+export const SOCIAL = {
+  instagram: "https://instagram.com/luralab",
+  facebook: "https://facebook.com/luralab",
+} as const;
+
+// Site Config
+export const SITE_CONFIG = {
+  name: "LURA",
+  url: "https://luralab.eu",
+  locale: "bg_BG",
+} as const;
+
+// Navigation Links
+export const NAV_LINKS = [
+  { href: "/produkt", label: "Магазин" },
+  { href: "/nauka", label: "Наука" },
+] as const;
+
+// Footer Links
+export const FOOTER_LINKS = {
+  shop: [
+    { href: "/produkt", label: "Corti-Glow" },
+    { href: "/produkt#bundles", label: "Пакети" },
+  ],
+  help: [
+    { href: "/pomosht", label: "Контакт" },
+    { href: "/pomosht#dostavka", label: "Доставка" },
+    { href: "/obshti-usloviya", label: "Общи условия" },
+    { href: "/poveritelnost", label: "Поверителност" },
+  ],
+} as const;

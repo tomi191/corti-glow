@@ -1,0 +1,164 @@
+"use client";
+
+import { useRef, useState } from "react";
+import { motion, useInView, AnimatePresence } from "framer-motion";
+import { HelpCircle, Plus, Minus, MessageCircle } from "lucide-react";
+import { AnimatedHeading } from "@/components/ui/AnimatedText";
+
+const faqs = [
+  {
+    question: "Кога ще видя резултати?",
+    answer:
+      "Повечето жени забелязват подобрен сън още след 2-3 дни. Намаляване на подуването обикновено се усеща към края на първата седмица. За пълни резултати с понижен кортизол и хормонален баланс, препоръчваме минимум 30 дни редовна употреба.",
+  },
+  {
+    question: "Безопасен ли е Corti-Glow при кърмене или бременност?",
+    answer:
+      "Препоръчваме да се консултирате с вашия лекар преди употреба по време на бременност или кърмене. Въпреки че съставките са натурални, всяка бременност е индивидуална и е важно да получите персонален съвет.",
+  },
+  {
+    question: "Мога ли да го пия всеки ден?",
+    answer:
+      "Да, Corti-Glow е създаден за ежедневна употреба. Всъщност, редовната употреба е ключът към оптимални резултати. Съставките са в безопасни дози, подходящи за дългосрочен прием.",
+  },
+  {
+    question: "Има ли странични ефекти?",
+    answer:
+      "Corti-Glow съдържа само натурални съставки в клинично доказани дози. Няма познати странични ефекти при препоръчителната доза. Ако имате алергии към някоя от съставките, моля консултирайте се с лекар.",
+  },
+  {
+    question: "Каква е вашата политика за връщане?",
+    answer:
+      "Предлагаме 14-дневна гаранция за връщане на парите. Ако не сте доволни от продукта по някаква причина, свържете се с нас и ще ви възстановим пълната сума без въпроси.",
+  },
+  {
+    question: "Съвместим ли е с други добавки или лекарства?",
+    answer:
+      "Corti-Glow е безопасен за комбиниране с повечето добавки. Ако приемате лекарства, особено за щитовидната жлеза, диабет или кръвно налягане, препоръчваме консултация с лекар преди започване.",
+  },
+];
+
+export function PremiumFAQ() {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const [openIndex, setOpenIndex] = useState<number | null>(0);
+
+  return (
+    <section ref={ref} className="py-32 relative overflow-hidden">
+      {/* Background */}
+      <div className="absolute inset-0 bg-gradient-to-b from-white via-[#2D4A3E]/5 to-white" />
+
+      <div className="max-w-4xl mx-auto px-6 relative">
+        {/* Header */}
+        <div className="text-center max-w-3xl mx-auto mb-16">
+          <motion.span
+            initial={{ opacity: 0, y: 20 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.6 }}
+            className="inline-flex items-center gap-2 text-[#2D4A3E] text-sm font-medium uppercase tracking-widest mb-6"
+          >
+            <HelpCircle className="w-4 h-4" />
+            Често Задавани Въпроси
+          </motion.span>
+
+          <AnimatedHeading delay={0.2}>
+            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-semibold text-[#2D4A3E] tracking-tight mb-6">
+              Имаш Въпроси?
+              <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#B2D8C6] to-[#FFC1CC]">
+                Имаме Отговори.
+              </span>
+            </h2>
+          </AnimatedHeading>
+        </div>
+
+        {/* FAQ Items */}
+        <div className="space-y-4">
+          {faqs.map((faq, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 20 }}
+              animate={isInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.5, delay: 0.1 * index }}
+            >
+              <div
+                className={`rounded-2xl overflow-hidden transition-all duration-500 ${
+                  openIndex === index
+                    ? "bg-white shadow-[0_20px_60px_rgba(45,74,62,0.1)]"
+                    : "bg-white/60 hover:bg-white/80"
+                }`}
+              >
+                <button
+                  onClick={() => setOpenIndex(openIndex === index ? null : index)}
+                  className="w-full px-8 py-6 flex items-center justify-between text-left"
+                >
+                  <span
+                    className={`font-medium transition-colors duration-300 ${
+                      openIndex === index ? "text-[#2D4A3E]" : "text-stone-700"
+                    }`}
+                  >
+                    {faq.question}
+                  </span>
+                  <motion.div
+                    animate={{ rotate: openIndex === index ? 180 : 0 }}
+                    transition={{ duration: 0.3 }}
+                    className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors duration-300 ${
+                      openIndex === index
+                        ? "bg-[#2D4A3E] text-white"
+                        : "bg-stone-100 text-stone-600"
+                    }`}
+                  >
+                    {openIndex === index ? (
+                      <Minus className="w-4 h-4" />
+                    ) : (
+                      <Plus className="w-4 h-4" />
+                    )}
+                  </motion.div>
+                </button>
+
+                <AnimatePresence>
+                  {openIndex === index && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <div className="px-8 pb-6">
+                        <div className="h-px bg-gradient-to-r from-transparent via-[#B2D8C6]/50 to-transparent mb-6" />
+                        <p className="text-stone-600 leading-relaxed">
+                          {faq.answer}
+                        </p>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+
+        {/* Contact CTA */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.6, delay: 0.8 }}
+          className="mt-16 text-center"
+        >
+          <div className="inline-flex items-center gap-4 px-8 py-5 rounded-2xl bg-gradient-to-r from-[#B2D8C6]/20 via-white to-[#FFC1CC]/20 border border-white/50 shadow-lg">
+            <MessageCircle className="w-6 h-6 text-[#2D4A3E]" />
+            <div className="text-left">
+              <p className="text-sm text-stone-500">Не намери отговор?</p>
+              <a
+                href="mailto:support@luralab.eu"
+                className="font-medium text-[#2D4A3E] hover:underline"
+              >
+                Пиши ни на support@luralab.eu
+              </a>
+            </div>
+          </div>
+        </motion.div>
+      </div>
+    </section>
+  );
+}

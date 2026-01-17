@@ -1,0 +1,282 @@
+import type { ProductVariant } from "@/types";
+
+export const productVariants: ProductVariant[] = [
+  {
+    id: "starter-box",
+    name: "Старт",
+    description: "Идеален за проба. 30 саше.",
+    price: 99,
+    quantity: 1,
+  },
+  {
+    id: "glow-bundle",
+    name: "Glow Пакет",
+    description: "За 2 месеца. Видими резултати.",
+    price: 169,
+    compareAtPrice: 198,
+    quantity: 2,
+    isBestSeller: true,
+    savings: 29,
+  },
+  {
+    id: "restart-bundle",
+    name: "Пълен Рестарт",
+    description: "За 3 месеца. Пълен хормонален ресет.",
+    price: 239,
+    compareAtPrice: 297,
+    quantity: 3,
+    savings: 58,
+  },
+];
+
+export const productInfo = {
+  name: "Corti-Glow",
+  tagline: "Ритуалът за хормонален баланс",
+  flavor: "Горска Ягода и Лайм",
+  servings: 30,
+  image: "/images/corti-glow.png",
+};
+
+export const ingredients = [
+  {
+    symbol: "Mg",
+    name: "Магнезиев Бисглицинат",
+    dosage: "300mg",
+    description:
+      "Най-усвоимата форма на магнезий. Успокоява мускулите и подобрява съня.",
+    color: "#B2D8C6",
+  },
+  {
+    symbol: "KSM",
+    name: "Ашваганда (KSM-66)",
+    dosage: "300mg",
+    description:
+      "Клинично доказано намаляване на кортизола с до 27%. Златният стандарт.",
+    color: "#FFC1CC",
+  },
+  {
+    symbol: "L-T",
+    name: "L-Теанин",
+    dosage: "200mg",
+    description:
+      "Аминокиселина от зелен чай. Насърчава алфа мозъчните вълни за спокойна концентрация.",
+    color: "#F4E3B2",
+  },
+  {
+    symbol: "MI",
+    name: "Мио-инозитол",
+    dosage: "2000mg",
+    description:
+      "Подкрепя инсулиновата чувствителност и хормоналния баланс при PCOS.",
+    color: "#E5E5E5",
+  },
+  {
+    symbol: "Br",
+    name: "Бромелаин",
+    dosage: "500mg",
+    description:
+      "Ензим от ананас. Премахва задържаната вода и подпомага храносмилането.",
+    color: "#FFD4A3",
+  },
+];
+
+export const features = [
+  {
+    icon: "droplets",
+    iconColor: "#B2D8C6",
+    title: "Моментална Лекота",
+    description:
+      "Бромелаин (от ананас) и Магнезиев Бисглицинат работят заедно, за да изчистят задържаната вода и успокоят стомаха.",
+  },
+  {
+    icon: "brain",
+    iconColor: "#FFC1CC",
+    title: "Дълбок Анти-Стрес",
+    description:
+      'KSM-66® Ашваганда и L-Теанин свалят нивата на кортизол с до 27%, превключвайки мозъка от "паника" на "спокойствие".',
+  },
+  {
+    icon: "scale",
+    iconColor: "#F4E3B2",
+    title: "Хормонален Баланс",
+    description:
+      "Мио-инозитолът подкрепя инсулиновата чувствителност и овулацията, като намалява хормоналното акне и промените в настроението.",
+  },
+];
+
+export const howToUse = [
+  {
+    step: 1,
+    title: "Отвори & Изсипи",
+    description:
+      "Изсипи едно саше в 250мл студена вода. Гледай как розовите минерали се разтварят.",
+  },
+  {
+    step: 2,
+    title: "Разбъркай & Добави Лед",
+    description:
+      "Разбъркай добре (без бучки, никога) и добави лед. Изстискай пресен лайм за още свежест.",
+  },
+  {
+    step: 3,
+    title: "Сияй & Релаксирай",
+    description:
+      "Отпивай бавно. Усети как магнезият успокоява мускулите в рамките на 20 минути.",
+  },
+];
+
+// Full product for Admin demo (matches database schema)
+export const demoProducts = [
+  {
+    id: "550e8400-e29b-41d4-a716-446655440001",
+    slug: "corti-glow",
+    sku: "CG-001",
+    barcode: "3800123456789",
+    name: "Corti-Glow",
+    tagline: "Ритуалът за хормонален баланс",
+    description:
+      "Corti-Glow е иновативна формула, създадена специално за жени, които искат да възстановят хормоналния си баланс по естествен начин. Комбинира 5 научно доказани съставки за намаляване на кортизола, подобряване на съня и цялостно благосъстояние.",
+    flavor: "Горска Ягода и Лайм",
+    servings: 30,
+    price: 99.0,
+    compare_at_price: null,
+    cost_price: 28.50,
+    image: "/images/product-hero-box.webp",
+    images: [
+      "/images/product-hero-box.webp",
+      "/images/product-sachet-marble.webp",
+      "/images/product-pouring.webp",
+      "/images/product-splash-pour.webp",
+      "/images/lifestyle-morning-stretch.webp",
+      "/images/lifestyle-nightstand-ritual.webp",
+      "/images/lifestyle-evening-mocktail.webp",
+      "/images/ingredients-flatlay.webp",
+    ],
+    stock: 247,
+    low_stock_threshold: 20,
+    track_inventory: true,
+    status: "active" as const,
+    badge: "Бестселър",
+    features: [
+      {
+        icon: "droplets",
+        icon_color: "#B2D8C6",
+        title: "Моментална Лекота",
+        description:
+          "Бромелаин (от ананас) и Магнезиев Бисглицинат работят заедно, за да изчистят задържаната вода и успокоят стомаха.",
+      },
+      {
+        icon: "brain",
+        icon_color: "#FFC1CC",
+        title: "Дълбок Анти-Стрес",
+        description:
+          "KSM-66 Ашваганда и L-Теанин свалят нивата на кортизол с до 27%, превключвайки мозъка от паника на спокойствие.",
+      },
+      {
+        icon: "scale",
+        icon_color: "#F4E3B2",
+        title: "Хормонален Баланс",
+        description:
+          "Мио-инозитолът подкрепя инсулиновата чувствителност и овулацията, като намалява хормоналното акне и промените в настроението.",
+      },
+    ],
+    ingredients: [
+      {
+        symbol: "Mg",
+        name: "Магнезиев Бисглицинат",
+        dosage: "300mg",
+        description:
+          "Най-усвоимата форма на магнезий. Успокоява мускулите и подобрява съня.",
+        color: "#B2D8C6",
+      },
+      {
+        symbol: "KSM",
+        name: "Ашваганда (KSM-66)",
+        dosage: "300mg",
+        description:
+          "Клинично доказано намаляване на кортизола с до 27%. Златният стандарт.",
+        color: "#FFC1CC",
+      },
+      {
+        symbol: "L-T",
+        name: "L-Теанин",
+        dosage: "200mg",
+        description:
+          "Аминокиселина от зелен чай. Насърчава алфа мозъчните вълни за спокойна концентрация.",
+        color: "#F4E3B2",
+      },
+      {
+        symbol: "MI",
+        name: "Мио-инозитол",
+        dosage: "2000mg",
+        description:
+          "Подкрепя инсулиновата чувствителност и хормоналния баланс при PCOS.",
+        color: "#E5E5E5",
+      },
+      {
+        symbol: "Br",
+        name: "Бромелаин",
+        dosage: "500mg",
+        description:
+          "Ензим от ананас. Премахва задържаната вода и подпомага храносмилането.",
+        color: "#FFD4A3",
+      },
+    ],
+    variants: [
+      {
+        id: "starter-box",
+        name: "Старт",
+        description: "Идеален за проба. 30 саше.",
+        price: 99,
+        quantity: 1,
+      },
+      {
+        id: "glow-bundle",
+        name: "Glow Пакет",
+        description: "За 2 месеца. Видими резултати.",
+        price: 169,
+        compare_at_price: 198,
+        quantity: 2,
+        is_best_seller: true,
+        savings: 29,
+      },
+      {
+        id: "restart-bundle",
+        name: "Пълен Рестарт",
+        description: "За 3 месеца. Пълен хормонален ресет.",
+        price: 239,
+        compare_at_price: 297,
+        quantity: 3,
+        savings: 58,
+      },
+    ],
+    how_to_use: [
+      {
+        step: 1,
+        title: "Отвори & Изсипи",
+        description:
+          "Изсипи едно саше в 250мл студена вода. Гледай как розовите минерали се разтварят.",
+      },
+      {
+        step: 2,
+        title: "Разбъркай & Добави Лед",
+        description:
+          "Разбъркай добре (без бучки, никога) и добави лед. Изстискай пресен лайм за още свежест.",
+      },
+      {
+        step: 3,
+        title: "Сияй & Релаксирай",
+        description:
+          "Отпивай бавно. Усети как магнезият успокоява мускулите в рамките на 20 минути.",
+      },
+    ],
+    meta_title: "Corti-Glow | Хормонален Баланс за Жени | LuraLab",
+    meta_description:
+      "Открий Corti-Glow - иновативна формула с Ашваганда KSM-66, Магнезий и Мио-инозитол за намаляване на кортизола и хормонален баланс. Безплатна доставка над 80 EUR.",
+    weight: 0.45,
+    dimensions: { length: 18, width: 12, height: 8 },
+    created_at: "2024-01-15T10:00:00Z",
+    updated_at: new Date().toISOString(),
+    published: true,
+  },
+];
