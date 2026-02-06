@@ -242,7 +242,7 @@ export function BentoReviews() {
 
           <ScrollReveal animation="blur-slide" delay={0.1}>
             <AnimatedHeading>
-              <h2 className="text-4xl sm:text-5xl lg:text-6xl font-semibold text-[#2D4A3E] tracking-tight mb-6">
+              <h2 className="text-2xl sm:text-4xl lg:text-6xl font-semibold text-[#2D4A3E] tracking-tight mb-6">
                 Истории на
                 <br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#B2D8C6] via-[#2D4A3E] to-[#FFC1CC]">

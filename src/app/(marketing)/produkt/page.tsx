@@ -111,7 +111,7 @@ export default async function ProductPage() {
                 <p className="text-sm text-[#B2D8C6] font-medium uppercase tracking-wider mb-2">
                   LURA Wellness
                 </p>
-                <h1 className="text-4xl md:text-5xl font-semibold text-[#2D4A3E] tracking-tight">
+                <h1 className="text-3xl md:text-5xl font-semibold text-[#2D4A3E] tracking-tight">
                   {product.name}
                 </h1>
                 <p className="text-stone-500 mt-2 text-lg">{product.tagline}</p>

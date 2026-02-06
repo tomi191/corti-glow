@@ -29,7 +29,7 @@ export function PremiumHero() {
       <AnimatedBackground />
 
       <div className="max-w-7xl mx-auto px-6 w-full">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
           {/* Content */}
           <motion.div style={{ opacity }} className="space-y-8">
             {/* Badge */}
@@ -53,7 +53,7 @@ export function PremiumHero() {
 
             {/* Headline */}
             <AnimatedHeading delay={0.3}>
-              <h1 className="text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-semibold leading-[0.95] tracking-tight">
+              <h1 className="text-3xl sm:text-5xl lg:text-7xl xl:text-8xl font-semibold leading-[0.95] tracking-tight">
                 <span className="text-[#2D4A3E]">Пребори</span>
                 <br />
                 <span className="text-[#2D4A3E]">стреса.</span>

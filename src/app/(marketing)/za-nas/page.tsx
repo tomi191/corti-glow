@@ -45,7 +45,7 @@ export default function AboutPage() {
           <span className="text-[#B2D8C6] text-xs font-bold tracking-widest uppercase mb-4 block">
             За Нас
           </span>
-          <h1 className="text-4xl md:text-6xl font-semibold text-[#2D4A3E] tracking-tight mb-6">
+          <h1 className="text-3xl md:text-6xl font-semibold text-[#2D4A3E] tracking-tight mb-6">
             Мисията на LURA
           </h1>
           <p className="text-lg text-stone-600 font-light">

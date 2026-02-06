@@ -42,7 +42,7 @@ export default function BlogPage() {
           <span className="inline-block px-4 py-1.5 rounded-full bg-[#B2D8C6]/20 text-[#2D4A3E] text-sm font-medium mb-6">
             LURA Блог
           </span>
-          <h1 className="text-4xl md:text-5xl font-semibold text-[#2D4A3E] mb-6">
+          <h1 className="text-3xl md:text-5xl font-semibold text-[#2D4A3E] mb-6">
             Знание за{" "}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#2D4A3E] via-[#B2D8C6] to-[#FFC1CC]">
               твоето здраве

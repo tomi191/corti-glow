@@ -82,7 +82,7 @@ export function Footer() {
                 href={SOCIAL.instagram}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-2"
+                className="p-2.5"
                 aria-label="Instagram"
               >
                 <Instagram className="w-5 h-5" />
@@ -91,7 +91,7 @@ export function Footer() {
                 href={SOCIAL.facebook}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-2"
+                className="p-2.5"
                 aria-label="Facebook"
               >
                 <Facebook className="w-5 h-5" />

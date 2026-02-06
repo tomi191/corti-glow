@@ -52,7 +52,7 @@ export function PremiumCTA() {
           </motion.span>
 
           <AnimatedHeading delay={0.2}>
-            <h2 className="text-4xl sm:text-5xl lg:text-7xl font-semibold text-white tracking-tight mb-8">
+            <h2 className="text-2xl sm:text-4xl lg:text-7xl font-semibold text-white tracking-tight mb-8">
               Готова ли си за
               <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#B2D8C6] via-white to-[#FFC1CC]">
@@ -65,7 +65,7 @@ export function PremiumCTA() {
             initial={{ opacity: 0, y: 20 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.6, delay: 0.4 }}
-            className="text-xl text-white/70 font-light max-w-2xl mx-auto mb-12"
+            className="text-xl text-white/70 font-light max-w-2xl mx-auto mb-8 md:mb-12"
           >
             Присъедини се към 500+ жени, които вече преоткриха спокойствието
             и естествената красота с Corti-Glow.
@@ -102,7 +102,7 @@ export function PremiumCTA() {
             initial={{ opacity: 0, y: 30 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.6, delay: 0.7 }}
-            className="flex flex-wrap justify-center gap-8"
+            className="flex flex-wrap justify-center gap-4 md:gap-8"
           >
             {[
               { icon: Shield, label: "14-дневна гаранция" },

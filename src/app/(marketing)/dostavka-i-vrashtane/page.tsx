@@ -69,7 +69,7 @@ export default function ShippingPage() {
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#B2D8C6]/20 mb-6">
             <Truck className="w-8 h-8 text-[#2D4A3E]" />
           </div>
-          <h1 className="text-4xl md:text-5xl font-semibold text-[#2D4A3E] mb-6">
+          <h1 className="text-3xl md:text-5xl font-semibold text-[#2D4A3E] mb-6">
             Доставка & Връщане
           </h1>
           <p className="text-lg text-stone-600 max-w-2xl mx-auto">

@@ -84,7 +84,7 @@ export function PremiumIngredients() {
 
       <div className="max-w-7xl mx-auto px-6 relative">
         {/* Header */}
-        <div className="text-center max-w-3xl mx-auto mb-20">
+        <div className="text-center max-w-3xl mx-auto mb-12 md:mb-20">
           <motion.span
             initial={{ opacity: 0, y: 20 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
@@ -96,7 +96,7 @@ export function PremiumIngredients() {
           </motion.span>
 
           <AnimatedHeading delay={0.2}>
-            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-semibold text-[#2D4A3E] tracking-tight mb-6">
+            <h2 className="text-2xl sm:text-4xl lg:text-6xl font-semibold text-[#2D4A3E] tracking-tight mb-6">
               Всяка Съставка
               <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#B2D8C6] via-[#2D4A3E] to-[#FFC1CC]">
@@ -255,7 +255,7 @@ export function PremiumIngredients() {
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6, delay: 0.8 }}
-          className="flex flex-wrap justify-center gap-6 mt-20"
+          className="flex flex-wrap justify-center gap-4 md:gap-6 mt-12 md:mt-20"
         >
           {[
             { icon: Leaf, label: "100% Натурално" },
