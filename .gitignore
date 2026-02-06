@@ -39,3 +39,19 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# external agent tools
+.agent/
+.playwright-mcp/
+
+# screenshots & review images
+*.png
+*.jpeg
+!public/**/*.png
+!public/**/*.jpeg
+!public/**/*.jpg
+
+# misc docs & artifacts
+BEST_PRACTICES_2026.md
+BLOG_GUIDELINES.md
+nul
