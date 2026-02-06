@@ -217,7 +217,7 @@ export function BentoReviews() {
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
-    <section ref={ref} className="py-32 relative overflow-hidden bg-[#F5F2EF]">
+    <section ref={ref} className="py-16 md:py-32 relative overflow-hidden bg-[#F5F2EF]">
       {/* Background pattern */}
       <div className="absolute inset-0 opacity-50">
         <svg className="absolute inset-0 w-full h-full" style={{ opacity: 0.03 }}>

@@ -24,7 +24,7 @@ export function PremiumHero() {
   return (
     <section
       ref={containerRef}
-      className="relative min-h-screen flex items-center overflow-hidden pt-20 pb-32"
+      className="relative min-h-screen flex items-center overflow-hidden pt-20 pb-16 md:pb-32"
     >
       <AnimatedBackground />
 
@@ -149,7 +149,7 @@ export function PremiumHero() {
             <motion.div
               animate={prefersReducedMotion ? {} : { y: [-10, 10, -10], rotate: [0, 5, 0] }}
               transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-              className="absolute -top-10 -left-10 w-24 h-24 rounded-2xl bg-white/80 backdrop-blur-sm shadow-xl p-4 border border-white/50"
+              className="absolute -top-10 -left-10 w-24 h-24 rounded-2xl bg-white/80 backdrop-blur-sm shadow-xl p-4 border border-white/50 hidden md:flex flex-col"
             >
               <div className="text-3xl font-bold text-[#2D4A3E]">-27%</div>
               <div className="text-[10px] text-stone-500 uppercase tracking-wider">
@@ -165,7 +165,7 @@ export function PremiumHero() {
                 ease: "easeInOut",
                 delay: 1,
               }}
-              className="absolute -bottom-5 -right-5 w-28 h-28 rounded-2xl bg-white/80 backdrop-blur-sm shadow-xl p-4 border border-white/50"
+              className="absolute -bottom-5 -right-5 w-28 h-28 rounded-2xl bg-white/80 backdrop-blur-sm shadow-xl p-4 border border-white/50 hidden md:flex flex-col"
             >
               <div className="text-3xl font-bold text-[#2D4A3E]">3</div>
               <div className="text-[10px] text-stone-500 uppercase tracking-wider">
@@ -185,6 +185,7 @@ export function PremiumHero() {
                 alt="Corti-Glow Premium Mocktail"
                 width={700}
                 height={400}
+                sizes="(max-width: 768px) 100vw, 700px"
                 priority
                 className="rounded-3xl drop-shadow-[0_40px_80px_rgba(45,74,62,0.3)] hover:scale-[1.02] transition-transform duration-700"
               />

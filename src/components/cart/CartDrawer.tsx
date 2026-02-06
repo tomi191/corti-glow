@@ -100,7 +100,7 @@ export function CartDrawer() {
                 whileHover={{ scale: 1.1, rotate: 90 }}
                 whileTap={{ scale: 0.9 }}
                 onClick={closeCart}
-                className="p-2.5 text-stone-400 hover:text-stone-600 rounded-full hover:bg-stone-100 transition-colors"
+                className="p-3 text-stone-400 hover:text-stone-600 rounded-full hover:bg-stone-100 transition-colors"
                 aria-label="Затвори количката"
               >
                 <X className="w-6 h-6" />

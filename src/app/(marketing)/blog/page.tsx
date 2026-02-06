@@ -37,7 +37,7 @@ export default function BlogPage() {
         ]}
       />
       {/* Hero */}
-      <section className="pt-32 pb-16 px-6">
+      <section className="pt-24 md:pt-32 pb-16 px-6">
         <div className="max-w-4xl mx-auto text-center">
           <span className="inline-block px-4 py-1.5 rounded-full bg-[#B2D8C6]/20 text-[#2D4A3E] text-sm font-medium mb-6">
             LURA Блог

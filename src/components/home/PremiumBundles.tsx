@@ -28,7 +28,7 @@ export function PremiumBundles() {
   };
 
   return (
-    <section ref={ref} id="bundles" className="py-32 relative overflow-hidden">
+    <section ref={ref} id="bundles" className="py-16 md:py-32 relative overflow-hidden">
       {/* Background */}
       <div className="absolute inset-0">
         <div className="absolute inset-0 bg-gradient-to-b from-white via-[#FFC1CC]/5 to-white" />

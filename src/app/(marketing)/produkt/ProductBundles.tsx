@@ -75,7 +75,7 @@ export function ProductBundles({ variants }: ProductBundlesProps) {
                     {variant.name}
                   </span>
                   {variant.isBestSeller && (
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-[#2D4A3E] bg-[#B2D8C6]/30 px-2 py-0.5 rounded-full">
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-[#2D4A3E] bg-[#B2D8C6]/30 px-2.5 py-1 rounded-full">
                       Най-популярен
                     </span>
                   )}

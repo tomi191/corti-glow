@@ -39,7 +39,7 @@ export default function SupportPage() {
       {/* Hero */}
       <section className="py-16 bg-white">
         <div className="max-w-4xl mx-auto px-6 text-center">
-          <h1 className="text-4xl font-semibold text-[#2D4A3E] mb-4">
+          <h1 className="text-3xl md:text-4xl font-semibold text-[#2D4A3E] mb-4">
             Как можем да помогнем?
           </h1>
           <p className="text-lg text-stone-600">

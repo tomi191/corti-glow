@@ -64,7 +64,7 @@ export function PremiumIngredients() {
   const [activeIngredient, setActiveIngredient] = useState(ingredients[0]);
 
   return (
-    <section ref={ref} className="py-32 relative overflow-hidden">
+    <section ref={ref} className="py-16 md:py-32 relative overflow-hidden">
       {/* Background */}
       <div className="absolute inset-0">
         <div className="absolute inset-0 bg-gradient-to-br from-[#F5F2EF] via-white to-[#B2D8C6]/10" />

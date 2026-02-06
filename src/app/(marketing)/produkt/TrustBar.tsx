@@ -6,7 +6,7 @@ export function TrustBar() {
   return (
     <div className="border-y border-stone-100 bg-stone-50/50 py-4">
       <div className="max-w-6xl mx-auto px-6">
-        <div className="flex flex-wrap justify-center gap-6 md:gap-10 text-sm">
+        <div className="flex flex-wrap justify-center gap-y-2 gap-x-6 md:gap-10 text-sm">
           <div className="flex items-center gap-2 text-stone-600">
             <Shield className="w-5 h-5 text-[#B2D8C6]" />
             <span>14-дневна гаранция</span>

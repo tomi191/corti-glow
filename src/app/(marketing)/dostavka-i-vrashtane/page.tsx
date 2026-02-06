@@ -64,7 +64,7 @@ export default function ShippingPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
       />
       {/* Hero */}
-      <section className="pt-32 pb-16 px-6">
+      <section className="pt-24 md:pt-32 pb-16 px-6">
         <div className="max-w-4xl mx-auto text-center">
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#B2D8C6]/20 mb-6">
             <Truck className="w-8 h-8 text-[#2D4A3E]" />

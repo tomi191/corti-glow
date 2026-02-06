@@ -12,7 +12,7 @@ export default function CheckoutPage() {
   return (
     <div className="min-h-screen bg-stone-50 py-12">
       <div className="max-w-6xl mx-auto px-6">
-        <h1 className="text-3xl font-semibold text-[#2D4A3E] mb-8 text-center">
+        <h1 className="text-2xl md:text-3xl font-semibold text-[#2D4A3E] mb-8 text-center">
           Завърши Поръчката
         </h1>
 

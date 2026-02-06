@@ -193,7 +193,7 @@ export function CheckoutForm() {
             <div key={step.num} className="flex items-center">
               <div className="flex flex-col items-center gap-1">
                 <div
-                  className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold transition-colors ${
+                  className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-semibold transition-colors ${
                     step.num === 1
                       ? "bg-[#2D4A3E] text-white"
                       : canProceedToShipping() && step.num === 2
@@ -229,7 +229,7 @@ export function CheckoutForm() {
           Информация за Контакт
         </h2>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="block text-xs font-bold text-stone-500 uppercase tracking-wide mb-1">
               Име

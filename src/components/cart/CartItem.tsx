@@ -48,7 +48,7 @@ export function CartItem({ item }: CartItemProps) {
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
               onClick={() => updateQuantity(item.id, -1)}
-              className="w-9 h-9 rounded-md flex items-center justify-center text-stone-500 hover:bg-white hover:text-[#2D4A3E] transition-colors"
+              className="w-11 h-11 rounded-md flex items-center justify-center text-stone-500 hover:bg-white hover:text-[#2D4A3E] transition-colors"
             >
               <Minus className="w-4 h-4" />
             </motion.button>
@@ -65,7 +65,7 @@ export function CartItem({ item }: CartItemProps) {
               whileTap={item.quantity < MAX_CART_QUANTITY ? { scale: 0.9 } : {}}
               onClick={() => updateQuantity(item.id, 1)}
               disabled={item.quantity >= MAX_CART_QUANTITY}
-              className="w-9 h-9 rounded-md flex items-center justify-center text-stone-500 hover:bg-white hover:text-[#2D4A3E] transition-colors disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-stone-500"
+              className="w-11 h-11 rounded-md flex items-center justify-center text-stone-500 hover:bg-white hover:text-[#2D4A3E] transition-colors disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-stone-500"
             >
               <Plus className="w-4 h-4" />
             </motion.button>

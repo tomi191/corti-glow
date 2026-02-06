@@ -388,7 +388,7 @@ export function InteractiveSciencePage() {
               <ScrollReveal animation="fade-up" delay={0.1}>
                 <div className="relative">
                   {/* Cycle visualization */}
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {[
                       { num: 1, title: "Стрес", desc: "Хроничен стрес от работа, семейство, социални мрежи", color: "#ef4444" },
                       { num: 2, title: "Висок кортизол", desc: "Надбъбречните жлези отделят повече кортизол", color: "#f97316" },

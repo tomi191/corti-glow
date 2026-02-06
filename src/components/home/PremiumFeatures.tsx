@@ -41,7 +41,7 @@ export function PremiumFeatures() {
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
-    <section ref={ref} className="py-32 relative overflow-hidden">
+    <section ref={ref} className="py-16 md:py-32 relative overflow-hidden">
       {/* Background */}
       <div className="absolute inset-0 bg-gradient-to-b from-white via-[#2D4A3E]/5 to-white" />
 

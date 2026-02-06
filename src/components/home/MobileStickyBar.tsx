@@ -113,7 +113,7 @@ export function MobileStickyBar() {
                     href="/checkout"
                     className="group flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-[#2D4A3E] to-[#3D5A4E] text-white rounded-xl text-sm font-semibold shadow-lg shadow-[#2D4A3E]/25 hover:shadow-xl hover:shadow-[#2D4A3E]/30 transition-all duration-300"
                   >
-                    Checkout
+                    Поръчай
                     <motion.span
                       className="inline-block"
                       animate={{ x: [0, 3, 0] }}
@@ -181,7 +181,7 @@ export function MobileStickyBar() {
           </div>
 
           {/* Safe area spacer for notched devices */}
-          <div className="h-safe-bottom bg-white" />
+          <div className="pb-[env(safe-area-inset-bottom)] bg-white" />
         </motion.div>
       )}
     </AnimatePresence>

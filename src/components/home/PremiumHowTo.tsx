@@ -49,7 +49,7 @@ export function PremiumHowTo() {
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
-    <section ref={ref} className="py-32 relative overflow-hidden bg-[#F5F2EF]">
+    <section ref={ref} className="py-16 md:py-32 relative overflow-hidden bg-[#F5F2EF]">
       {/* Hero Image */}
       <motion.div
         initial={{ opacity: 0, scale: 1.1 }}
