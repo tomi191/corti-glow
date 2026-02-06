@@ -2,9 +2,12 @@
 
 import { useCartStore } from "@/stores/cart-store";
 import { cn } from "@/lib/utils";
+import { trackAddToCart } from "@/components/analytics/GoogleAnalytics";
 
 interface AddToCartButtonProps {
   id: string;
+  productId: string;
+  variantId: string;
   title: string;
   price: number;
   image?: string;
@@ -15,9 +18,11 @@ interface AddToCartButtonProps {
 
 export function AddToCartButton({
   id,
+  productId,
+  variantId,
   title,
   price,
-  image = "/images/corti-glow.png",
+  image = "/images/product-hero-box.webp",
   variant = "primary",
   className,
   children,
@@ -27,10 +32,13 @@ export function AddToCartButton({
   const handleClick = () => {
     addItem({
       id,
+      productId,
+      variantId,
       title,
       price,
       image,
     });
+    trackAddToCart({ id, name: title, price });
   };
 
   return (

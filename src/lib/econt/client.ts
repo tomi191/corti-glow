@@ -1,9 +1,16 @@
 // Econt API Client with Basic HTTP Authentication
 
-const ECONT_API_URL =
-  process.env.ECONT_API_URL || "https://demo.econt.com/ee/services/";
-const ECONT_USERNAME = process.env.ECONT_USERNAME || "iasp-dev";
-const ECONT_PASSWORD = process.env.ECONT_PASSWORD || "1Asp-dev";
+function getRequiredEnv(name: string): string {
+  const value = process.env[name];
+  if (!value) {
+    throw new Error(`Missing required environment variable: ${name}`);
+  }
+  return value;
+}
+
+const ECONT_API_URL = getRequiredEnv("ECONT_API_URL");
+const ECONT_USERNAME = getRequiredEnv("ECONT_USERNAME");
+const ECONT_PASSWORD = getRequiredEnv("ECONT_PASSWORD");
 
 interface EcontResponse<T> {
   data?: T;

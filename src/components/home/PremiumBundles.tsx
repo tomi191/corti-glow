@@ -19,9 +19,11 @@ export function PremiumBundles() {
   const handleAddToCart = (variant: (typeof productVariants)[0]) => {
     addItem({
       id: variant.id,
+      productId: "corti-glow",
+      variantId: variant.id,
       title: `Corti-Glow (${variant.name})`,
       price: variant.price,
-      image: "/images/corti-glow.png",
+      image: "/images/product-hero-box.webp",
     });
   };
 

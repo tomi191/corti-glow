@@ -1,8 +1,7 @@
 "use server";
 
-// Order Management Server Actions
-// LOCAL MOCK VERSION - No database required
-
+import { createServerClient } from "@/lib/supabase/server";
+import { revalidatePath } from "next/cache";
 import type {
   OrderInsert,
   OrderUpdate,
@@ -11,8 +10,22 @@ import type {
   PaymentStatus,
 } from "@/lib/supabase/types";
 
-// In-memory storage for local testing
-const localOrders: Map<string, Order> = new Map();
+// Stock Management Types
+interface StockItem {
+  productId: string;
+  variantId: string;
+  quantity: number;
+}
+
+interface StockCheckResult {
+  available: boolean;
+  insufficientItems: Array<{
+    productId: string;
+    variantId: string;
+    requested: number;
+    available: number;
+  }>;
+}
 
 // Generate unique order number
 function generateOrderNumber(): string {
@@ -24,73 +37,31 @@ function generateOrderNumber(): string {
   return `LL${year}${month}${day}-${random}`;
 }
 
-// Generate UUID
-function generateUUID(): string {
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-    const r = Math.random() * 16 | 0;
-    const v = c === 'x' ? r : (r & 0x3 | 0x8);
-    return v.toString(16);
-  });
-}
-
-// Create a new order (LOCAL MOCK)
+// Create a new order
 export async function createOrder(
   data: Omit<OrderInsert, "order_number">
 ): Promise<{ order: Order | null; error: string | null }> {
   try {
+    const supabase = createServerClient();
     const orderNumber = generateOrderNumber();
-    const orderId = generateUUID();
-    const now = new Date().toISOString();
 
-    const order: Order = {
-      id: orderId,
+    const insertData: OrderInsert = {
+      ...data,
       order_number: orderNumber,
-      created_at: now,
-      updated_at: now,
-      customer_first_name: data.customer_first_name,
-      customer_last_name: data.customer_last_name,
-      customer_email: data.customer_email,
-      customer_phone: data.customer_phone,
-      shipping_method: data.shipping_method,
-      shipping_address: data.shipping_address,
-      shipping_price: data.shipping_price,
-      shipping_weight: data.shipping_weight || null,
-      econt_shipment_id: null,
-      econt_tracking_number: null,
-      econt_label_url: null,
-      econt_label_generated_at: null,
-      shipped_at: null,
-      delivered_at: null,
-      estimated_delivery_date: null,
-      payment_method: data.payment_method,
-      payment_status: data.payment_status || "pending",
-      stripe_payment_intent_id: null,
-      items: data.items,
-      subtotal: data.subtotal,
-      discount_code: data.discount_code || null,
-      discount_amount: data.discount_amount || 0,
-      total: data.total,
-      currency: data.currency || "EUR",
-      status: data.status || "new",
-      notes: data.notes || null,
     };
 
-    // Store locally
-    localOrders.set(orderId, order);
+    const { data: order, error } = await (supabase
+      .from("orders") as any)
+      .insert(insertData)
+      .select()
+      .single();
 
-    // Log for debugging
-    console.log("========================================");
-    console.log("NEW ORDER CREATED (LOCAL MOCK)");
-    console.log("========================================");
-    console.log("Order Number:", orderNumber);
-    console.log("Customer:", `${data.customer_first_name} ${data.customer_last_name}`);
-    console.log("Email:", data.customer_email);
-    console.log("Phone:", data.customer_phone);
-    console.log("Total:", data.total, data.currency);
-    console.log("Payment Method:", data.payment_method);
-    console.log("Items:", JSON.stringify(data.items, null, 2));
-    console.log("========================================");
+    if (error) {
+      console.error("Supabase create order error:", error);
+      return { order: null, error: error.message };
+    }
 
+    revalidatePath("/admin/porachki");
     return { order, error: null };
   } catch (error) {
     console.error("Create order error:", error);
@@ -105,9 +76,15 @@ export async function createOrder(
 export async function getOrder(
   orderId: string
 ): Promise<{ order: Order | null; error: string | null }> {
-  const order = localOrders.get(orderId);
-  if (!order) {
-    return { order: null, error: "Order not found" };
+  const supabase = createServerClient();
+  const { data: order, error } = await supabase
+    .from("orders")
+    .select("*")
+    .eq("id", orderId)
+    .single();
+
+  if (error) {
+    return { order: null, error: error.message };
   }
   return { order, error: null };
 }
@@ -116,11 +93,15 @@ export async function getOrder(
 export async function getOrderByNumber(
   orderNumber: string
 ): Promise<{ order: Order | null; error: string | null }> {
-  const order = Array.from(localOrders.values()).find(
-    (o) => o.order_number === orderNumber
-  );
-  if (!order) {
-    return { order: null, error: "Order not found" };
+  const supabase = createServerClient();
+  const { data: order, error } = await supabase
+    .from("orders")
+    .select("*")
+    .eq("order_number", orderNumber)
+    .single();
+
+  if (error) {
+    return { order: null, error: error.message };
   }
   return { order, error: null };
 }
@@ -129,10 +110,14 @@ export async function getOrderByNumber(
 export async function getOrderByPaymentIntent(
   paymentIntentId: string
 ): Promise<{ order: Order | null; error: string | null }> {
-  const order = Array.from(localOrders.values()).find(
-    (o) => o.stripe_payment_intent_id === paymentIntentId
-  );
-  if (!order) {
+  const supabase = createServerClient();
+  const { data: order, error } = await supabase
+    .from("orders")
+    .select("*")
+    .eq("stripe_payment_intent_id", paymentIntentId)
+    .single();
+
+  if (error) {
     return { order: null, error: "Order not found" };
   }
   return { order, error: null };
@@ -143,19 +128,20 @@ export async function updateOrder(
   orderId: string,
   data: OrderUpdate
 ): Promise<{ order: Order | null; error: string | null }> {
-  const existing = localOrders.get(orderId);
-  if (!existing) {
-    return { order: null, error: "Order not found" };
+  const supabase = createServerClient();
+  const { data: order, error } = await (supabase
+    .from("orders") as any)
+    .update(data)
+    .eq("id", orderId)
+    .select()
+    .single();
+
+  if (error) {
+    return { order: null, error: error.message };
   }
 
-  const updated: Order = {
-    ...existing,
-    ...data,
-    updated_at: new Date().toISOString(),
-  };
-
-  localOrders.set(orderId, updated);
-  return { order: updated, error: null };
+  revalidatePath("/admin/porachki");
+  return { order, error: null };
 }
 
 // Update order status
@@ -173,10 +159,13 @@ export async function updatePaymentStatus(
   paymentStatus: PaymentStatus,
   paymentIntentId?: string
 ): Promise<{ success: boolean; error: string | null }> {
-  const { error } = await updateOrder(orderId, {
+  const updateData: OrderUpdate = {
     payment_status: paymentStatus,
-    ...(paymentIntentId && { stripe_payment_intent_id: paymentIntentId }),
-  });
+  };
+  if (paymentIntentId) {
+    updateData.stripe_payment_intent_id = paymentIntentId;
+  }
+  const { error } = await updateOrder(orderId, updateData);
   return { success: !error, error };
 }
 
@@ -202,44 +191,51 @@ export async function listOrders(filters?: {
   limit?: number;
   offset?: number;
 }): Promise<{ orders: Order[]; count: number; error: string | null }> {
-  let orders = Array.from(localOrders.values());
+  const supabase = createServerClient();
+  let query = supabase
+    .from("orders")
+    .select("*", { count: "exact" });
 
   // Apply filters
   if (filters?.status) {
-    orders = orders.filter((o) => o.status === filters.status);
+    query = query.eq("status", filters.status);
   }
 
   if (filters?.paymentStatus) {
-    orders = orders.filter((o) => o.payment_status === filters.paymentStatus);
+    query = query.eq("payment_status", filters.paymentStatus);
   }
 
   if (filters?.search) {
-    const search = filters.search.toLowerCase();
-    orders = orders.filter(
-      (o) =>
-        o.order_number.toLowerCase().includes(search) ||
-        o.customer_email.toLowerCase().includes(search) ||
-        o.customer_first_name.toLowerCase().includes(search) ||
-        o.customer_last_name.toLowerCase().includes(search)
-    );
+    // Sanitize search input to prevent SQL/PostgREST injection
+    // Remove special characters that could manipulate the query
+    const sanitizedSearch = filters.search
+      .replace(/[%_,()]/g, '') // Remove wildcards and special PostgREST chars
+      .trim()
+      .slice(0, 100); // Limit length
+
+    if (sanitizedSearch) {
+      query = query.or(`order_number.ilike.%${sanitizedSearch}%,customer_email.ilike.%${sanitizedSearch}%`);
+    }
   }
 
-  // Sort by created_at descending
-  orders.sort((a, b) =>
-    new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-  );
+  // Sorting
+  query = query.order("created_at", { ascending: false });
 
-  const count = orders.length;
-
-  // Apply pagination
-  if (filters?.offset) {
-    orders = orders.slice(filters.offset);
-  }
+  // Pagination
   if (filters?.limit) {
-    orders = orders.slice(0, filters.limit);
+    const from = filters.offset || 0;
+    const to = from + filters.limit - 1;
+    query = query.range(from, to);
   }
 
-  return { orders, count, error: null };
+  const { data, count, error } = await query;
+
+  if (error) {
+    console.error("List orders error:", error);
+    return { orders: [], count: 0, error: error.message };
+  }
+
+  return { orders: data as Order[], count: count || 0, error: null };
 }
 
 // Get order statistics
@@ -250,17 +246,206 @@ export async function getOrderStats(): Promise<{
   shippedOrders: number;
   error: string | null;
 }> {
-  const orders = Array.from(localOrders.values());
+  // This is expensive to do on client, but for now we aggregate.
+  // Better to use RCP (Remote Procedure Call) or specific queries.
+  // We'll run separate queries for strict correctness.
+
+  const supabase = createServerClient();
+
+  // Total Orders
+  const { count: totalOrders, error: err1 } = await supabase
+    .from("orders")
+    .select("*", { count: "exact", head: true });
+
+  // Pending Orders
+  const { count: pendingOrders, error: err2 } = await supabase
+    .from("orders")
+    .select("*", { count: "exact", head: true })
+    .in("status", ["new", "processing"]);
+
+  // Shipped Orders
+  const { count: shippedOrders, error: err3 } = await supabase
+    .from("orders")
+    .select("*", { count: "exact", head: true })
+    .in("status", ["shipped", "delivered"]);
+
+  // Revenue (requires summing 'total')
+  // Supabase JS doesn't do sum() directly unless we use .rpc() or fetch all.
+  // For safety and performance, let's fetch only the 'total' column.
+  const { data: revenueData, error: err4 } = await supabase
+    .from("orders")
+    .select("total");
+
+  if (err1 || err2 || err3 || err4) {
+    return {
+      totalOrders: 0,
+      totalRevenue: 0,
+      pendingOrders: 0,
+      shippedOrders: 0,
+      error: "Failed to fetch stats",
+    };
+  }
+
+  const totalRevenue = revenueData?.reduce((sum, row: any) => sum + row.total, 0) || 0;
 
   return {
-    totalOrders: orders.length,
-    totalRevenue: orders.reduce((sum, order) => sum + order.total, 0),
-    pendingOrders: orders.filter(
-      (o) => o.status === "new" || o.status === "processing"
-    ).length,
-    shippedOrders: orders.filter(
-      (o) => o.status === "shipped" || o.status === "delivered"
-    ).length,
+    totalOrders: totalOrders || 0,
+    totalRevenue,
+    pendingOrders: pendingOrders || 0,
+    shippedOrders: shippedOrders || 0,
     error: null,
   };
+}
+
+// ============================================
+// Stock Management Functions
+// ============================================
+
+// Check if requested quantities are available
+export async function checkStock(
+  items: StockItem[]
+): Promise<StockCheckResult> {
+  const supabase = createServerClient();
+  const insufficientItems: StockCheckResult["insufficientItems"] = [];
+
+  // Group items by productId since stock is per-product
+  const productQuantities = new Map<string, number>();
+  for (const item of items) {
+    const current = productQuantities.get(item.productId) || 0;
+    productQuantities.set(item.productId, current + item.quantity);
+  }
+
+  // Check each product's stock
+  for (const [productId, requestedQty] of productQuantities) {
+    const { data: product, error } = await supabase
+      .from("products")
+      .select("stock, track_inventory")
+      .eq("id", productId)
+      .single() as { data: { stock: number; track_inventory: boolean } | null; error: any };
+
+    if (error || !product) {
+      insufficientItems.push({
+        productId,
+        variantId: "",
+        requested: requestedQty,
+        available: 0,
+      });
+      continue;
+    }
+
+    // Skip check if inventory tracking is disabled
+    if (!product.track_inventory) {
+      continue;
+    }
+
+    if (product.stock < requestedQty) {
+      insufficientItems.push({
+        productId,
+        variantId: "",
+        requested: requestedQty,
+        available: product.stock,
+      });
+    }
+  }
+
+  return {
+    available: insufficientItems.length === 0,
+    insufficientItems,
+  };
+}
+
+// Deduct stock when order is confirmed
+export async function deductStock(
+  items: StockItem[]
+): Promise<{ success: boolean; error: string | null }> {
+  const supabase = createServerClient();
+
+  // Group items by productId
+  const productQuantities = new Map<string, number>();
+  for (const item of items) {
+    const current = productQuantities.get(item.productId) || 0;
+    productQuantities.set(item.productId, current + item.quantity);
+  }
+
+  // Deduct stock for each product
+  for (const [productId, quantity] of productQuantities) {
+    // First get current stock
+    const { data: product, error: fetchError } = await supabase
+      .from("products")
+      .select("stock, track_inventory")
+      .eq("id", productId)
+      .single() as { data: { stock: number; track_inventory: boolean } | null; error: any };
+
+    if (fetchError || !product) {
+      console.error(`Failed to fetch product ${productId}:`, fetchError);
+      continue;
+    }
+
+    // Skip if inventory tracking is disabled
+    if (!product.track_inventory) {
+      continue;
+    }
+
+    const newStock = Math.max(0, product.stock - quantity);
+
+    const { error: updateError } = await (supabase
+      .from("products") as any)
+      .update({ stock: newStock })
+      .eq("id", productId);
+
+    if (updateError) {
+      console.error(`Failed to update stock for ${productId}:`, updateError);
+      return { success: false, error: `Failed to update stock for product` };
+    }
+  }
+
+  revalidatePath("/admin/produkti");
+  return { success: true, error: null };
+}
+
+// Restore stock when order is cancelled
+export async function restoreStock(
+  items: StockItem[]
+): Promise<{ success: boolean; error: string | null }> {
+  const supabase = createServerClient();
+
+  // Group items by productId
+  const productQuantities = new Map<string, number>();
+  for (const item of items) {
+    const current = productQuantities.get(item.productId) || 0;
+    productQuantities.set(item.productId, current + item.quantity);
+  }
+
+  // Restore stock for each product
+  for (const [productId, quantity] of productQuantities) {
+    const { data: product, error: fetchError } = await supabase
+      .from("products")
+      .select("stock, track_inventory")
+      .eq("id", productId)
+      .single() as { data: { stock: number; track_inventory: boolean } | null; error: any };
+
+    if (fetchError || !product) {
+      console.error(`Failed to fetch product ${productId}:`, fetchError);
+      continue;
+    }
+
+    if (!product.track_inventory) {
+      continue;
+    }
+
+    const newStock = product.stock + quantity;
+
+    const { error: updateError } = await (supabase
+      .from("products") as any)
+      .update({ stock: newStock })
+      .eq("id", productId);
+
+    if (updateError) {
+      console.error(`Failed to restore stock for ${productId}:`, updateError);
+      return { success: false, error: `Failed to restore stock` };
+    }
+  }
+
+  revalidatePath("/admin/produkti");
+  return { success: true, error: null };
 }

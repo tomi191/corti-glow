@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, useCallback, useEffect } from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
@@ -22,20 +22,42 @@ export function MagneticButton({
   href,
 }: MagneticButtonProps) {
   const ref = useRef<HTMLButtonElement>(null);
+  const rafRef = useRef<number | null>(null);
   const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [isMouse, setIsMouse] = useState(false);
 
-  const handleMouse = (e: React.MouseEvent) => {
-    if (!ref.current) return;
-    const { clientX, clientY } = e;
-    const { left, top, width, height } = ref.current.getBoundingClientRect();
-    const x = (clientX - (left + width / 2)) * 0.3;
-    const y = (clientY - (top + height / 2)) * 0.3;
-    setPosition({ x, y });
-  };
+  useEffect(() => {
+    const mq = window.matchMedia("(hover: hover) and (pointer: fine)");
+    setIsMouse(mq.matches);
+    const handler = (e: MediaQueryListEvent) => setIsMouse(e.matches);
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, []);
 
-  const reset = () => {
+  const handleMouse = useCallback((e: React.MouseEvent) => {
+    if (rafRef.current) return; // Throttle: skip if a frame is already pending
+
+    rafRef.current = requestAnimationFrame(() => {
+      if (!ref.current) {
+        rafRef.current = null;
+        return;
+      }
+      const { clientX, clientY } = e;
+      const { left, top, width, height } = ref.current.getBoundingClientRect();
+      const x = (clientX - (left + width / 2)) * 0.3;
+      const y = (clientY - (top + height / 2)) * 0.3;
+      setPosition({ x, y });
+      rafRef.current = null;
+    });
+  }, []);
+
+  const reset = useCallback(() => {
+    if (rafRef.current) {
+      cancelAnimationFrame(rafRef.current);
+      rafRef.current = null;
+    }
     setPosition({ x: 0, y: 0 });
-  };
+  }, []);
 
   const variants = {
     primary:
@@ -58,9 +80,9 @@ export function MagneticButton({
       ref={ref as never}
       href={href}
       onClick={onClick}
-      onMouseMove={handleMouse}
-      onMouseLeave={reset}
-      animate={{ x: position.x, y: position.y }}
+      onMouseMove={isMouse ? handleMouse : undefined}
+      onMouseLeave={isMouse ? reset : undefined}
+      animate={isMouse ? { x: position.x, y: position.y } : {}}
       transition={{ type: "spring", stiffness: 350, damping: 15, mass: 0.5 }}
       className={cn(
         "relative inline-flex items-center justify-center rounded-full font-medium",

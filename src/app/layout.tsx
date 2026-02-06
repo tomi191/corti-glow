@@ -1,12 +1,15 @@
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import { SmoothScrollProvider } from "@/components/providers/SmoothScroll";
+import { CookieConsent } from "@/components/ui/CookieConsent";
+import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
 import "./globals.css";
 
 const plusJakarta = Plus_Jakarta_Sans({
   variable: "--font-plus-jakarta",
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
+  weight: ["300", "400", "600", "700"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -60,15 +63,43 @@ export const metadata: Metadata = {
   },
 };
 
+const organizationJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "LURA",
+  legalName: '"Лура Лаб" ЕООД',
+  url: "https://luralab.eu",
+  logo: "https://luralab.eu/images/og-image.png",
+  email: "hello@luralab.eu",
+  address: {
+    "@type": "PostalAddress",
+    streetAddress: 'бул. "Витоша" 10',
+    addressLocality: "София",
+    addressCountry: "BG",
+  },
+  sameAs: [
+    "https://instagram.com/luralab",
+    "https://facebook.com/luralab",
+  ],
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="bg" className="scroll-smooth">
-      <body className={`${plusJakarta.variable} antialiased font-sans bg-white`}>
+    <html lang="bg">
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+        />
+      </head>
+      <body className={`${plusJakarta.variable} antialiased font-sans bg-white overflow-x-hidden`}>
+        <GoogleAnalytics />
         <SmoothScrollProvider>{children}</SmoothScrollProvider>
+        <CookieConsent />
       </body>
     </html>
   );

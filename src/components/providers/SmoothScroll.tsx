@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect } from "react";
-import Lenis from "lenis";
 
 export function SmoothScrollProvider({
   children,
@@ -9,23 +8,10 @@ export function SmoothScrollProvider({
   children: React.ReactNode;
 }) {
   useEffect(() => {
-    const lenis = new Lenis({
-      duration: 1.2,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      orientation: "vertical",
-      gestureOrientation: "vertical",
-      smoothWheel: true,
-    });
-
-    function raf(time: number) {
-      lenis.raf(time);
-      requestAnimationFrame(raf);
-    }
-
-    requestAnimationFrame(raf);
-
+    // Apply smooth scroll via CSS — zero main thread cost
+    document.documentElement.style.scrollBehavior = "smooth";
     return () => {
-      lenis.destroy();
+      document.documentElement.style.scrollBehavior = "";
     };
   }, []);
 

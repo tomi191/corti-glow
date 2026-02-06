@@ -37,7 +37,7 @@ export function PremiumTestimonials() {
             className="inline-flex items-center gap-2 text-[#B2D8C6] text-sm font-medium uppercase tracking-widest mb-6"
           >
             <Star className="w-4 h-4 fill-current" />
-            10,000+ Доволни Клиенти
+            500+ Доволни Клиенти
           </motion.span>
 
           <AnimatedHeading delay={0.2}>

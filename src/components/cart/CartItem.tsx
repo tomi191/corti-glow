@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { Minus, Plus, Trash2 } from "lucide-react";
-import { useCartStore, type CartItem as CartItemType } from "@/stores/cart-store";
+import { useCartStore, MAX_CART_QUANTITY, type CartItem as CartItemType } from "@/stores/cart-store";
 import { formatPrice } from "@/lib/utils";
 
 interface CartItemProps {
@@ -48,9 +48,9 @@ export function CartItem({ item }: CartItemProps) {
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
               onClick={() => updateQuantity(item.id, -1)}
-              className="w-7 h-7 rounded-md flex items-center justify-center text-stone-500 hover:bg-white hover:text-[#2D4A3E] transition-colors"
+              className="w-9 h-9 rounded-md flex items-center justify-center text-stone-500 hover:bg-white hover:text-[#2D4A3E] transition-colors"
             >
-              <Minus className="w-3 h-3" />
+              <Minus className="w-4 h-4" />
             </motion.button>
             <motion.span
               key={item.quantity}
@@ -61,12 +61,13 @@ export function CartItem({ item }: CartItemProps) {
               {item.quantity}
             </motion.span>
             <motion.button
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
+              whileHover={item.quantity < MAX_CART_QUANTITY ? { scale: 1.1 } : {}}
+              whileTap={item.quantity < MAX_CART_QUANTITY ? { scale: 0.9 } : {}}
               onClick={() => updateQuantity(item.id, 1)}
-              className="w-7 h-7 rounded-md flex items-center justify-center text-stone-500 hover:bg-white hover:text-[#2D4A3E] transition-colors"
+              disabled={item.quantity >= MAX_CART_QUANTITY}
+              className="w-9 h-9 rounded-md flex items-center justify-center text-stone-500 hover:bg-white hover:text-[#2D4A3E] transition-colors disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-stone-500"
             >
-              <Plus className="w-3 h-3" />
+              <Plus className="w-4 h-4" />
             </motion.button>
           </div>
 
@@ -75,7 +76,7 @@ export function CartItem({ item }: CartItemProps) {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => removeItem(item.id)}
-            className="flex items-center gap-1 px-3 py-1.5 text-xs text-stone-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+            className="flex items-center gap-1 px-3 py-2 text-xs text-stone-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
           >
             <Trash2 className="w-3 h-3" />
             Премахни

@@ -1,0 +1,25 @@
+{
+    "Navigation": {
+        "shop": "Магазин",
+        "science": "Наука",
+        "about": "За нас"
+    },
+    "Product": {
+        "addToCart": "Добави в Количка",
+        "outOfStock": "Изчерпано",
+        "description": "Описание",
+        "ingredients": "Съставки",
+        "howToUse": "Начин на употреба",
+        "shipping": "Доставка",
+        "reviews": "Отзиви"
+    },
+    "Cart": {
+        "title": "Твоята Количка",
+        "empty": "Количката е празна",
+        "subtotal": "Междинна сума",
+        "shipping": "Доставка",
+        "total": "Общо",
+        "checkout": "Към Плащане",
+        "freeShipping": "Безплатна доставка"
+    }
+}

@@ -202,7 +202,7 @@ function ReviewCard({ review, index }: { review: typeof reviews[0]; index: numbe
                 <Verified className="w-4 h-4 text-[#B2D8C6]" />
               )}
             </div>
-            <span className={`text-xs ${review.highlight || hasImage ? "text-white/50" : "text-stone-400"}`}>
+            <span className={`text-xs ${review.highlight || hasImage ? "text-white/70" : "text-stone-400"}`}>
               {review.location}
             </span>
           </div>
@@ -236,7 +236,7 @@ export function BentoReviews() {
           <ScrollReveal animation="blur-in">
             <span className="inline-flex items-center gap-2 text-[#2D4A3E] text-sm font-medium uppercase tracking-widest mb-6">
               <Star className="w-4 h-4 fill-current text-[#F4E3B2]" />
-              10,000+ Доволни Клиенти
+              500+ Доволни Клиенти
             </span>
           </ScrollReveal>
 
@@ -271,7 +271,7 @@ export function BentoReviews() {
           <div className="flex flex-wrap justify-center gap-8 md:gap-16 mt-16 pt-12 border-t border-stone-200">
             {[
               { value: "4.9", label: "Средна оценка", suffix: "/5" },
-              { value: "10K+", label: "Доволни клиенти", suffix: "" },
+              { value: "500+", label: "Доволни клиенти", suffix: "" },
               { value: "92%", label: "Виждат резултат", suffix: "" },
             ].map((stat) => (
               <div key={stat.label} className="text-center">

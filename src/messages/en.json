@@ -1,0 +1,25 @@
+{
+    "Navigation": {
+        "shop": "Shop",
+        "science": "Science",
+        "about": "About Us"
+    },
+    "Product": {
+        "addToCart": "Add to Cart",
+        "outOfStock": "Out of Stock",
+        "description": "Description",
+        "ingredients": "Ingredients",
+        "howToUse": "How to Use",
+        "shipping": "Shipping",
+        "reviews": "Reviews"
+    },
+    "Cart": {
+        "title": "Your Cart",
+        "empty": "Your cart is empty",
+        "subtotal": "Subtotal",
+        "shipping": "Shipping",
+        "total": "Total",
+        "checkout": "Checkout",
+        "freeShipping": "Free Shipping"
+    }
+}

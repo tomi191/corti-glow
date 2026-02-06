@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { CheckCircle, Package, Mail } from "lucide-react";
+import { CheckCircle, Package, Mail, HelpCircle } from "lucide-react";
+import { PurchaseTracker } from "./PurchaseTracker";
 
 export const metadata: Metadata = {
   title: "Поръчката е приета",
   description: "Благодарим за поръчката!",
+  robots: { index: false, follow: false },
 };
 
 interface SuccessPageProps {
@@ -17,6 +19,7 @@ export default async function SuccessPage({ searchParams }: SuccessPageProps) {
 
   return (
     <div className="min-h-screen bg-stone-50 py-20">
+      {displayOrderNumber && <PurchaseTracker orderNumber={displayOrderNumber} />}
       <div className="max-w-md mx-auto px-6 text-center">
         {/* Success Icon */}
         <div className="w-20 h-20 bg-[#B2D8C6] rounded-full flex items-center justify-center mx-auto mb-8">
@@ -34,9 +37,12 @@ export default async function SuccessPage({ searchParams }: SuccessPageProps) {
           </p>
         )}
 
-        <p className="text-stone-600 mb-8">
-          Благодарим ти, че избра LURA! Ще получиш имейл с потвърждение на
-          поръчката.
+        <p className="text-stone-600 mb-2">
+          Благодарим ти, че избра LURA! Запази номера на поръчката, за да можеш
+          да я проследиш.
+        </p>
+        <p className="text-sm text-stone-500 mb-8">
+          Изпратихме потвърждение на имейла ти.
         </p>
 
         {/* Info Cards */}
@@ -51,14 +57,31 @@ export default async function SuccessPage({ searchParams }: SuccessPageProps) {
             </div>
           </div>
 
-          <div className="bg-white rounded-xl p-4 border border-stone-100 flex items-start gap-3 text-left">
+          <Link
+            href="/prosledi-porachka"
+            className="bg-white rounded-xl p-4 border border-stone-100 flex items-start gap-3 text-left hover:border-[#B2D8C6] transition block"
+          >
             <Mail className="w-5 h-5 text-[#2D4A3E] mt-0.5 flex-shrink-0" />
             <div>
-              <p className="font-medium text-stone-800">Проверете имейла си</p>
+              <p className="font-medium text-stone-800">Проследи поръчката</p>
               <p className="text-sm text-stone-500">
-                Изпратихме потвърждение на поръчката
+                Виж статуса на доставката по всяко време
               </p>
             </div>
+          </Link>
+        </div>
+
+        {/* Contact info */}
+        <div className="bg-white rounded-xl p-4 border border-stone-100 flex items-start gap-3 text-left mb-8">
+          <HelpCircle className="w-5 h-5 text-[#2D4A3E] mt-0.5 flex-shrink-0" />
+          <div>
+            <p className="font-medium text-stone-800">Имаш въпрос?</p>
+            <p className="text-sm text-stone-500">
+              Пиши ни на{" "}
+              <a href="mailto:hello@luralab.eu" className="text-[#2D4A3E] underline">
+                hello@luralab.eu
+              </a>
+            </p>
           </div>
         </div>
 

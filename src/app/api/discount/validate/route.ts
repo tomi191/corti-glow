@@ -1,21 +1,44 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@/lib/supabase/server";
+import { z } from "zod";
 import type { Discount } from "@/lib/supabase/types";
+import { createRateLimiter, getClientIp } from "@/lib/rate-limit";
+
+// 15 attempts per 5 minutes
+const limiter = createRateLimiter(15, 5 * 60 * 1000);
+
+const discountSchema = z.object({
+  code: z.string().min(1).max(50),
+  subtotal: z.number().nonnegative(),
+  productIds: z.array(z.string()).optional(),
+  variantIds: z.array(z.string()).optional(),
+});
 
 // POST /api/discount/validate - Validate a discount code
 export async function POST(request: NextRequest) {
   try {
+    // Rate limiting
+    const ip = getClientIp(request);
+    if (limiter.isLimited(ip)) {
+      return NextResponse.json(
+        { valid: false, error: "Твърде много опити. Опитайте отново по-късно." },
+        { status: 429 }
+      );
+    }
+    limiter.recordAttempt(ip);
+
     const supabase = createServerClient();
     const body = await request.json();
 
-    const { code, subtotal, productIds, variantIds } = body;
-
-    if (!code || typeof code !== "string") {
+    const validated = discountSchema.safeParse(body);
+    if (!validated.success) {
       return NextResponse.json(
-        { valid: false, error: "Моля, въведете код за отстъпка" },
+        { valid: false, error: "Моля, въведете валиден код за отстъпка" },
         { status: 400 }
       );
     }
+
+    const { code, subtotal, productIds, variantIds } = validated.data;
 
     // Fetch the discount by code
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

@@ -50,9 +50,13 @@ export function HowToUseSection() {
             />
             <div className="absolute inset-0 bg-gradient-to-t from-[#2D4A3E]/30 to-transparent" />
             <div className="absolute bottom-6 left-6 flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-white/20 backdrop-blur border border-white/40 flex items-center justify-center cursor-pointer hover:scale-110 transition">
+              <button
+                type="button"
+                aria-label="Пусни видеото"
+                className="w-10 h-10 rounded-full bg-white/20 backdrop-blur border border-white/40 flex items-center justify-center hover:scale-110 transition"
+              >
                 <Play className="w-4 h-4 text-white fill-white" />
-              </div>
+              </button>
               <span className="text-white text-sm font-medium tracking-wide">
                 Виж ритуала
               </span>

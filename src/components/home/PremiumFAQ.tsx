@@ -4,39 +4,7 @@ import { useRef, useState } from "react";
 import { motion, useInView, AnimatePresence } from "framer-motion";
 import { HelpCircle, Plus, Minus, MessageCircle } from "lucide-react";
 import { AnimatedHeading } from "@/components/ui/AnimatedText";
-
-const faqs = [
-  {
-    question: "Кога ще видя резултати?",
-    answer:
-      "Повечето жени забелязват подобрен сън още след 2-3 дни. Намаляване на подуването обикновено се усеща към края на първата седмица. За пълни резултати с понижен кортизол и хормонален баланс, препоръчваме минимум 30 дни редовна употреба.",
-  },
-  {
-    question: "Безопасен ли е Corti-Glow при кърмене или бременност?",
-    answer:
-      "Препоръчваме да се консултирате с вашия лекар преди употреба по време на бременност или кърмене. Въпреки че съставките са натурални, всяка бременност е индивидуална и е важно да получите персонален съвет.",
-  },
-  {
-    question: "Мога ли да го пия всеки ден?",
-    answer:
-      "Да, Corti-Glow е създаден за ежедневна употреба. Всъщност, редовната употреба е ключът към оптимални резултати. Съставките са в безопасни дози, подходящи за дългосрочен прием.",
-  },
-  {
-    question: "Има ли странични ефекти?",
-    answer:
-      "Corti-Glow съдържа само натурални съставки в клинично доказани дози. Няма познати странични ефекти при препоръчителната доза. Ако имате алергии към някоя от съставките, моля консултирайте се с лекар.",
-  },
-  {
-    question: "Каква е вашата политика за връщане?",
-    answer:
-      "Предлагаме 14-дневна гаранция за връщане на парите. Ако не сте доволни от продукта по някаква причина, свържете се с нас и ще ви възстановим пълната сума без въпроси.",
-  },
-  {
-    question: "Съвместим ли е с други добавки или лекарства?",
-    answer:
-      "Corti-Glow е безопасен за комбиниране с повечето добавки. Ако приемате лекарства, особено за щитовидната жлеза, диабет или кръвно налягане, препоръчваме консултация с лекар преди започване.",
-  },
-];
+import { homepageFaqs } from "@/data/homepage-faqs";
 
 export function PremiumFAQ() {
   const ref = useRef(null);
@@ -74,7 +42,7 @@ export function PremiumFAQ() {
 
         {/* FAQ Items */}
         <div className="space-y-4">
-          {faqs.map((faq, index) => (
+          {homepageFaqs.map((faq, index) => (
             <motion.div
               key={index}
               initial={{ opacity: 0, y: 20 }}
@@ -91,6 +59,8 @@ export function PremiumFAQ() {
                 <button
                   onClick={() => setOpenIndex(openIndex === index ? null : index)}
                   className="w-full px-8 py-6 flex items-center justify-between text-left"
+                  aria-expanded={openIndex === index}
+                  aria-controls={`faq-answer-${index}`}
                 >
                   <span
                     className={`font-medium transition-colors duration-300 ${
@@ -123,6 +93,8 @@ export function PremiumFAQ() {
                       animate={{ height: "auto", opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}
                       transition={{ duration: 0.3 }}
+                      id={`faq-answer-${index}`}
+                      role="region"
                     >
                       <div className="px-8 pb-6">
                         <div className="h-px bg-gradient-to-r from-transparent via-[#B2D8C6]/50 to-transparent mb-6" />
@@ -150,10 +122,10 @@ export function PremiumFAQ() {
             <div className="text-left">
               <p className="text-sm text-stone-500">Не намери отговор?</p>
               <a
-                href="mailto:support@luralab.eu"
+                href="mailto:hello@luralab.eu"
                 className="font-medium text-[#2D4A3E] hover:underline"
               >
-                Пиши ни на support@luralab.eu
+                Пиши ни на hello@luralab.eu
               </a>
             </div>
           </div>

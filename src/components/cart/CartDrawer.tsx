@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, ShoppingBag, CheckCircle, Sparkles, Shield, Truck } from "lucide-react";
+import { X, ShoppingBag, CheckCircle, Sparkles, Shield, Truck, TrendingUp } from "lucide-react";
 import { useCartStore } from "@/stores/cart-store";
 import { formatPrice } from "@/lib/utils";
 import { CartItem } from "./CartItem";
@@ -35,6 +35,15 @@ export function CartDrawer() {
     };
   }, [isOpen]);
 
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") closeCart();
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen, closeCart]);
+
   if (!mounted) return null;
 
   const subtotal = getSubtotal();
@@ -63,6 +72,9 @@ export function CartDrawer() {
             exit={{ x: "100%" }}
             transition={{ type: "spring", damping: 30, stiffness: 300 }}
             className="fixed inset-y-0 right-0 w-full max-w-md bg-white shadow-2xl z-50 flex flex-col"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Количка"
           >
             {/* Header */}
             <div className="px-6 py-5 border-b border-stone-100 flex items-center justify-between bg-gradient-to-r from-white to-stone-50">
@@ -88,7 +100,8 @@ export function CartDrawer() {
                 whileHover={{ scale: 1.1, rotate: 90 }}
                 whileTap={{ scale: 0.9 }}
                 onClick={closeCart}
-                className="p-2 text-stone-400 hover:text-stone-600 rounded-full hover:bg-stone-100 transition-colors"
+                className="p-2.5 text-stone-400 hover:text-stone-600 rounded-full hover:bg-stone-100 transition-colors"
+                aria-label="Затвори количката"
               >
                 <X className="w-6 h-6" />
               </motion.button>
@@ -159,19 +172,46 @@ export function CartDrawer() {
                   </motion.button>
                 </motion.div>
               ) : (
-                <AnimatePresence mode="popLayout">
-                  {items.map((item, index) => (
-                    <motion.div
-                      key={item.id}
-                      initial={{ opacity: 0, x: 50 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: -50, height: 0 }}
-                      transition={{ delay: index * 0.05 }}
-                    >
-                      <CartItem item={item} />
-                    </motion.div>
-                  ))}
-                </AnimatePresence>
+                <>
+                  <AnimatePresence mode="popLayout">
+                    {items.map((item, index) => (
+                      <motion.div
+                        key={item.id}
+                        initial={{ opacity: 0, x: 50 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -50, height: 0 }}
+                        transition={{ delay: index * 0.05 }}
+                      >
+                        <CartItem item={item} />
+                      </motion.div>
+                    ))}
+                  </AnimatePresence>
+
+                  {/* Upsell banner - show when only 1x starter box */}
+                  {items.length === 1 &&
+                    items[0].variantId === "starter-box" &&
+                    items[0].quantity === 1 && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="mt-4 p-3 rounded-xl bg-gradient-to-r from-[#B2D8C6]/15 to-[#FFC1CC]/15 border border-[#B2D8C6]/30"
+                      >
+                        <div className="flex items-center gap-2 text-sm">
+                          <TrendingUp className="w-4 h-4 text-[#2D4A3E] flex-shrink-0" />
+                          <p className="text-stone-600">
+                            Спести <strong className="text-[#2D4A3E]">58 лв</strong> с 3-пакета!{" "}
+                            <Link
+                              href="/produkt"
+                              onClick={closeCart}
+                              className="text-[#2D4A3E] font-medium underline underline-offset-2 hover:text-[#1f352c]"
+                            >
+                              Виж пакетите
+                            </Link>
+                          </p>
+                        </div>
+                      </motion.div>
+                    )}
+                </>
               )}
             </div>
 
@@ -229,6 +269,13 @@ export function CartDrawer() {
                     />
                   </Link>
                 </motion.div>
+
+                <button
+                  onClick={closeCart}
+                  className="w-full text-center text-sm text-stone-500 hover:text-[#2D4A3E] transition-colors py-1"
+                >
+                  Продължи пазаруването
+                </button>
 
                 <p className="text-center text-[10px] text-stone-400 flex items-center justify-center gap-1">
                   <Shield className="w-3 h-3" />

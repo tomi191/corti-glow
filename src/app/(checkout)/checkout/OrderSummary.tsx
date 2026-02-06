@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { useCartStore } from "@/stores/cart-store";
 import { useCheckoutStore } from "@/stores/checkout-store";
@@ -7,15 +8,21 @@ import { formatPrice } from "@/lib/utils";
 import { CheckCircle, Shield, Truck, Package } from "lucide-react";
 
 export function OrderSummary() {
+  const [mounted, setMounted] = useState(false);
   const { items, getSubtotal, isFreeShipping } = useCartStore();
-  const { shipping } = useCheckoutStore();
+  const { shipping, discount } = useCheckoutStore();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const subtotal = getSubtotal();
   const hasFreeShipping = isFreeShipping();
   const shippingPrice = hasFreeShipping ? 0 : shipping.price;
-  const total = subtotal + shippingPrice;
+  const discountAmount = discount?.amount ?? 0;
+  const total = subtotal + shippingPrice - discountAmount;
 
-  if (items.length === 0) {
+  if (!mounted || items.length === 0) {
     return (
       <div className="bg-white rounded-2xl p-6 shadow-sm border border-stone-100">
         <p className="text-stone-500 text-center">Количката е празна</p>
@@ -95,6 +102,16 @@ export function OrderSummary() {
             {hasFreeShipping ? "БЕЗПЛАТНА" : formatPrice(shippingPrice)}
           </span>
         </div>
+        {discount && discountAmount > 0 && (
+          <div className="flex justify-between text-sm">
+            <span className="text-green-600">
+              Отстъпка ({discount.code})
+            </span>
+            <span className="text-green-600 font-medium">
+              -{formatPrice(discountAmount)}
+            </span>
+          </div>
+        )}
         <div className="flex justify-between text-lg font-bold pt-2 border-t border-stone-100">
           <span className="text-[#2D4A3E]">Общо</span>
           <span className="text-[#2D4A3E]">{formatPrice(total)}</span>

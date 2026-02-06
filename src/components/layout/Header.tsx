@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { Sparkles } from "lucide-react";
-import { NAV_LINKS } from "@/lib/constants";
+import { NAV_LINKS, SHIPPING_THRESHOLD } from "@/lib/constants";
 import { CartBadge } from "@/components/cart/CartBadge";
 import { MobileMenu } from "./MobileMenu";
 
@@ -45,7 +45,8 @@ export function Header() {
             >
               <Sparkles className="w-3 h-3" />
               <span className="tracking-wide">
-                БЕЗПЛАТНА ДОСТАВКА ЗА ПОРЪЧКИ НАД 80€ • 14-ДНЕВНА ГАРАНЦИЯ
+                БЕЗПЛАТНА ДОСТАВКА НАД {SHIPPING_THRESHOLD} лв
+                <span className="hidden sm:inline"> • 14-ДНЕВНА ГАРАНЦИЯ</span>
               </span>
               <Sparkles className="w-3 h-3" />
             </motion.div>

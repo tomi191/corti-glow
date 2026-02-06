@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import {
@@ -54,47 +54,49 @@ const paymentStatusColors: Record<string, string> = {
   refunded: "bg-stone-100 text-stone-700",
 };
 
-export default function OrdersPage() {
+function OrdersPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [orders, setOrders] = useState<Order[]>([]);
   const [totalCount, setTotalCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [search, setSearch] = useState(searchParams.get("search") || "");
+  const [appliedSearch, setAppliedSearch] = useState(search);
   const [statusFilter, setStatusFilter] = useState(searchParams.get("status") || "");
   const [page, setPage] = useState(1);
+  const [refreshKey, setRefreshKey] = useState(0);
   const limit = 20;
 
-  const fetchOrders = async () => {
-    setIsLoading(true);
-    try {
-      const params = new URLSearchParams();
-      if (statusFilter) params.set("status", statusFilter);
-      if (search) params.set("search", search);
-      params.set("limit", limit.toString());
-      params.set("offset", ((page - 1) * limit).toString());
-
-      const res = await fetch(`/api/admin/orders?${params}`);
-      if (res.ok) {
-        const data = await res.json();
-        setOrders(data.orders || []);
-        setTotalCount(data.count || 0);
-      }
-    } catch (error) {
-      console.error("Failed to fetch orders:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   useEffect(() => {
+    const fetchOrders = async () => {
+      setIsLoading(true);
+      try {
+        const params = new URLSearchParams();
+        if (statusFilter) params.set("status", statusFilter);
+        if (appliedSearch) params.set("search", appliedSearch);
+        params.set("limit", limit.toString());
+        params.set("offset", ((page - 1) * limit).toString());
+
+        const res = await fetch(`/api/admin/orders?${params}`);
+        if (res.ok) {
+          const data = await res.json();
+          setOrders(data.orders || []);
+          setTotalCount(data.count || 0);
+        }
+      } catch (error) {
+        console.error("Failed to fetch orders:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
     fetchOrders();
-  }, [statusFilter, page]);
+  }, [statusFilter, page, appliedSearch, refreshKey]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     setPage(1);
-    fetchOrders();
+    setAppliedSearch(search);
   };
 
   const totalPages = Math.ceil(totalCount / limit);
@@ -121,7 +123,7 @@ export default function OrdersPage() {
         </div>
 
         <button
-          onClick={fetchOrders}
+          onClick={() => setRefreshKey((k) => k + 1)}
           className="flex items-center gap-2 px-4 py-2 bg-white border border-stone-200 rounded-xl text-sm font-medium hover:bg-stone-50 transition"
         >
           <RefreshCw className="w-4 h-4" />
@@ -333,5 +335,17 @@ export default function OrdersPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function OrdersPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex items-center justify-center min-h-screen">
+        <RefreshCw className="w-8 h-8 animate-spin text-stone-400" />
+      </div>
+    }>
+      <OrdersPageContent />
+    </Suspense>
   );
 }

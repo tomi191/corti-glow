@@ -1,6 +1,7 @@
 "use client";
 
 import { create } from "zustand";
+import { persist, createJSONStorage } from "zustand/middleware";
 import type { SimpleEcontOffice, SimpleEcontCity } from "@/lib/econt/types";
 
 export type ShippingMethod = "econt_office" | "econt_address";
@@ -35,11 +36,20 @@ interface PaymentInfo {
   paymentIntentId?: string;
 }
 
+interface DiscountInfo {
+  code: string;
+  type: "percentage" | "fixed";
+  value: number;
+  amount: number; // Calculated discount amount
+  description: string;
+}
+
 interface CheckoutState {
   currentStep: CheckoutStep;
   customer: CustomerInfo;
   shipping: ShippingInfo;
   payment: PaymentInfo;
+  discount: DiscountInfo | null;
   orderId?: string;
   orderNumber?: string;
   isLoading: boolean;
@@ -47,6 +57,7 @@ interface CheckoutState {
   // Shipping calculation state
   shippingCalculating: boolean;
   shippingEstimated: boolean; // true = fallback price, false = real API price
+  shippingError: string;
 }
 
 interface CheckoutActions {
@@ -58,11 +69,14 @@ interface CheckoutActions {
   setShippingPrice: (price: number, days?: number) => void;
   setPaymentMethod: (method: PaymentMethod) => void;
   setPaymentIntent: (clientSecret: string, paymentIntentId: string) => void;
+  setDiscount: (discount: DiscountInfo) => void;
+  clearDiscount: () => void;
   setOrder: (orderId: string, orderNumber: string) => void;
   setLoading: (loading: boolean) => void;
   setError: (error: string | undefined) => void;
   setShippingCalculating: (calculating: boolean) => void;
   setShippingEstimated: (estimated: boolean) => void;
+  setShippingError: (error: string) => void;
   reset: () => void;
   canProceedToShipping: () => boolean;
   canProceedToPayment: () => boolean;
@@ -87,12 +101,16 @@ const initialState: CheckoutState = {
   payment: {
     method: "cod",
   },
+  discount: null,
   isLoading: false,
   shippingCalculating: false,
   shippingEstimated: true, // Start with estimated prices
+  shippingError: "",
 };
 
-export const useCheckoutStore = create<CheckoutStore>()((set, get) => ({
+export const useCheckoutStore = create<CheckoutStore>()(
+  persist(
+  (set, get) => ({
   ...initialState,
 
   setStep: (step) => set({ currentStep: step }),
@@ -142,6 +160,10 @@ export const useCheckoutStore = create<CheckoutStore>()((set, get) => ({
       payment: { ...state.payment, clientSecret, paymentIntentId },
     })),
 
+  setDiscount: (discount) => set({ discount }),
+
+  clearDiscount: () => set({ discount: null }),
+
   setOrder: (orderId, orderNumber) =>
     set({ orderId, orderNumber }),
 
@@ -152,6 +174,8 @@ export const useCheckoutStore = create<CheckoutStore>()((set, get) => ({
   setShippingCalculating: (calculating) => set({ shippingCalculating: calculating }),
 
   setShippingEstimated: (estimated) => set({ shippingEstimated: estimated }),
+
+  setShippingError: (error) => set({ shippingError: error }),
 
   reset: () => set(initialState),
 
@@ -186,4 +210,13 @@ export const useCheckoutStore = create<CheckoutStore>()((set, get) => ({
       !!state.payment.method
     );
   },
-}));
+}),
+  {
+    name: "lura-checkout",
+    storage: createJSONStorage(() => sessionStorage),
+    partialize: (state) => ({
+      customer: state.customer,
+      shipping: { method: state.shipping.method },
+    }),
+  }
+));

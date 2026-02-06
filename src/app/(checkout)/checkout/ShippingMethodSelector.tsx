@@ -1,11 +1,12 @@
 "use client";
 
 import { useEffect } from "react";
-import { Building, MapPin, CheckCircle, Loader2 } from "lucide-react";
+import { Building, MapPin, CheckCircle, Loader2, AlertTriangle } from "lucide-react";
 import { useCheckoutStore, type ShippingMethod } from "@/stores/checkout-store";
 import { useCartStore } from "@/stores/cart-store";
 import { useShippingCalculation } from "@/hooks/useShippingCalculation";
 import { formatPrice } from "@/lib/utils";
+import { SHIPPING_THRESHOLD } from "@/lib/constants";
 
 const shippingOptions: {
   method: ShippingMethod;
@@ -17,7 +18,7 @@ const shippingOptions: {
   {
     method: "econt_office",
     title: "До офис на Еконт",
-    description: "Безплатно при поръчка над 80 лв",
+    description: `Безплатно при поръчка над ${SHIPPING_THRESHOLD} лв`,
     basePrice: 4.99,
     icon: <Building className="w-5 h-5" />,
   },
@@ -36,6 +37,7 @@ export function ShippingMethodSelector() {
     setShippingMethod,
     shippingCalculating,
     shippingEstimated,
+    shippingError,
   } = useCheckoutStore();
   const { isFreeShipping } = useCartStore();
   const { immediateCalculate } = useShippingCalculation();
@@ -127,6 +129,13 @@ export function ShippingMethodSelector() {
           <CheckCircle className="w-3 h-3" />
           Безплатна доставка е включена!
         </p>
+      )}
+
+      {shippingError && !hasFreeShipping && (
+        <div className="flex items-center gap-2 p-3 bg-amber-50 border border-amber-200 rounded-lg text-xs text-amber-700">
+          <AlertTriangle className="w-4 h-4 flex-shrink-0" />
+          {shippingError}
+        </div>
       )}
     </div>
   );

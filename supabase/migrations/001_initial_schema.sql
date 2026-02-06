@@ -243,8 +243,8 @@ INSERT INTO products (
   'Горска Ягода и Лайм',
   30,
   99.00,
-  '/images/corti-glow.png',
-  ARRAY['/images/corti-glow.png', '/images/corti-glow-2.png'],
+  '/images/product-hero-box.webp',
+  ARRAY['/images/product-hero-box.webp', '/images/product-sachet-marble.webp', '/images/product-pouring.webp', '/images/product-splash-pour.webp'],
   100,
   'active',
   '[

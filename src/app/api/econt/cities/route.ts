@@ -6,7 +6,8 @@ import { searchCities, getAllCities } from "@/lib/econt";
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { query, limit = 10 } = body;
+    const { query, limit: rawLimit = 10 } = body;
+    const limit = Math.min(Math.max(1, parseInt(rawLimit) || 10), 50);
 
     if (!query || query.length < 2) {
       return NextResponse.json(

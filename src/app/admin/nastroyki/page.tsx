@@ -1,16 +1,7 @@
-"use client";
-
-import { useState } from "react";
-import { Settings, Save, AlertCircle, CheckCircle } from "lucide-react";
+import { Settings, AlertCircle, Truck, Store } from "lucide-react";
+import { SHIPPING_THRESHOLD, COMPANY } from "@/lib/constants";
 
 export default function SettingsPage() {
-  const [saved, setSaved] = useState(false);
-
-  const handleSave = () => {
-    setSaved(true);
-    setTimeout(() => setSaved(false), 3000);
-  };
-
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -27,30 +18,19 @@ export default function SettingsPage() {
         <div className="bg-white rounded-2xl shadow-sm border border-stone-100 overflow-hidden">
           <div className="px-6 py-4 border-b border-stone-100">
             <h2 className="font-semibold text-[#2D4A3E] flex items-center gap-2">
-              <Settings className="w-5 h-5" />
+              <Store className="w-5 h-5" />
               Общи Настройки
             </h2>
           </div>
           <div className="p-6 space-y-4">
-            <div>
-              <label className="block text-xs font-bold text-stone-500 uppercase tracking-wide mb-1">
-                Име на Магазина
-              </label>
-              <input
-                type="text"
-                defaultValue="LuraLab"
-                className="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-xl text-sm focus:outline-none focus:border-[#2D4A3E]"
-              />
+            <div className="flex justify-between items-center py-2">
+              <span className="text-sm text-stone-500">Име на Магазина</span>
+              <span className="text-sm font-medium text-stone-800">{COMPANY.name}</span>
             </div>
-            <div>
-              <label className="block text-xs font-bold text-stone-500 uppercase tracking-wide mb-1">
-                Имейл за Контакт
-              </label>
-              <input
-                type="email"
-                defaultValue="orders@luralab.eu"
-                className="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-xl text-sm focus:outline-none focus:border-[#2D4A3E]"
-              />
+            <div className="border-t border-stone-100" />
+            <div className="flex justify-between items-center py-2">
+              <span className="text-sm text-stone-500">Имейл за Контакт</span>
+              <span className="text-sm font-medium text-stone-800">{COMPANY.email}</span>
             </div>
           </div>
         </div>
@@ -58,43 +38,25 @@ export default function SettingsPage() {
         {/* Shipping Settings */}
         <div className="bg-white rounded-2xl shadow-sm border border-stone-100 overflow-hidden">
           <div className="px-6 py-4 border-b border-stone-100">
-            <h2 className="font-semibold text-[#2D4A3E]">Доставка</h2>
+            <h2 className="font-semibold text-[#2D4A3E] flex items-center gap-2">
+              <Truck className="w-5 h-5" />
+              Доставка
+            </h2>
           </div>
           <div className="p-6 space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-xs font-bold text-stone-500 uppercase tracking-wide mb-1">
-                  Цена до Офис (EUR)
-                </label>
-                <input
-                  type="number"
-                  defaultValue="4.99"
-                  step="0.01"
-                  className="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-xl text-sm focus:outline-none focus:border-[#2D4A3E]"
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-bold text-stone-500 uppercase tracking-wide mb-1">
-                  Цена до Адрес (EUR)
-                </label>
-                <input
-                  type="number"
-                  defaultValue="6.99"
-                  step="0.01"
-                  className="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-xl text-sm focus:outline-none focus:border-[#2D4A3E]"
-                />
-              </div>
+            <div className="flex justify-between items-center py-2">
+              <span className="text-sm text-stone-500">Цена до Офис на Еконт</span>
+              <span className="text-sm font-medium text-stone-800">4.99 лв</span>
             </div>
-            <div>
-              <label className="block text-xs font-bold text-stone-500 uppercase tracking-wide mb-1">
-                Безплатна Доставка над (EUR)
-              </label>
-              <input
-                type="number"
-                defaultValue="80"
-                step="1"
-                className="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-xl text-sm focus:outline-none focus:border-[#2D4A3E]"
-              />
+            <div className="border-t border-stone-100" />
+            <div className="flex justify-between items-center py-2">
+              <span className="text-sm text-stone-500">Цена до Адрес</span>
+              <span className="text-sm font-medium text-stone-800">6.99 лв</span>
+            </div>
+            <div className="border-t border-stone-100" />
+            <div className="flex justify-between items-center py-2">
+              <span className="text-sm text-stone-500">Безплатна доставка над</span>
+              <span className="text-sm font-medium text-[#2D4A3E]">{SHIPPING_THRESHOLD} лв</span>
             </div>
           </div>
         </div>
@@ -102,7 +64,10 @@ export default function SettingsPage() {
         {/* Integration Info */}
         <div className="bg-white rounded-2xl shadow-sm border border-stone-100 overflow-hidden">
           <div className="px-6 py-4 border-b border-stone-100">
-            <h2 className="font-semibold text-[#2D4A3E]">Интеграции</h2>
+            <h2 className="font-semibold text-[#2D4A3E] flex items-center gap-2">
+              <Settings className="w-5 h-5" />
+              Интеграции
+            </h2>
           </div>
           <div className="p-6 space-y-4">
             <div className="flex items-center justify-between p-4 bg-stone-50 rounded-xl">
@@ -153,39 +118,19 @@ export default function SettingsPage() {
         </div>
 
         {/* Info Box */}
-        <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
+        <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
           <div className="flex gap-3">
-            <AlertCircle className="w-5 h-5 text-amber-600 flex-shrink-0" />
+            <AlertCircle className="w-5 h-5 text-blue-600 flex-shrink-0" />
             <div>
-              <p className="text-sm text-amber-800 font-medium">
-                Демо Режим
+              <p className="text-sm text-blue-800 font-medium">
+                Промяна на настройки
               </p>
-              <p className="text-xs text-amber-700 mt-1">
-                Настройките са за демо цели. За production, конфигурирайте .env.local файла с реални credentials.
+              <p className="text-xs text-blue-700 mt-1">
+                За промяна на цени за доставка или други настройки, редактирайте файловете <code className="bg-blue-100 px-1 rounded">src/lib/constants.ts</code> и <code className="bg-blue-100 px-1 rounded">.env.local</code>.
               </p>
             </div>
           </div>
         </div>
-      </div>
-
-      {/* Save Button */}
-      <div className="flex justify-end">
-        <button
-          onClick={handleSave}
-          className="flex items-center gap-2 px-6 py-3 bg-[#2D4A3E] text-white rounded-xl font-semibold hover:bg-[#1f352c] transition"
-        >
-          {saved ? (
-            <>
-              <CheckCircle className="w-5 h-5" />
-              Запазено
-            </>
-          ) : (
-            <>
-              <Save className="w-5 h-5" />
-              Запази Настройките
-            </>
-          )}
-        </button>
       </div>
     </div>
   );

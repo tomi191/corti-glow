@@ -15,13 +15,21 @@ export async function GET(request: NextRequest) {
     // Query the customers view
     let query = supabase
       .from("customers")
-      .select("*", { count: "exact" })
+      .select("email, first_name, last_name, order_count, total_spent, last_order_at", { count: "exact" })
       .order("total_spent", { ascending: false });
 
     if (search) {
-      query = query.or(
-        `email.ilike.%${search}%,first_name.ilike.%${search}%,last_name.ilike.%${search}%`
-      );
+      // Sanitize search input to prevent PostgREST injection
+      const sanitizedSearch = search
+        .replace(/[%_,()]/g, '')
+        .trim()
+        .slice(0, 100);
+
+      if (sanitizedSearch) {
+        query = query.or(
+          `email.ilike.%${sanitizedSearch}%,first_name.ilike.%${sanitizedSearch}%,last_name.ilike.%${sanitizedSearch}%`
+        );
+      }
     }
 
     query = query.range(offset, offset + limit - 1);

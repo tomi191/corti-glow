@@ -3,13 +3,14 @@
 import { useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
 import { Sparkles, CheckCircle, ArrowRight, Star } from "lucide-react";
 import { AnimatedBackground } from "@/components/ui/AnimatedBackground";
 import { MagneticButton } from "@/components/ui/MagneticButton";
 import { AnimatedHeading } from "@/components/ui/AnimatedText";
 
 export function PremiumHero() {
+  const prefersReducedMotion = useReducedMotion();
   const containerRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -129,7 +130,7 @@ export function PremiumHero() {
                 ))}
               </div>
               <p className="text-sm text-stone-500">
-                <span className="font-semibold text-[#2D4A3E]">10,000+</span>{" "}
+                <span className="font-semibold text-[#2D4A3E]">500+</span>{" "}
                 жени вече сияят
               </p>
             </motion.div>
@@ -146,7 +147,7 @@ export function PremiumHero() {
 
             {/* Floating elements */}
             <motion.div
-              animate={{ y: [-10, 10, -10], rotate: [0, 5, 0] }}
+              animate={prefersReducedMotion ? {} : { y: [-10, 10, -10], rotate: [0, 5, 0] }}
               transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
               className="absolute -top-10 -left-10 w-24 h-24 rounded-2xl bg-white/80 backdrop-blur-sm shadow-xl p-4 border border-white/50"
             >
@@ -157,7 +158,7 @@ export function PremiumHero() {
             </motion.div>
 
             <motion.div
-              animate={{ y: [10, -10, 10], rotate: [0, -3, 0] }}
+              animate={prefersReducedMotion ? {} : { y: [10, -10, 10], rotate: [0, -3, 0] }}
               transition={{
                 duration: 6,
                 repeat: Infinity,
@@ -200,12 +201,12 @@ export function PremiumHero() {
         className="absolute bottom-10 left-1/2 -translate-x-1/2"
       >
         <motion.div
-          animate={{ y: [0, 10, 0] }}
+          animate={prefersReducedMotion ? {} : { y: [0, 10, 0] }}
           transition={{ duration: 2, repeat: Infinity }}
           className="w-6 h-10 rounded-full border-2 border-[#2D4A3E]/20 flex justify-center pt-2"
         >
           <motion.div
-            animate={{ y: [0, 12, 0], opacity: [1, 0, 1] }}
+            animate={prefersReducedMotion ? {} : { y: [0, 12, 0], opacity: [1, 0, 1] }}
             transition={{ duration: 2, repeat: Infinity }}
             className="w-1.5 h-1.5 rounded-full bg-[#2D4A3E]"
           />

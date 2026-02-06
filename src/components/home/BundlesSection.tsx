@@ -83,6 +83,8 @@ export function BundlesSection() {
 
                 <AddToCartButton
                   id={variant.id}
+                  productId="corti-glow"
+                  variantId={variant.id}
                   title={`Corti-Glow (${variant.name})`}
                   price={variant.price}
                   variant={variant.isBestSeller ? "primary" : "secondary"}

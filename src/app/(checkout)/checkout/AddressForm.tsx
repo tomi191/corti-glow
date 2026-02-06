@@ -67,12 +67,13 @@ export function AddressForm() {
       <div className="grid grid-cols-2 gap-4">
         {/* City Search */}
         <div className="relative col-span-2 sm:col-span-1">
-          <label className="block text-xs font-bold text-stone-500 uppercase tracking-wide mb-1">
+          <label htmlFor="city-input" className="block text-xs font-bold text-stone-500 uppercase tracking-wide mb-1">
             Град
           </label>
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
             <input
+              id="city-input"
               type="text"
               value={cityQuery}
               onChange={(e) => {
@@ -112,10 +113,11 @@ export function AddressForm() {
 
         {/* Post Code */}
         <div className="col-span-2 sm:col-span-1">
-          <label className="block text-xs font-bold text-stone-500 uppercase tracking-wide mb-1">
+          <label htmlFor="postcode-input" className="block text-xs font-bold text-stone-500 uppercase tracking-wide mb-1">
             Пощ. код
           </label>
           <input
+            id="postcode-input"
             type="text"
             value={shipping.postCode || ""}
             onChange={(e) => setShippingAddress({ postCode: e.target.value })}
@@ -126,10 +128,11 @@ export function AddressForm() {
 
         {/* Street */}
         <div className="col-span-2">
-          <label className="block text-xs font-bold text-stone-500 uppercase tracking-wide mb-1">
+          <label htmlFor="street-input" className="block text-xs font-bold text-stone-500 uppercase tracking-wide mb-1">
             Улица / Булевард
           </label>
           <input
+            id="street-input"
             type="text"
             value={shipping.street || ""}
             onChange={(e) => {
@@ -143,10 +146,11 @@ export function AddressForm() {
 
         {/* Building */}
         <div>
-          <label className="block text-xs font-bold text-stone-500 uppercase tracking-wide mb-1">
+          <label htmlFor="building-input" className="block text-xs font-bold text-stone-500 uppercase tracking-wide mb-1">
             Блок / Вход
           </label>
           <input
+            id="building-input"
             type="text"
             value={shipping.building || ""}
             onChange={(e) => {
@@ -160,10 +164,11 @@ export function AddressForm() {
 
         {/* Apartment */}
         <div>
-          <label className="block text-xs font-bold text-stone-500 uppercase tracking-wide mb-1">
+          <label htmlFor="apartment-input" className="block text-xs font-bold text-stone-500 uppercase tracking-wide mb-1">
             Апартамент
           </label>
           <input
+            id="apartment-input"
             type="text"
             value={shipping.apartment || ""}
             onChange={(e) => {

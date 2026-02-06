@@ -37,6 +37,7 @@ export const SITE_CONFIG = {
 export const NAV_LINKS = [
   { href: "/produkt", label: "Магазин" },
   { href: "/nauka", label: "Наука" },
+  { href: "/blog", label: "Блог" },
 ] as const;
 
 // Footer Links
@@ -44,10 +45,15 @@ export const FOOTER_LINKS = {
   shop: [
     { href: "/produkt", label: "Corti-Glow" },
     { href: "/produkt#bundles", label: "Пакети" },
+    { href: "/blog", label: "Блог" },
   ],
   help: [
     { href: "/pomosht", label: "Контакт" },
-    { href: "/pomosht#dostavka", label: "Доставка" },
+    { href: "/dostavka-i-vrashtane", label: "Доставка & Връщане" },
+    { href: "/prosledi-porachka", label: "Проследи Поръчка" },
+    { href: "/akount", label: "Моят Акаунт" },
+  ],
+  legal: [
     { href: "/obshti-usloviya", label: "Общи условия" },
     { href: "/poveritelnost", label: "Поверителност" },
   ],

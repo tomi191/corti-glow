@@ -7,7 +7,9 @@ import {
   getOrderByPaymentIntent,
   updatePaymentStatus,
   updateOrderStatus,
+  deductStock,
 } from "@/lib/actions/orders";
+import { sendOrderConfirmationEmail } from "@/lib/email";
 
 export async function POST(request: NextRequest) {
   try {
@@ -39,21 +41,36 @@ export async function POST(request: NextRequest) {
     switch (event.type) {
       case "payment_intent.succeeded": {
         const paymentIntent = event.data.object;
-        console.log(`Payment succeeded: ${paymentIntent.id}`);
 
         // Find order by payment intent ID
         const { order } = await getOrderByPaymentIntent(paymentIntent.id);
 
         if (order) {
+          // Idempotency guard: skip if already processed
+          if (order.payment_status === "paid") {
+            console.log(`Order ${order.order_number} already paid, skipping duplicate webhook`);
+            break;
+          }
+
           // Update payment status to paid
           await updatePaymentStatus(order.id, "paid", paymentIntent.id);
           // Update order status to processing
           await updateOrderStatus(order.id, "processing");
 
-          console.log(`Order ${order.order_number} marked as paid`);
+          // Deduct stock for card payment orders
+          const items = (order.items as Array<{ productId: string; variantId: string; quantity: number }>) || [];
+          if (items.length > 0) {
+            await deductStock(items.map(item => ({
+              productId: item.productId,
+              variantId: item.variantId,
+              quantity: item.quantity,
+            })));
+          }
 
-          // TODO: Send confirmation email
-          // TODO: Create Econt shipment automatically (if desired)
+          // Send confirmation email (async, don't await)
+          sendOrderConfirmationEmail(order).catch(err =>
+            console.error("Failed to send confirmation email:", err)
+          );
         } else {
           console.warn(
             `No order found for payment intent: ${paymentIntent.id}`
@@ -64,28 +81,22 @@ export async function POST(request: NextRequest) {
 
       case "payment_intent.payment_failed": {
         const paymentIntent = event.data.object;
-        console.log(`Payment failed: ${paymentIntent.id}`);
 
         const { order } = await getOrderByPaymentIntent(paymentIntent.id);
 
         if (order) {
           await updatePaymentStatus(order.id, "failed");
-          console.log(`Order ${order.order_number} payment failed`);
-
-          // TODO: Send failure notification email
         }
         break;
       }
 
       case "payment_intent.canceled": {
         const paymentIntent = event.data.object;
-        console.log(`Payment canceled: ${paymentIntent.id}`);
 
         const { order } = await getOrderByPaymentIntent(paymentIntent.id);
 
         if (order) {
           await updateOrderStatus(order.id, "cancelled");
-          console.log(`Order ${order.order_number} cancelled`);
         }
         break;
       }
@@ -102,16 +113,13 @@ export async function POST(request: NextRequest) {
 
           if (order) {
             await updatePaymentStatus(order.id, "refunded");
-            console.log(`Order ${order.order_number} refunded`);
-
-            // TODO: Send refund confirmation email
           }
         }
         break;
       }
 
       default:
-        console.log(`Unhandled event type: ${event.type}`);
+        break;
     }
 
     return NextResponse.json({ received: true });

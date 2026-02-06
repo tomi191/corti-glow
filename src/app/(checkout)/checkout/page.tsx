@@ -5,6 +5,7 @@ import { OrderSummary } from "./OrderSummary";
 export const metadata: Metadata = {
   title: "Checkout",
   description: "Завърши поръчката си",
+  alternates: { canonical: "https://luralab.eu/checkout" },
 };
 
 export default function CheckoutPage() {

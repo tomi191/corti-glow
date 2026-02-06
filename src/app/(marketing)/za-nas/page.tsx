@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import { Heart, Leaf, Sparkles } from "lucide-react";
+import { BreadcrumbJsonLd } from "@/components/ui/BreadcrumbJsonLd";
 
 export const metadata: Metadata = {
   title: "За Нас",
   description: "Запознайте се с LURA - марката за женско здраве.",
+  alternates: { canonical: "https://luralab.eu/za-nas" },
 };
 
 const values = [
@@ -31,6 +33,12 @@ const values = [
 export default function AboutPage() {
   return (
     <>
+      <BreadcrumbJsonLd
+        items={[
+          { name: "Начало", url: "https://luralab.eu" },
+          { name: "За Нас", url: "https://luralab.eu/za-nas" },
+        ]}
+      />
       {/* Hero */}
       <section className="py-16 md:py-24 bg-white">
         <div className="max-w-4xl mx-auto px-6 text-center">

@@ -37,6 +37,6 @@ export const reviews: Review[] = [
 
 export const socialProof = {
   rating: 4.9,
-  reviewCount: 10000,
+  reviewCount: 500,
   publications: ["VOGUE", "ELLE", "Women'sHealth", "COSMOPOLITAN"],
 };

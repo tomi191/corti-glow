@@ -3,10 +3,13 @@ import { Mail, Phone, Clock, Truck, RotateCcw, HelpCircle } from "lucide-react";
 import { faqs } from "@/data/faqs";
 import { ChevronDown } from "lucide-react";
 import { COMPANY, CARRIERS, DELIVERY_DAYS } from "@/lib/constants";
+import { BreadcrumbJsonLd } from "@/components/ui/BreadcrumbJsonLd";
+import { ContactForm } from "./ContactForm";
 
 export const metadata: Metadata = {
   title: "Помощ и Поддръжка",
   description: "Имате въпроси? Свържете се с нас или проверете FAQ секцията.",
+  alternates: { canonical: "https://luralab.eu/pomosht" },
 };
 
 const contactMethods = [
@@ -27,6 +30,12 @@ const contactMethods = [
 export default function SupportPage() {
   return (
     <>
+      <BreadcrumbJsonLd
+        items={[
+          { name: "Начало", url: "https://luralab.eu" },
+          { name: "Помощ", url: "https://luralab.eu/pomosht" },
+        ]}
+      />
       {/* Hero */}
       <section className="py-16 bg-white">
         <div className="max-w-4xl mx-auto px-6 text-center">
@@ -56,6 +65,36 @@ export default function SupportPage() {
                 <p className="text-sm text-stone-500">{method.description}</p>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Contact Form */}
+      <section className="py-12 bg-white">
+        <div className="max-w-4xl mx-auto px-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div>
+              <h2 className="text-2xl font-semibold text-[#2D4A3E] mb-4">
+                Изпрати ни съобщение
+              </h2>
+              <p className="text-stone-600 mb-6">
+                Попълни формата и ще ти отговорим в рамките на 24 часа.
+              </p>
+              <ContactForm />
+            </div>
+            <div className="flex flex-col justify-center">
+              <div className="bg-stone-50 rounded-2xl p-6 space-y-4">
+                <h3 className="font-semibold text-stone-800">Работно време</h3>
+                <div className="space-y-2 text-sm text-stone-600">
+                  <p>Понеделник – Петък: 9:00 – 18:00</p>
+                  <p>Събота – Неделя: Затворено</p>
+                </div>
+                <div className="h-px bg-stone-200" />
+                <p className="text-sm text-stone-500">
+                  Обикновено отговаряме в рамките на няколко часа в работно време.
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </section>

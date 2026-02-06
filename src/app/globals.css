@@ -33,8 +33,14 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-html {
-  scroll-behavior: smooth;
+/* CSS-based orb animations (zero main thread cost) */
+@keyframes orb1 {
+  0%, 100% { transform: scale(1) translate(0, 0); }
+  50% { transform: scale(1.2) translate(50px, 30px); }
+}
+@keyframes orb2 {
+  0%, 100% { transform: scale(1) translate(0, 0); }
+  50% { transform: scale(1.3) translate(-30px, -50px); }
 }
 
 /* Hide scrollbar for horizontal scroll areas */

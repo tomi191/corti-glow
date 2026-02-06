@@ -1,7 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -55,102 +54,25 @@ export default function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const router = useRouter();
   const pathname = usePathname();
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  useEffect(() => {
-    // Check if already authenticated
-    const authToken = sessionStorage.getItem("admin_auth");
-    if (authToken === "authenticated") {
-      setIsAuthenticated(true);
-    }
-    setIsLoading(false);
-  }, []);
-
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
-
-    try {
-      const res = await fetch("/api/admin/auth", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password }),
-      });
-
-      if (res.ok) {
-        sessionStorage.setItem("admin_auth", "authenticated");
-        setIsAuthenticated(true);
-      } else {
-        setError("Грешна парола");
-      }
-    } catch (err) {
-      setError("Възникна грешка");
-    }
-  };
+  // Special layout for login page
+  if (pathname === "/admin/login") {
+    return <>{children}</>;
+  }
 
   const handleLogout = () => {
-    sessionStorage.removeItem("admin_auth");
-    setIsAuthenticated(false);
-    setPassword("");
+    fetch("/api/admin/auth", { method: "DELETE" })
+      .then(() => {
+        window.location.href = "/admin/login";
+      })
+      .catch(() => {
+        // Even if API fails, redirect to login (cookie may still exist but middleware will catch it)
+        window.location.href = "/admin/login";
+      });
   };
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-stone-100 flex items-center justify-center">
-        <div className="w-8 h-8 border-3 border-[#2D4A3E] border-t-transparent rounded-full animate-spin" />
-      </div>
-    );
-  }
-
-  // Login Screen
-  if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen bg-stone-100 flex items-center justify-center p-4">
-        <div className="w-full max-w-sm">
-          <div className="bg-white rounded-2xl shadow-xl p-8">
-            <div className="text-center mb-8">
-              <h1 className="text-2xl font-bold text-[#2D4A3E]">LuraLab Admin</h1>
-              <p className="text-stone-500 text-sm mt-1">
-                Въведете паролата за достъп
-              </p>
-            </div>
-
-            <form onSubmit={handleLogin} className="space-y-4">
-              <div>
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Парола"
-                  className="w-full px-4 py-3 border border-stone-200 rounded-xl text-sm focus:outline-none focus:border-[#2D4A3E] focus:ring-1 focus:ring-[#2D4A3E]"
-                  autoFocus
-                />
-              </div>
-
-              {error && (
-                <p className="text-red-500 text-sm text-center">{error}</p>
-              )}
-
-              <button
-                type="submit"
-                className="w-full py-3 bg-[#2D4A3E] text-white rounded-xl font-semibold hover:bg-[#1f352c] transition"
-              >
-                Вход
-              </button>
-            </form>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Admin Dashboard Layout
   return (
     <div className="min-h-screen bg-stone-100">
       {/* Mobile Header */}

@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import {
   ChevronLeft,
   User,
@@ -293,9 +294,11 @@ export default function OrderDetailPage() {
                 <div key={index} className="px-6 py-4 flex items-center gap-4">
                   <div className="w-16 h-16 bg-stone-100 rounded-lg flex items-center justify-center flex-shrink-0">
                     {item.image ? (
-                      <img
+                      <Image
                         src={item.image}
                         alt={item.title}
+                        width={64}
+                        height={64}
                         className="w-full h-full object-contain p-1"
                       />
                     ) : (

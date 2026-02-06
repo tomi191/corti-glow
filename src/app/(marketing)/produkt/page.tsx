@@ -1,104 +1,190 @@
 import type { Metadata } from "next";
-import Image from "next/image";
-import { ChevronDown, CheckCircle } from "lucide-react";
-import { productVariants, productInfo, ingredients } from "@/data/products";
+import { ChevronDown, CheckCircle, Shield, Truck, Clock, Star } from "lucide-react";
+import { notFound } from "next/navigation";
+import { getProduct } from "@/lib/actions/products";
 import { faqs } from "@/data/faqs";
-import { formatPrice } from "@/lib/utils";
 import { ProductBundles } from "./ProductBundles";
+import { ProductGallery } from "./ProductGallery";
+import { TrustBar, GuaranteeBadge, PaymentMethods } from "./TrustBar";
+import { ProductReviews } from "./ProductReviews";
+import { WhyCortiGlow } from "./WhyCortiGlow";
+import type { ProductVariant } from "@/types";
+import type { ProductVariantDB, ProductIngredientDB } from "@/lib/supabase/types";
+import { BreadcrumbJsonLd } from "@/components/ui/BreadcrumbJsonLd";
+
+export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "Corti-Glow - Анти-Стрес Моктейл",
+  title: "Corti-Glow - Анти-Стрес Моктейл за Хормонален Баланс",
   description:
-    "Corti-Glow е вкусен моктейл с Горска Ягода и Лайм, който понижава кортизола, премахва подуването и подобрява съня.",
+    "Corti-Glow е вкусен моктейл с Горска Ягода и Лайм, който понижава кортизола с до 27%, премахва подуването и подобрява съня. 500+ доволни клиенти.",
+  openGraph: {
+    title: "Corti-Glow - Анти-Стрес Моктейл | LURA",
+    description:
+      "Научно доказана формула за хормонален баланс. 14-дневна гаранция за връщане.",
+  },
+  alternates: {
+    canonical: "https://luralab.eu/produkt",
+  },
 };
 
-export default function ProductPage() {
+function mapVariants(dbVariants: ProductVariantDB[]): ProductVariant[] {
+  return dbVariants.map((v) => ({
+    id: v.id,
+    name: v.name,
+    description: v.description,
+    price: v.price,
+    compareAtPrice: v.compare_at_price,
+    quantity: v.quantity,
+    isBestSeller: v.is_best_seller,
+    savings: v.savings,
+  }));
+}
+
+export default async function ProductPage() {
+  const { product, error } = await getProduct("corti-glow");
+
+  if (!product || error) {
+    if (error) console.error(error);
+    notFound();
+  }
+
+  const variants = mapVariants(product.variants as unknown as ProductVariantDB[]);
+  const ingredients = product.ingredients as unknown as ProductIngredientDB[];
+  const images = product.images?.length > 0 ? product.images : [product.image];
+
+  const productSchema = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: product.name,
+    description: product.tagline,
+    image: `https://luralab.eu${product.image}`,
+    brand: { "@type": "Brand", name: "LURA" },
+    offers: variants.map((v) => ({
+      "@type": "Offer",
+      price: v.price,
+      priceCurrency: "BGN",
+      availability: "https://schema.org/InStock",
+    })),
+    aggregateRating: {
+      "@type": "AggregateRating",
+      ratingValue: "4.9",
+      reviewCount: "487",
+    },
+  };
+
   return (
     <>
-      {/* Hero Section */}
-      <section className="py-12 md:py-20 bg-white">
-        <div className="max-w-6xl mx-auto px-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
-            {/* Product Image */}
-            <div className="relative">
-              <div className="aspect-square bg-stone-50 rounded-3xl overflow-hidden border border-stone-100">
-                <Image
-                  src={productInfo.image}
-                  alt={productInfo.name}
-                  width={600}
-                  height={600}
-                  priority
-                  className="w-full h-full object-contain p-8"
-                />
-              </div>
+      <BreadcrumbJsonLd
+        items={[
+          { name: "Начало", url: "https://luralab.eu" },
+          { name: "Магазин", url: "https://luralab.eu/produkt" },
+        ]}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }}
+      />
 
-              {/* Trust badges */}
-              <div className="flex items-center justify-center gap-4 mt-6 text-xs text-stone-500">
-                <span className="flex items-center gap-1">
-                  <CheckCircle className="w-4 h-4 text-[#B2D8C6]" />
-                  Без Захар
-                </span>
-                <span className="flex items-center gap-1">
-                  <CheckCircle className="w-4 h-4 text-[#B2D8C6]" />
-                  Веган
-                </span>
-                <span className="flex items-center gap-1">
-                  <CheckCircle className="w-4 h-4 text-[#B2D8C6]" />
-                  Без ГМО
-                </span>
-              </div>
-            </div>
+      {/* Trust Bar */}
+      <TrustBar />
+
+      {/* Hero Section */}
+      <section className="py-12 md:py-16 bg-white">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+            {/* Product Gallery */}
+            <ProductGallery images={images} productName={product.name} />
 
             {/* Product Info */}
             <div className="space-y-6">
+              {/* Badge */}
+              {product.badge && (
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FFC1CC]/20 text-[#2D4A3E] text-xs font-semibold uppercase tracking-wide">
+                  <Star className="w-3 h-3 fill-current" />
+                  {product.badge}
+                </span>
+              )}
+
+              {/* Title */}
               <div>
                 <p className="text-sm text-[#B2D8C6] font-medium uppercase tracking-wider mb-2">
                   LURA Wellness
                 </p>
                 <h1 className="text-4xl md:text-5xl font-semibold text-[#2D4A3E] tracking-tight">
-                  {productInfo.name}
+                  {product.name}
                 </h1>
-                <p className="text-stone-500 mt-2">{productInfo.tagline}</p>
+                <p className="text-stone-500 mt-2 text-lg">{product.tagline}</p>
               </div>
 
-              {/* Rating */}
-              <div className="flex items-center gap-2">
-                <div className="flex text-[#F4E3B2]">
-                  {[...Array(5)].map((_, i) => (
-                    <svg
-                      key={i}
-                      className="w-5 h-5 fill-current"
-                      viewBox="0 0 20 20"
-                    >
-                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                    </svg>
-                  ))}
+              {/* Rating & Social Proof */}
+              <div className="flex flex-wrap items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <div className="flex text-[#F4E3B2]">
+                    {[...Array(5)].map((_, i) => (
+                      <Star key={i} className="w-5 h-5 fill-current" />
+                    ))}
+                  </div>
+                  <span className="text-sm font-medium text-[#2D4A3E]">4.9</span>
                 </div>
                 <span className="text-sm text-stone-500">
-                  4.9/5 (10,000+ отзива)
+                  500+ доволни клиенти
+                </span>
+                <span className="text-sm text-stone-500 flex items-center gap-1">
+                  <CheckCircle className="w-4 h-4 text-[#B2D8C6]" />
+                  92% виждат резултат
                 </span>
               </div>
 
+              {/* Trust badges inline */}
+              <div className="flex flex-wrap gap-3">
+                {["Без Захар", "Веган", "Без ГМО", "Без глутен"].map((badge) => (
+                  <span
+                    key={badge}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-stone-100 text-xs font-medium text-stone-600"
+                  >
+                    <CheckCircle className="w-3.5 h-3.5 text-[#B2D8C6]" />
+                    {badge}
+                  </span>
+                ))}
+              </div>
+
               {/* Bundle Selection */}
-              <ProductBundles variants={productVariants} />
+              <ProductBundles variants={variants} />
+
+              {/* Quick Benefits */}
+              <div className="grid grid-cols-3 gap-4 py-4 border-y border-stone-100">
+                <div className="text-center">
+                  <Shield className="w-6 h-6 text-[#B2D8C6] mx-auto mb-1" />
+                  <p className="text-xs text-stone-600">14-дневна гаранция</p>
+                </div>
+                <div className="text-center">
+                  <Truck className="w-6 h-6 text-[#B2D8C6] mx-auto mb-1" />
+                  <p className="text-xs text-stone-600">Бърза доставка</p>
+                </div>
+                <div className="text-center">
+                  <Clock className="w-6 h-6 text-[#B2D8C6] mx-auto mb-1" />
+                  <p className="text-xs text-stone-600">Резултат за 14 дни</p>
+                </div>
+              </div>
+
+              {/* Payment Methods */}
+              <PaymentMethods />
 
               {/* Product Details Accordion */}
-              <div className="space-y-3 pt-6 border-t border-stone-100">
-                <details className="group">
-                  <summary className="flex justify-between items-center cursor-pointer py-3">
-                    <span className="font-medium text-stone-800">
-                      Съставки
+              <div className="space-y-3 pt-4">
+                <details className="group" open>
+                  <summary className="flex justify-between items-center cursor-pointer py-3 border-b border-stone-100">
+                    <span className="font-medium text-[#2D4A3E]">
+                      Съставки ({ingredients.length} активни)
                     </span>
                     <ChevronDown className="w-5 h-5 text-stone-400 group-open:rotate-180 transition-transform" />
                   </summary>
-                  <div className="pb-4 space-y-3">
+                  <div className="py-4 space-y-3">
                     {ingredients.map((ing) => (
-                      <div
-                        key={ing.name}
-                        className="flex items-start gap-3 text-sm"
-                      >
+                      <div key={ing.name} className="flex items-start gap-3 text-sm">
                         <span
-                          className="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold flex-shrink-0"
+                          className="w-10 h-10 rounded-lg flex items-center justify-center text-xs font-bold flex-shrink-0"
                           style={{
                             backgroundColor: `${ing.color}20`,
                             color: ing.color,
@@ -107,15 +193,13 @@ export default function ProductPage() {
                           {ing.symbol}
                         </span>
                         <div>
-                          <p className="font-medium text-stone-800">
+                          <p className="font-medium text-[#2D4A3E]">
                             {ing.name}{" "}
-                            <span className="text-stone-400">
-                              ({ing.dosage})
+                            <span className="text-[#B2D8C6] font-semibold">
+                              {ing.dosage}
                             </span>
                           </p>
-                          <p className="text-stone-500 text-xs">
-                            {ing.description}
-                          </p>
+                          <p className="text-stone-500 text-xs">{ing.description}</p>
                         </div>
                       </div>
                     ))}
@@ -123,59 +207,70 @@ export default function ProductPage() {
                 </details>
 
                 <details className="group">
-                  <summary className="flex justify-between items-center cursor-pointer py-3">
-                    <span className="font-medium text-stone-800">
-                      Как да използвам
-                    </span>
+                  <summary className="flex justify-between items-center cursor-pointer py-3 border-b border-stone-100">
+                    <span className="font-medium text-[#2D4A3E]">Как да използвам</span>
                     <ChevronDown className="w-5 h-5 text-stone-400 group-open:rotate-180 transition-transform" />
                   </summary>
-                  <div className="pb-4 text-sm text-stone-600">
-                    <p>
-                      Разтвори 1 саше в 250мл студена вода. Разбъркай добре.
-                      Пий веднъж дневно, за предпочитане вечер преди сън. За
-                      най-добри резултати, използвай минимум 30 дни.
-                    </p>
+                  <div className="py-4 space-y-4">
+                    <div className="flex gap-3">
+                      <span className="w-7 h-7 rounded-full bg-[#B2D8C6] text-[#2D4A3E] flex items-center justify-center text-sm font-bold flex-shrink-0">1</span>
+                      <p className="text-sm text-stone-600">Разтвори 1 саше в 250мл студена вода</p>
+                    </div>
+                    <div className="flex gap-3">
+                      <span className="w-7 h-7 rounded-full bg-[#B2D8C6] text-[#2D4A3E] flex items-center justify-center text-sm font-bold flex-shrink-0">2</span>
+                      <p className="text-sm text-stone-600">Разбъркай добре, добави лед по желание</p>
+                    </div>
+                    <div className="flex gap-3">
+                      <span className="w-7 h-7 rounded-full bg-[#B2D8C6] text-[#2D4A3E] flex items-center justify-center text-sm font-bold flex-shrink-0">3</span>
+                      <p className="text-sm text-stone-600">Пий веднъж дневно, за предпочитане вечер</p>
+                    </div>
                   </div>
                 </details>
 
                 <details className="group">
-                  <summary className="flex justify-between items-center cursor-pointer py-3">
-                    <span className="font-medium text-stone-800">
-                      Доставка
-                    </span>
+                  <summary className="flex justify-between items-center cursor-pointer py-3 border-b border-stone-100">
+                    <span className="font-medium text-[#2D4A3E]">Доставка & Връщане</span>
                     <ChevronDown className="w-5 h-5 text-stone-400 group-open:rotate-180 transition-transform" />
                   </summary>
-                  <div className="pb-4 text-sm text-stone-600">
-                    <p>
-                      Безплатна доставка за поръчки над 160 лв. Доставка с
-                      Еконт или Спиди за 1-2 работни дни. Плащане при
-                      доставка или с карта.
-                    </p>
+                  <div className="py-4 text-sm text-stone-600 space-y-2">
+                    <p>✓ Безплатна доставка за поръчки над 160 лв</p>
+                    <p>✓ Доставка с Еконт за 1-2 работни дни</p>
+                    <p>✓ Плащане с карта или при доставка</p>
+                    <p>✓ 14-дневна гаранция за връщане без въпроси</p>
                   </div>
                 </details>
               </div>
+
+              {/* Guarantee Badge */}
+              <GuaranteeBadge />
             </div>
           </div>
         </div>
       </section>
 
+      {/* Why Corti-Glow Section */}
+      <WhyCortiGlow />
+
+      {/* Reviews Section */}
+      <ProductReviews />
+
       {/* FAQ Section */}
-      <section className="py-16 bg-stone-50">
+      <section className="py-16 bg-white">
         <div className="max-w-2xl mx-auto px-6">
-          <h2 className="text-2xl font-semibold mb-8 text-center text-[#2D4A3E]">
+          <h2 className="text-3xl font-semibold mb-8 text-center text-[#2D4A3E]">
             Често задавани въпроси
           </h2>
           <div className="space-y-4">
             {faqs.map((faq, index) => (
               <details
                 key={index}
-                className="group p-4 bg-white rounded-xl cursor-pointer shadow-sm"
+                className="group p-5 bg-stone-50 rounded-xl cursor-pointer hover:bg-stone-100 transition"
               >
-                <summary className="flex justify-between items-center font-medium text-stone-800">
+                <summary className="flex justify-between items-center font-medium text-[#2D4A3E]">
                   {faq.question}
                   <ChevronDown className="w-5 h-5 text-[#B2D8C6] group-open:rotate-180 transition-transform" />
                 </summary>
-                <p className="text-stone-500 text-sm mt-3 leading-relaxed">
+                <p className="text-stone-600 text-sm mt-3 leading-relaxed">
                   {faq.answer}
                 </p>
               </details>

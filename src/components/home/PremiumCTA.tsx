@@ -4,6 +4,7 @@ import { useRef } from "react";
 import Image from "next/image";
 import { motion, useInView } from "framer-motion";
 import { ArrowRight, Sparkles, Shield, Truck, Timer } from "lucide-react";
+import { SHIPPING_THRESHOLD } from "@/lib/constants";
 import { MagneticButton } from "@/components/ui/MagneticButton";
 import { AnimatedHeading } from "@/components/ui/AnimatedText";
 
@@ -66,7 +67,7 @@ export function PremiumCTA() {
             transition={{ duration: 0.6, delay: 0.4 }}
             className="text-xl text-white/70 font-light max-w-2xl mx-auto mb-12"
           >
-            Присъедини се към 10,000+ жени, които вече преоткриха спокойствието
+            Присъедини се към 500+ жени, които вече преоткриха спокойствието
             и естествената красота с Corti-Glow.
           </motion.p>
 
@@ -105,7 +106,7 @@ export function PremiumCTA() {
           >
             {[
               { icon: Shield, label: "14-дневна гаранция" },
-              { icon: Truck, label: "Безплатна доставка над 80€" },
+              { icon: Truck, label: `Безплатна доставка над ${SHIPPING_THRESHOLD} лв` },
               { icon: Timer, label: "Експресна доставка" },
             ].map((badge, index) => (
               <motion.div

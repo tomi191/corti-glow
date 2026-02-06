@@ -10,12 +10,16 @@ import { EcontOfficeSelector } from "./EcontOfficeSelector";
 import { AddressForm } from "./AddressForm";
 import { PaymentMethodSelector } from "./PaymentMethodSelector";
 import { StripePaymentForm } from "./StripePaymentForm";
+import { DiscountCodeInput } from "./DiscountCodeInput";
+import { SuccessCheckmark } from "@/components/ui/SuccessCheckmark";
+import { trackBeginCheckout } from "@/components/analytics/GoogleAnalytics";
 
 export function CheckoutForm() {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [codSuccess, setCodSuccess] = useState(false);
 
   const {
     currentStep,
@@ -24,6 +28,7 @@ export function CheckoutForm() {
     setCustomer,
     shipping,
     payment,
+    discount,
     canProceedToShipping,
     canProceedToPayment,
     canSubmitOrder,
@@ -36,7 +41,24 @@ export function CheckoutForm() {
   const { items, getSubtotal, isFreeShipping, clearCart } = useCartStore();
   const subtotal = getSubtotal();
   const shippingPrice = isFreeShipping() ? 0 : shipping.price;
-  const total = subtotal + shippingPrice;
+  const discountAmount = discount?.amount ?? 0;
+  const total = subtotal + shippingPrice - discountAmount;
+
+  // Track begin_checkout on mount
+  useEffect(() => {
+    if (items.length > 0) {
+      trackBeginCheckout(
+        items.map((item) => ({
+          id: item.id,
+          name: item.title,
+          price: item.price,
+          quantity: item.quantity,
+        })),
+        subtotal
+      );
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Create payment intent when proceeding to card payment
   const handleCreateOrder = async () => {
@@ -77,13 +99,13 @@ export function CheckoutForm() {
                 .join(", "),
             };
 
-      // Prepare cart items
+      // Prepare cart items (must include productId and variantId for server validation)
       const orderItems = items.map((item) => ({
-        id: item.id,
-        title: item.title,
-        price: item.price,
+        productId: item.productId,
+        variantId: item.variantId,
         quantity: item.quantity,
-        image: item.image,
+        price: item.price,
+        title: item.title,
       }));
 
       const response = await fetch("/api/payment", {
@@ -102,6 +124,7 @@ export function CheckoutForm() {
           total,
           currency: "EUR",
           paymentMethod: payment.method,
+          ...(discount && { discountCode: discount.code }),
         }),
       });
 
@@ -113,11 +136,14 @@ export function CheckoutForm() {
 
       setOrder(data.orderId, data.orderNumber);
 
-      // For COD orders, redirect to success page
+      // For COD orders, show success animation then redirect
       if (payment.method === "cod") {
-        clearCart();
-        resetCheckout();
-        router.push(`/uspeh?orderNumber=${data.orderNumber}`);
+        setCodSuccess(true);
+        setTimeout(() => {
+          clearCart();
+          resetCheckout();
+          router.push(`/uspeh?orderNumber=${data.orderNumber}`);
+        }, 1500);
         return;
       }
 
@@ -127,7 +153,11 @@ export function CheckoutForm() {
       }
     } catch (err) {
       console.error("Order creation failed:", err);
-      setError(err instanceof Error ? err.message : "Възникна грешка при създаване на поръчката.");
+      setError(
+        err instanceof Error && err.message !== "Failed to fetch"
+          ? err.message
+          : "Няма връзка със сървъра. Проверете интернет връзката си и опитайте отново."
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -152,6 +182,46 @@ export function CheckoutForm() {
 
   return (
     <div className="space-y-6">
+      {/* Progress Indicator */}
+      <div className="bg-white rounded-2xl p-4 shadow-sm border border-stone-100">
+        <div className="flex items-center justify-between max-w-md mx-auto">
+          {[
+            { num: 1, label: "Данни", icon: User },
+            { num: 2, label: "Доставка", icon: Truck },
+            { num: 3, label: "Плащане", icon: CreditCard },
+          ].map((step, index) => (
+            <div key={step.num} className="flex items-center">
+              <div className="flex flex-col items-center gap-1">
+                <div
+                  className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold transition-colors ${
+                    step.num === 1
+                      ? "bg-[#2D4A3E] text-white"
+                      : canProceedToShipping() && step.num === 2
+                        ? "bg-[#2D4A3E] text-white"
+                        : canProceedToPayment() && step.num === 3
+                          ? "bg-[#2D4A3E] text-white"
+                          : "bg-stone-100 text-stone-400"
+                  }`}
+                >
+                  {step.num}
+                </div>
+                <span className="text-xs text-stone-500 hidden sm:block">{step.label}</span>
+              </div>
+              {index < 2 && (
+                <div
+                  className={`w-12 sm:w-20 h-0.5 mx-2 transition-colors ${
+                    (index === 0 && canProceedToShipping()) ||
+                    (index === 1 && canProceedToPayment())
+                      ? "bg-[#2D4A3E]"
+                      : "bg-stone-200"
+                  }`}
+                />
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+
       {/* Customer Info Section */}
       <div className="bg-white rounded-2xl p-6 shadow-sm border border-stone-100">
         <h2 className="text-lg font-semibold text-[#2D4A3E] mb-6 flex items-center gap-2">
@@ -237,6 +307,11 @@ export function CheckoutForm() {
         </div>
       </div>
 
+      {/* Discount Code */}
+      <div className="bg-white rounded-2xl p-6 shadow-sm border border-stone-100">
+        <DiscountCodeInput />
+      </div>
+
       {/* Payment Section */}
       <div className="bg-white rounded-2xl p-6 shadow-sm border border-stone-100">
         <h2 className="text-lg font-semibold text-[#2D4A3E] mb-6 flex items-center gap-2">
@@ -257,6 +332,13 @@ export function CheckoutForm() {
           </div>
         )}
       </div>
+
+      {/* COD Success Animation */}
+      {codSuccess && (
+        <div className="flex justify-center py-6">
+          <SuccessCheckmark message="Поръчката е приета!" />
+        </div>
+      )}
 
       {/* Error Message */}
       {error && (

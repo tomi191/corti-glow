@@ -34,7 +34,7 @@ export const productInfo = {
   tagline: "Ритуалът за хормонален баланс",
   flavor: "Горска Ягода и Лайм",
   servings: 30,
-  image: "/images/corti-glow.png",
+  image: "/images/product-hero-box.webp",
 };
 
 export const ingredients = [

@@ -10,6 +10,7 @@ export function useShippingCalculation() {
     setShippingPrice,
     setShippingCalculating,
     setShippingEstimated,
+    setShippingError,
   } = useCheckoutStore();
 
   const { getSubtotal, isFreeShipping } = useCartStore();
@@ -76,6 +77,7 @@ export function useShippingCalculation() {
       if (data.price !== undefined) {
         setShippingPrice(data.price, data.deliveryDays || (shipping.method === "econt_office" ? 1 : 2));
         setShippingEstimated(data.estimated || false);
+        setShippingError("");
       }
     } catch (error) {
       // Ignore abort errors
@@ -85,6 +87,7 @@ export function useShippingCalculation() {
       console.error("Shipping calculation error:", error);
       // Keep estimated price on error
       setShippingEstimated(true);
+      setShippingError("Не можахме да изчислим доставката. Цената е приблизителна.");
     } finally {
       setShippingCalculating(false);
     }
@@ -95,6 +98,7 @@ export function useShippingCalculation() {
     setShippingPrice,
     setShippingCalculating,
     setShippingEstimated,
+    setShippingError,
   ]);
 
   // Debounced calculation - waits 600ms after last call

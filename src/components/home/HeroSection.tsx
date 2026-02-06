@@ -55,7 +55,7 @@ export function HeroSection() {
           {/* Product Image */}
           <div className="relative z-10 w-full max-w-md flex items-center justify-center">
             <Image
-              src="/images/corti-glow.png"
+              src="/images/product-hero-box.webp"
               alt="Corti-Glow Box and Sachet"
               width={500}
               height={500}

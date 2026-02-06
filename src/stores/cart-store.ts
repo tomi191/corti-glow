@@ -4,8 +4,12 @@ import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { SHIPPING_THRESHOLD } from "@/lib/constants";
 
+export const MAX_CART_QUANTITY = 10;
+
 export interface CartItem {
   id: string;
+  productId: string;
+  variantId: string;
   title: string;
   price: number;
   image: string;
@@ -48,6 +52,7 @@ export const useCartStore = create<CartStore>()(
         set((state) => {
           const existing = state.items.find((i) => i.id === item.id);
           if (existing) {
+            if (existing.quantity >= MAX_CART_QUANTITY) return { isOpen: true };
             return {
               items: state.items.map((i) =>
                 i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i
@@ -77,6 +82,7 @@ export const useCartStore = create<CartStore>()(
           if (newQuantity <= 0) {
             return { items: state.items.filter((i) => i.id !== id) };
           }
+          if (newQuantity > MAX_CART_QUANTITY) return state;
           return {
             items: state.items.map((i) =>
               i.id === id ? { ...i, quantity: newQuantity } : i

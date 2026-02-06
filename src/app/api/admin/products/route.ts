@@ -59,7 +59,15 @@ export async function GET(request: NextRequest) {
     }
 
     if (search) {
-      query = query.or(`name.ilike.%${search}%,slug.ilike.%${search}%,sku.ilike.%${search}%`);
+      // Sanitize search input to prevent PostgREST injection
+      const sanitizedSearch = search
+        .replace(/[%_,()]/g, '')
+        .trim()
+        .slice(0, 100);
+
+      if (sanitizedSearch) {
+        query = query.or(`name.ilike.%${sanitizedSearch}%,slug.ilike.%${sanitizedSearch}%,sku.ilike.%${sanitizedSearch}%`);
+      }
     }
 
     const { data: products, error, count } = await query;

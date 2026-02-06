@@ -27,7 +27,13 @@ export async function GET(request: NextRequest) {
     }
 
     if (search) {
-      query = query.ilike("code", `%${search}%`);
+      const sanitizedSearch = search
+        .replace(/[%_,()]/g, '')
+        .trim()
+        .slice(0, 100);
+      if (sanitizedSearch) {
+        query = query.ilike("code", `%${sanitizedSearch}%`);
+      }
     }
 
     const { data: discounts, error, count } = await query;
