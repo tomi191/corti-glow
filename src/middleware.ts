@@ -3,19 +3,29 @@ import type { NextRequest } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 
 async function isValidSession(token: string): Promise<boolean> {
-    const supabase = createClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.SUPABASE_SERVICE_ROLE_KEY!
-    );
+    try {
+        const supabase = createClient(
+            process.env.NEXT_PUBLIC_SUPABASE_URL!,
+            process.env.SUPABASE_SERVICE_ROLE_KEY!
+        );
 
-    const { data } = await supabase
-        .from("admin_sessions")
-        .select("token")
-        .eq("token", token)
-        .gt("expires_at", new Date().toISOString())
-        .single();
+        const { data, error } = await supabase
+            .from("admin_sessions")
+            .select("token")
+            .eq("token", token)
+            .gt("expires_at", new Date().toISOString())
+            .single();
 
-    return !!data;
+        if (error) {
+            console.error("Session validation error:", error.message);
+            return false;
+        }
+
+        return !!data;
+    } catch (err) {
+        console.error("Session validation failed:", err);
+        return false;
+    }
 }
 
 export default async function middleware(request: NextRequest) {

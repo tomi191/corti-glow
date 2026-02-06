@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
     // Query the customers view
     let query = supabase
       .from("customers")
-      .select("email, first_name, last_name, order_count, total_spent, last_order_at", { count: "exact" })
+      .select("email, first_name, last_name, phone, order_count, total_spent", { count: "exact" })
       .order("total_spent", { ascending: false });
 
     if (search) {
