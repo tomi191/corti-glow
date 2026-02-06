@@ -12,7 +12,7 @@ import type { ProductVariant } from "@/types";
 import type { ProductVariantDB, ProductIngredientDB } from "@/lib/supabase/types";
 import { BreadcrumbJsonLd } from "@/components/ui/BreadcrumbJsonLd";
 
-export const revalidate = 3600;
+export const revalidate = 3600; // 1 hour ISR
 
 export const metadata: Metadata = {
   title: "Corti-Glow - Анти-Стрес Моктейл за Хормонален Баланс",
