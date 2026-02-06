@@ -746,18 +746,18 @@ export function ProductModal({ product, onClose, onSave }: ProductModalProps) {
                           <div className="space-y-1">
                             <div className="flex items-baseline gap-2">
                               <span className="text-2xl font-bold text-[#2D4A3E]">
-                                {variant.price?.toFixed(2)} лв
+                                {variant.price?.toFixed(2)} €
                               </span>
                               {variant.compare_at_price && (
                                 <span className="text-sm text-stone-400 line-through">
-                                  {variant.compare_at_price.toFixed(2)} лв
+                                  {variant.compare_at_price.toFixed(2)} €
                                 </span>
                               )}
                             </div>
                             {savings > 0 && (
                               <div className="inline-flex items-center gap-1 px-2 py-0.5 bg-green-100 text-green-700 rounded-full text-xs font-medium">
                                 <Star className="w-3 h-3" />
-                                Спестяваш {savings.toFixed(0)} лв (-{savingsPercent}%)
+                                Спестяваш {savings.toFixed(0)} € (-{savingsPercent}%)
                               </div>
                             )}
                           </div>
@@ -767,7 +767,7 @@ export function ProductModal({ product, onClose, onSave }: ProductModalProps) {
                             <div className="flex items-center justify-between">
                               <span className="text-xs text-amber-700">На ден:</span>
                               <span className="text-sm font-bold text-amber-800">
-                                {pricePerDay.toFixed(2)} лв/саше
+                                {pricePerDay.toFixed(2)} €/саше
                               </span>
                             </div>
                           </div>
@@ -859,11 +859,11 @@ export function ProductModal({ product, onClose, onSave }: ProductModalProps) {
                           <div className="flex items-center gap-2">
                             {/* Price per day badge */}
                             <span className="px-2 py-0.5 bg-amber-100 text-amber-700 text-xs rounded-full font-medium">
-                              {pricePerDay.toFixed(2)} лв/ден
+                              {pricePerDay.toFixed(2)} €/ден
                             </span>
                             {savings > 0 && (
                               <span className="px-2 py-0.5 bg-green-100 text-green-700 text-xs rounded-full font-medium">
-                                -{savings.toFixed(0)} лв
+                                -{savings.toFixed(0)} €
                               </span>
                             )}
                             <button

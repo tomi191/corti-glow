@@ -104,7 +104,7 @@ export function MobileStickyBar() {
                         animate={{ opacity: 1, y: 0 }}
                         className="text-lg font-bold text-[#2D4A3E]"
                       >
-                        {subtotal.toFixed(2)} лв
+                        {subtotal.toFixed(2)} €
                       </motion.p>
                     </div>
                   </div>
@@ -140,8 +140,8 @@ export function MobileStickyBar() {
                     <div>
                       <p className="text-xs text-stone-500">Glow Пакет</p>
                       <div className="flex items-baseline gap-2">
-                        <p className="text-lg font-bold text-[#2D4A3E]">169 лв</p>
-                        <span className="text-xs text-stone-400 line-through">219 лв</span>
+                        <p className="text-lg font-bold text-[#2D4A3E]">85.99 €</p>
+                        <span className="text-xs text-stone-400 line-through">119.99 €</span>
                       </div>
                     </div>
                   </div>
@@ -165,14 +165,14 @@ export function MobileStickyBar() {
                 className="mt-2 pt-2 border-t border-stone-100"
               >
                 <div className="flex items-center justify-between text-xs text-stone-500 mb-1">
-                  <span>Остават {(160 - subtotal).toFixed(0)} лв за безплатна доставка</span>
-                  <span className="text-[#B2D8C6] font-medium">160 лв</span>
+                  <span>Остават {(80 - subtotal).toFixed(0)} € за безплатна доставка</span>
+                  <span className="text-[#B2D8C6] font-medium">80 €</span>
                 </div>
                 <div className="h-1.5 bg-stone-100 rounded-full overflow-hidden">
                   <motion.div
                     className="h-full bg-gradient-to-r from-[#B2D8C6] to-[#FFC1CC] rounded-full"
                     initial={{ width: 0 }}
-                    animate={{ width: `${Math.min((subtotal / 160) * 100, 100)}%` }}
+                    animate={{ width: `${Math.min((subtotal / 80) * 100, 100)}%` }}
                     transition={{ duration: 0.5, ease: "easeOut" }}
                   />
                 </div>

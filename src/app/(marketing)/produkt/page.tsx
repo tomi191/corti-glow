@@ -63,7 +63,7 @@ export default async function ProductPage() {
     offers: variants.map((v) => ({
       "@type": "Offer",
       price: v.price,
-      priceCurrency: "BGN",
+      priceCurrency: "EUR",
       availability: "https://schema.org/InStock",
     })),
     aggregateRating: {
@@ -233,7 +233,7 @@ export default async function ProductPage() {
                     <ChevronDown className="w-5 h-5 text-stone-400 group-open:rotate-180 transition-transform" />
                   </summary>
                   <div className="py-4 text-sm text-stone-600 space-y-2">
-                    <p>✓ Безплатна доставка за поръчки над 160 лв</p>
+                    <p>✓ Безплатна доставка за поръчки над 80 €</p>
                     <p>✓ Доставка с Еконт за 1-2 работни дни</p>
                     <p>✓ Плащане с карта или при доставка</p>
                     <p>✓ 14-дневна гаранция за връщане без въпроси</p>

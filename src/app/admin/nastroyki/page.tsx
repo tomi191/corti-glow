@@ -46,17 +46,17 @@ export default function SettingsPage() {
           <div className="p-6 space-y-4">
             <div className="flex justify-between items-center py-2">
               <span className="text-sm text-stone-500">Цена до Офис на Еконт</span>
-              <span className="text-sm font-medium text-stone-800">4.99 лв</span>
+              <span className="text-sm font-medium text-stone-800">4.99 €</span>
             </div>
             <div className="border-t border-stone-100" />
             <div className="flex justify-between items-center py-2">
               <span className="text-sm text-stone-500">Цена до Адрес</span>
-              <span className="text-sm font-medium text-stone-800">6.99 лв</span>
+              <span className="text-sm font-medium text-stone-800">6.99 €</span>
             </div>
             <div className="border-t border-stone-100" />
             <div className="flex justify-between items-center py-2">
               <span className="text-sm text-stone-500">Безплатна доставка над</span>
-              <span className="text-sm font-medium text-[#2D4A3E]">{SHIPPING_THRESHOLD} лв</span>
+              <span className="text-sm font-medium text-[#2D4A3E]">{SHIPPING_THRESHOLD} €</span>
             </div>
           </div>
         </div>

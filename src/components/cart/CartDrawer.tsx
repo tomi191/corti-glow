@@ -49,7 +49,7 @@ export function CartDrawer() {
   const subtotal = getSubtotal();
   const freeShipping = isFreeShipping();
   const remaining = getRemainingForFreeShipping();
-  const progress = Math.min(100, (subtotal / 160) * 100);
+  const progress = Math.min(100, (subtotal / 80) * 100);
 
   return (
     <AnimatePresence>
@@ -199,7 +199,7 @@ export function CartDrawer() {
                         <div className="flex items-center gap-2 text-sm">
                           <TrendingUp className="w-4 h-4 text-[#2D4A3E] flex-shrink-0" />
                           <p className="text-stone-600">
-                            Спести <strong className="text-[#2D4A3E]">58 лв</strong> с 3-пакета!{" "}
+                            Спести <strong className="text-[#2D4A3E]">58 €</strong> с 3-пакета!{" "}
                             <Link
                               href="/produkt"
                               onClick={closeCart}

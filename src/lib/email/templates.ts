@@ -137,7 +137,7 @@ export const emailTemplates = {
                         <td style="padding-left: 15px; vertical-align: top;">
                           <p style="margin: 0; font-weight: 600; color: #2D4A3E;">Corti-Glow</p>
                           <p style="margin: 5px 0 0; color: #666; font-size: 14px;">Анти-стрес моктейл</p>
-                          <p style="margin: 10px 0 0; color: #2D4A3E; font-weight: 600;">от 99 лв</p>
+                          <p style="margin: 10px 0 0; color: #2D4A3E; font-weight: 600;">от 49.99 €</p>
                         </td>
                       </tr>
                     </table>
@@ -161,7 +161,7 @@ export const emailTemplates = {
                 <tr>
                   <td align="center">
                     <p style="color: #999; font-size: 12px; margin: 0;">
-                      ✓ 14-дневна гаранция &nbsp;&nbsp; ✓ Безплатна доставка над 160лв &nbsp;&nbsp; ✓ Сигурно плащане
+                      ✓ 14-дневна гаранция &nbsp;&nbsp; ✓ Безплатна доставка над 80 € &nbsp;&nbsp; ✓ Сигурно плащане
                     </p>
                   </td>
                 </tr>

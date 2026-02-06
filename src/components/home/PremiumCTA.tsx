@@ -106,7 +106,7 @@ export function PremiumCTA() {
           >
             {[
               { icon: Shield, label: "14-дневна гаранция" },
-              { icon: Truck, label: `Безплатна доставка над ${SHIPPING_THRESHOLD} лв` },
+              { icon: Truck, label: `Безплатна доставка над ${SHIPPING_THRESHOLD} €` },
               { icon: Timer, label: "Експресна доставка" },
             ].map((badge, index) => (
               <motion.div

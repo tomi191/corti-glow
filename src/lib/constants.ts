@@ -8,7 +8,7 @@ export const COLORS = {
 } as const;
 
 // Shipping
-export const SHIPPING_THRESHOLD = 160; // BGN for free shipping
+export const SHIPPING_THRESHOLD = 80; // EUR for free shipping
 export const DELIVERY_DAYS = "1-2";
 export const CARRIERS = ["Спиди", "Еконт"] as const;
 

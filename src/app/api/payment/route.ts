@@ -129,12 +129,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 3. Shipping Validation (Simple Rule: > 160 BGN = Free)
-    // Note: Assuming currency is BGN for calculation logic parity with constants
-    // If currency is EUR, we might need conversion or logic adjustment.
-    // For now taking clientShippingPrice but ideally re-calculate.
-    // Let's re-calculate simple threshold rule:
-    const SHIPPING_THRESHOLD = 160;
+    // 3. Shipping Validation (Simple Rule: >= 80 EUR = Free)
+    const SHIPPING_THRESHOLD = 80;
     const isFreeShipping = calculatedSubtotal >= SHIPPING_THRESHOLD;
     const verifiedShippingPrice = isFreeShipping ? 0 : Number(clientShippingPrice);
 

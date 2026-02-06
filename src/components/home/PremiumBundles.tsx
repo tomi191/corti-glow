@@ -157,7 +157,7 @@ export function PremiumBundles() {
                   </div>
                   {variant.savings && (
                     <p className="text-[#2D4A3E] text-sm font-medium mt-1">
-                      Спестяваш {variant.savings} лв
+                      Спестяваш {variant.savings} €
                     </p>
                   )}
                 </div>

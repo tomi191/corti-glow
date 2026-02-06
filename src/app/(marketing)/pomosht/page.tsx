@@ -121,7 +121,7 @@ export default function SupportPage() {
                 Безплатна Доставка
               </h3>
               <p className="text-sm text-stone-600">
-                За поръчки над 160 лв доставката е безплатна
+                За поръчки над 80 € доставката е безплатна
               </p>
             </div>
             <div className="text-center p-6 bg-stone-50 rounded-2xl">

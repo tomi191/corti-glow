@@ -13,7 +13,7 @@ export function TrustBar() {
           </div>
           <div className="flex items-center gap-2 text-stone-600">
             <Truck className="w-5 h-5 text-[#B2D8C6]" />
-            <span>Безплатна доставка над 160лв</span>
+            <span>Безплатна доставка над 80€</span>
           </div>
           <div className="flex items-center gap-2 text-stone-600">
             <Lock className="w-5 h-5 text-[#B2D8C6]" />

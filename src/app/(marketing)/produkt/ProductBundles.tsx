@@ -111,7 +111,7 @@ export function ProductBundles({ variants }: ProductBundlesProps) {
 
         {selectedVariant.savings && (
           <p className="text-center text-xs text-[#2D4A3E]">
-            Спестяваш {selectedVariant.savings} лв + Безплатна Доставка
+            Спестяваш {selectedVariant.savings} € + Безплатна Доставка
           </p>
         )}
       </div>

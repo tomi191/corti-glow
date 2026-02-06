@@ -82,7 +82,7 @@ export function trackAddToCart(item: {
 }) {
   if (typeof window !== "undefined" && window.gtag) {
     window.gtag("event", "add_to_cart", {
-      currency: "BGN",
+      currency: "EUR",
       value: item.price * (item.quantity ?? 1),
       items: [
         {
@@ -105,7 +105,7 @@ export function trackBeginCheckout(items: Array<{
 }>, total: number) {
   if (typeof window !== "undefined" && window.gtag) {
     window.gtag("event", "begin_checkout", {
-      currency: "BGN",
+      currency: "EUR",
       value: total,
       items: items.map((item) => ({
         item_id: item.id,
@@ -127,7 +127,7 @@ export function trackPurchase(orderNumber: string, total: number, items: Array<{
   if (typeof window !== "undefined" && window.gtag) {
     window.gtag("event", "purchase", {
       transaction_id: orderNumber,
-      currency: "BGN",
+      currency: "EUR",
       value: total,
       items: items.map((item) => ({
         item_id: item.id,

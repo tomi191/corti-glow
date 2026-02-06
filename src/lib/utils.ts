@@ -9,10 +9,10 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 /**
- * Format price in Bulgarian Lev
+ * Format price in Euro
  */
 export function formatPrice(price: number): string {
-  return `${price.toFixed(2)} лв`;
+  return `${price.toFixed(2)} €`;
 }
 
 /**

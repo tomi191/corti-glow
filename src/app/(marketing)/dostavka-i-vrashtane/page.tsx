@@ -18,7 +18,7 @@ export const revalidate = 3600;
 export const metadata: Metadata = {
   title: "Доставка и Връщане",
   description:
-    "Информация за доставка с Еконт и Спиди, срокове, безплатна доставка над 160 лв и политика за връщане.",
+    "Информация за доставка с Еконт и Спиди, срокове, безплатна доставка над 80 € и политика за връщане.",
   alternates: {
     canonical: "https://luralab.eu/dostavka-i-vrashtane",
   },
@@ -98,11 +98,11 @@ export default function ShippingPage() {
                   <h3 className="font-semibold text-[#2D4A3E]">
                     Безплатна доставка
                   </h3>
-                  <p className="text-sm text-stone-600">За поръчки над 160 лв</p>
+                  <p className="text-sm text-stone-600">За поръчки над 80 €</p>
                 </div>
               </div>
               <p className="text-stone-600 text-sm">
-                Поръчай за над 160 лв и получи безплатна доставка до офис на
+                Поръчай за над 80 € и получи безплатна доставка до офис на
                 Еконт или до адрес.
               </p>
             </div>
@@ -143,7 +143,7 @@ export default function ShippingPage() {
                     за теб време.
                   </p>
                   <p className="text-sm font-medium text-[#2D4A3E] mt-2">
-                    Цена: 5.99 лв (безплатно над 160 лв)
+                    Цена: 5.99 € (безплатно над 80 €)
                   </p>
                 </div>
               </div>
@@ -159,7 +159,7 @@ export default function ShippingPage() {
                     ще се свърже с теб преди доставката.
                   </p>
                   <p className="text-sm font-medium text-[#2D4A3E] mt-2">
-                    Цена: 7.99 лв (безплатно над 160 лв)
+                    Цена: 7.99 € (безплатно над 80 €)
                   </p>
                 </div>
               </div>

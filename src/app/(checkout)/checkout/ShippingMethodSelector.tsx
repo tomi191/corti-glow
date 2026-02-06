@@ -18,7 +18,7 @@ const shippingOptions: {
   {
     method: "econt_office",
     title: "До офис на Еконт",
-    description: `Безплатно при поръчка над ${SHIPPING_THRESHOLD} лв`,
+    description: `Безплатно при поръчка над ${SHIPPING_THRESHOLD} €`,
     basePrice: 4.99,
     icon: <Building className="w-5 h-5" />,
   },

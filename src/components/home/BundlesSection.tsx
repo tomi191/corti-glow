@@ -76,7 +76,7 @@ export function BundlesSection() {
                   </div>
                   {variant.savings && (
                     <span className="text-[#2D4A3E] text-xs font-medium mt-1">
-                      Спестяваш {variant.savings} лв + Безплатна Доставка
+                      Спестяваш {variant.savings} € + Безплатна Доставка
                     </span>
                   )}
                 </div>

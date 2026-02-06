@@ -45,7 +45,7 @@ export function Header() {
             >
               <Sparkles className="w-3 h-3" />
               <span className="tracking-wide">
-                БЕЗПЛАТНА ДОСТАВКА НАД {SHIPPING_THRESHOLD} лв
+                БЕЗПЛАТНА ДОСТАВКА НАД {SHIPPING_THRESHOLD} €
                 <span className="hidden sm:inline"> • 14-ДНЕВНА ГАРАНЦИЯ</span>
               </span>
               <Sparkles className="w-3 h-3" />

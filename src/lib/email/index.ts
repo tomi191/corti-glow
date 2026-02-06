@@ -109,7 +109,7 @@ export async function sendOrderConfirmationEmail(
       <tr>
         <td style="padding: 12px; border-bottom: 1px solid #eee;">${item.title}</td>
         <td style="padding: 12px; border-bottom: 1px solid #eee; text-align: center;">${item.quantity}</td>
-        <td style="padding: 12px; border-bottom: 1px solid #eee; text-align: right;">${(item.price * item.quantity).toFixed(2)} лв</td>
+        <td style="padding: 12px; border-bottom: 1px solid #eee; text-align: right;">${(item.price * item.quantity).toFixed(2)} €</td>
       </tr>
     `
     )
@@ -155,21 +155,21 @@ export async function sendOrderConfirmationEmail(
       <div style="background: #fff; border: 1px solid #eee; border-radius: 8px; padding: 16px; margin-bottom: 24px;">
         <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
           <span>Междинна сума:</span>
-          <span>${order.subtotal.toFixed(2)} лв</span>
+          <span>${order.subtotal.toFixed(2)} €</span>
         </div>
         <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
           <span>Доставка:</span>
-          <span>${order.shipping_price === 0 ? "Безплатна" : `${order.shipping_price.toFixed(2)} лв`}</span>
+          <span>${order.shipping_price === 0 ? "Безплатна" : `${order.shipping_price.toFixed(2)} €`}</span>
         </div>
         ${order.discount_amount > 0 ? `
         <div style="display: flex; justify-content: space-between; margin-bottom: 8px; color: #22c55e;">
           <span>Отстъпка:</span>
-          <span>-${order.discount_amount.toFixed(2)} лв</span>
+          <span>-${order.discount_amount.toFixed(2)} €</span>
         </div>
         ` : ""}
         <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 18px; padding-top: 12px; border-top: 2px solid #2D4A3E;">
           <span>Общо:</span>
-          <span>${order.total.toFixed(2)} лв</span>
+          <span>${order.total.toFixed(2)} €</span>
         </div>
       </div>
 
@@ -196,9 +196,9 @@ export async function sendOrderConfirmationEmail(
 Дата: ${new Date(order.created_at).toLocaleDateString("bg-BG")}
 
 Продукти:
-${items.map((item) => `- ${item.title} x${item.quantity}: ${(item.price * item.quantity).toFixed(2)} лв`).join("\n")}
+${items.map((item) => `- ${item.title} x${item.quantity}: ${(item.price * item.quantity).toFixed(2)} €`).join("\n")}
 
-Общо: ${order.total.toFixed(2)} лв
+Общо: ${order.total.toFixed(2)} €
 
 Проследи поръчката: ${process.env.NEXT_PUBLIC_APP_URL || "https://luralab.eu"}/prosledi-porachka
 
