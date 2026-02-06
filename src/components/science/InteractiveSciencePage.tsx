@@ -68,7 +68,7 @@ function CortisolGraph() {
         <h3 className="text-lg font-semibold text-[#2D4A3E]">
           Нива на Кортизол (nmol/L)
         </h3>
-        <div className="flex gap-4 text-sm">
+        <div className="flex flex-wrap gap-3 text-xs sm:text-sm">
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 rounded-full bg-stone-300" />
             <span className="text-stone-500">Без Corti-Glow</span>
@@ -292,7 +292,7 @@ export function InteractiveSciencePage() {
   return (
     <div ref={containerRef} className="bg-white">
       {/* Hero */}
-      <section className="relative py-20 md:py-32 overflow-hidden">
+      <section className="relative py-12 md:py-20 lg:py-32 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-[#F5F2EF] to-white" />
         <motion.div
           className="absolute top-20 right-20 w-96 h-96 rounded-full bg-[#B2D8C6]/20 blur-3xl"
@@ -310,7 +310,7 @@ export function InteractiveSciencePage() {
 
           <ScrollReveal animation="blur-slide" delay={0.1}>
             <AnimatedHeading>
-              <h1 className="text-4xl md:text-6xl lg:text-7xl font-semibold text-[#2D4A3E] tracking-tight mb-6">
+              <h1 className="text-3xl md:text-6xl lg:text-7xl font-semibold text-[#2D4A3E] tracking-tight mb-6">
                 Науката зад
                 <br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#B2D8C6] to-[#FFC1CC]">
@@ -321,7 +321,7 @@ export function InteractiveSciencePage() {
           </ScrollReveal>
 
           <ScrollReveal animation="fade-up" delay={0.2}>
-            <p className="text-lg md:text-xl text-stone-600 font-light max-w-2xl mx-auto">
+            <p className="text-base md:text-xl text-stone-600 font-light max-w-2xl mx-auto">
               Разбери как хроничният стрес влияе на тялото ти и как нашата формула
               помага да възстановиш баланса.
             </p>
@@ -330,16 +330,16 @@ export function InteractiveSciencePage() {
       </section>
 
       {/* Main Content with Sticky ToC */}
-      <div className="max-w-7xl mx-auto px-6 py-16">
-        <div className="flex gap-16">
+      <div className="max-w-7xl mx-auto px-6 py-8 md:py-16">
+        <div className="flex gap-8 lg:gap-16">
           <StickyToC activeSection={activeSection} />
 
           {/* Content */}
           <div className="flex-1 max-w-3xl">
             {/* Section: What is Cortisol */}
-            <section id="cortisol" className="mb-24 scroll-mt-32">
+            <section id="cortisol" className="mb-12 md:mb-24 scroll-mt-32">
               <ScrollReveal animation="fade-up">
-                <h2 className="text-3xl md:text-4xl font-semibold text-[#2D4A3E] mb-8">
+                <h2 className="text-2xl md:text-4xl font-semibold text-[#2D4A3E] mb-6 md:mb-8">
                   Какво е Кортизол?
                 </h2>
               </ScrollReveal>
@@ -378,9 +378,9 @@ export function InteractiveSciencePage() {
             </section>
 
             {/* Section: The Vicious Cycle */}
-            <section id="cycle" className="mb-24 scroll-mt-32">
+            <section id="cycle" className="mb-12 md:mb-24 scroll-mt-32">
               <ScrollReveal animation="fade-up">
-                <h2 className="text-3xl md:text-4xl font-semibold text-[#2D4A3E] mb-8">
+                <h2 className="text-2xl md:text-4xl font-semibold text-[#2D4A3E] mb-6 md:mb-8">
                   Порочният Кръг на Стреса
                 </h2>
               </ScrollReveal>
@@ -424,9 +424,9 @@ export function InteractiveSciencePage() {
             </section>
 
             {/* Section: The Solution */}
-            <section id="solution" className="mb-24 scroll-mt-32">
+            <section id="solution" className="mb-12 md:mb-24 scroll-mt-32">
               <ScrollReveal animation="fade-up">
-                <h2 className="text-3xl md:text-4xl font-semibold text-[#2D4A3E] mb-8">
+                <h2 className="text-2xl md:text-4xl font-semibold text-[#2D4A3E] mb-6 md:mb-8">
                   Решението: Corti-Glow
                 </h2>
               </ScrollReveal>
@@ -444,16 +444,16 @@ export function InteractiveSciencePage() {
             </section>
 
             {/* Section: Ingredients */}
-            <section id="ingredients" className="mb-24 scroll-mt-32">
+            <section id="ingredients" className="mb-12 md:mb-24 scroll-mt-32">
               <ScrollReveal animation="fade-up">
-                <h2 className="text-3xl md:text-4xl font-semibold text-[#2D4A3E] mb-8">
+                <h2 className="text-2xl md:text-4xl font-semibold text-[#2D4A3E] mb-6 md:mb-8">
                   Клинично Доказани Съставки
                 </h2>
               </ScrollReveal>
 
               {/* Ingredients Flat Lay Image */}
               <ScrollReveal animation="scale-up" delay={0.1}>
-                <div className="relative w-full aspect-[16/9] mb-12 rounded-3xl overflow-hidden shadow-2xl">
+                <div className="relative w-full aspect-[16/9] mb-8 md:mb-12 rounded-3xl overflow-hidden shadow-2xl">
                   <Image
                     src="/images/ingredients-flatlay.webp"
                     alt="Corti-Glow ingredients - ashwagandha, lime, strawberry"
@@ -472,7 +472,7 @@ export function InteractiveSciencePage() {
                 </div>
               </ScrollReveal>
 
-              <div className="space-y-6">
+              <div className="space-y-4 md:space-y-6">
                 {ingredients.map((ing, i) => (
                   <ScrollReveal key={ing.name} animation="fade-left" delay={i * 0.1}>
                     <div className="group p-6 bg-white rounded-2xl border border-stone-100 hover:shadow-xl hover:border-[#B2D8C6]/50 transition-all duration-300">
@@ -505,9 +505,9 @@ export function InteractiveSciencePage() {
             </section>
 
             {/* Section: Studies */}
-            <section id="studies" className="mb-24 scroll-mt-32">
+            <section id="studies" className="mb-12 md:mb-24 scroll-mt-32">
               <ScrollReveal animation="fade-up">
-                <h2 className="text-3xl md:text-4xl font-semibold text-[#2D4A3E] mb-8">
+                <h2 className="text-2xl md:text-4xl font-semibold text-[#2D4A3E] mb-6 md:mb-8">
                   Клинични Проучвания
                 </h2>
               </ScrollReveal>
@@ -559,7 +559,7 @@ export function InteractiveSciencePage() {
       </div>
 
       {/* Final CTA */}
-      <section className="py-20 bg-[#2D4A3E] relative overflow-hidden">
+      <section className="py-12 md:py-20 bg-[#2D4A3E] relative overflow-hidden">
         <motion.div
           className="absolute inset-0 opacity-20"
           style={{
@@ -569,13 +569,13 @@ export function InteractiveSciencePage() {
 
         <div className="max-w-3xl mx-auto px-6 text-center relative">
           <ScrollReveal animation="blur-in">
-            <h2 className="text-3xl md:text-5xl font-semibold text-white mb-6">
+            <h2 className="text-2xl md:text-5xl font-semibold text-white mb-6">
               Готова да Прекъснеш Цикъла?
             </h2>
           </ScrollReveal>
 
           <ScrollReveal animation="fade-up" delay={0.1}>
-            <p className="text-lg text-white/70 mb-8">
+            <p className="text-lg text-white/70 mb-6 md:mb-8">
               Започни своя път към хормонален баланс с клинично доказани съставки.
             </p>
           </ScrollReveal>
