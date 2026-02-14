@@ -2,8 +2,9 @@
 
 import { useState, useRef } from "react";
 import { motion, useInView } from "framer-motion";
-import { Check, Sparkles, Truck, Shield } from "lucide-react";
+import { Check, Sparkles, Truck, Shield, RefreshCw } from "lucide-react";
 import { productVariants } from "@/data/products";
+import { SUBSCRIPTION_VARIANTS, SUBSCRIPTION_DISCOUNT } from "@/lib/stripe/subscription-prices";
 import { formatPrice } from "@/lib/utils";
 import { useCartStore } from "@/stores/cart-store";
 import { GlassCard } from "@/components/ui/GlassCard";
@@ -15,15 +16,20 @@ export function PremiumBundles() {
   const isInView = useInView(ref, { once: true, margin: "-100px" });
   const addItem = useCartStore((state) => state.addItem);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
+  const [isSubscription, setIsSubscription] = useState(false);
 
   const handleAddToCart = (variant: (typeof productVariants)[0]) => {
+    const subVariant = SUBSCRIPTION_VARIANTS[variant.id];
     addItem({
-      id: variant.id,
+      id: isSubscription ? `${variant.id}-sub` : variant.id,
       productId: "corti-glow",
       variantId: variant.id,
-      title: `Corti-Glow (${variant.name})`,
-      price: variant.price,
+      title: `Corti-Glow (${variant.name})${isSubscription ? " — Абонамент" : ""}`,
+      price: isSubscription && subVariant ? subVariant.subscriptionPrice : variant.price,
       image: "/images/product-hero-box.webp",
+      isSubscription,
+      subscriptionPrice: subVariant?.subscriptionPrice,
+      originalPrice: variant.price,
     });
   };
 
@@ -76,6 +82,38 @@ export function PremiumBundles() {
             30 саше във всяка кутия. 14-дневна гаранция за връщане.
           </motion.p>
         </div>
+
+        {/* Subscription Toggle */}
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.5, delay: 0.5 }}
+          className="flex justify-center mb-10"
+        >
+          <div className="inline-flex items-center bg-stone-100 rounded-full p-1">
+            <button
+              onClick={() => setIsSubscription(false)}
+              className={`px-5 py-2.5 rounded-full text-sm font-medium transition-all ${
+                !isSubscription
+                  ? "bg-white text-[#2D4A3E] shadow-sm"
+                  : "text-stone-500 hover:text-stone-700"
+              }`}
+            >
+              Еднократна покупка
+            </button>
+            <button
+              onClick={() => setIsSubscription(true)}
+              className={`px-5 py-2.5 rounded-full text-sm font-medium transition-all flex items-center gap-1.5 ${
+                isSubscription
+                  ? "bg-[#2D4A3E] text-white shadow-sm"
+                  : "text-stone-500 hover:text-stone-700"
+              }`}
+            >
+              <RefreshCw className="w-3.5 h-3.5" />
+              Абонамент — Спести {SUBSCRIPTION_DISCOUNT * 100}%
+            </button>
+          </div>
+        </motion.div>
 
         {/* Pricing Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
@@ -141,24 +179,47 @@ export function PremiumBundles() {
 
                 {/* Price */}
                 <div className="mb-6">
-                  <div className="flex items-baseline gap-2">
-                    <span
-                      className={`text-4xl font-bold ${
-                        variant.isBestSeller ? "text-[#2D4A3E]" : "text-stone-800"
-                      }`}
-                    >
-                      {formatPrice(variant.price)}
-                    </span>
-                    {variant.compareAtPrice && (
-                      <span className="text-stone-400 line-through">
-                        {formatPrice(variant.compareAtPrice)}
-                      </span>
-                    )}
-                  </div>
-                  {variant.savings && (
-                    <p className="text-[#2D4A3E] text-sm font-medium mt-1">
-                      Спестяваш {variant.savings} €
-                    </p>
+                  {isSubscription ? (
+                    <>
+                      <div className="flex items-baseline gap-2">
+                        <span
+                          className={`text-4xl font-bold ${
+                            variant.isBestSeller ? "text-[#2D4A3E]" : "text-stone-800"
+                          }`}
+                        >
+                          {formatPrice(SUBSCRIPTION_VARIANTS[variant.id]?.subscriptionPrice ?? variant.price)}
+                        </span>
+                        <span className="text-stone-400 line-through">
+                          {formatPrice(variant.price)}
+                        </span>
+                        <span className="text-xs text-stone-500">/месец</span>
+                      </div>
+                      <p className="text-[#2D4A3E] text-sm font-medium mt-1">
+                        + Безплатна доставка · Отказ по всяко време
+                      </p>
+                    </>
+                  ) : (
+                    <>
+                      <div className="flex items-baseline gap-2">
+                        <span
+                          className={`text-4xl font-bold ${
+                            variant.isBestSeller ? "text-[#2D4A3E]" : "text-stone-800"
+                          }`}
+                        >
+                          {formatPrice(variant.price)}
+                        </span>
+                        {variant.compareAtPrice && (
+                          <span className="text-stone-400 line-through">
+                            {formatPrice(variant.compareAtPrice)}
+                          </span>
+                        )}
+                      </div>
+                      {variant.savings && (
+                        <p className="text-[#2D4A3E] text-sm font-medium mt-1">
+                          Спестяваш {variant.savings} €
+                        </p>
+                      )}
+                    </>
                   )}
                 </div>
 

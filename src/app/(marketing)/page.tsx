@@ -1,9 +1,13 @@
 import type { Metadata } from "next";
 import {
   PremiumHero,
+  SocialProofBanner,
   PremiumFeatures,
+  GlowGuideCTA,
+  RealResults,
   PremiumIngredients,
   PremiumHowTo,
+  GlowGuideCTAMini,
   PremiumBundles,
   BentoReviews,
   PremiumFAQ,
@@ -48,9 +52,13 @@ export default function HomePage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
       />
       <PremiumHero />
+      <SocialProofBanner />
       <PremiumFeatures />
+      <GlowGuideCTA />
+      <RealResults />
       <PremiumIngredients />
       <PremiumHowTo />
+      <GlowGuideCTAMini />
       <PremiumBundles />
       <BentoReviews />
       <PremiumFAQ />

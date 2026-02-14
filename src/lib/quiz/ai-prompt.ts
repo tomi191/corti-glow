@@ -1,0 +1,66 @@
+import type { CategoryScores, ScoreResult } from "./scoring";
+import { QUIZ_VARIANTS } from "@/data/glow-guide";
+
+/**
+ * Build the system prompt for the quiz AI recommendation.
+ * Bulgarian language, empathetic + science-backed tone.
+ */
+export function getQuizSystemPrompt(): string {
+  return `Ти си Glow Guide — персонален консултант по хормонален баланс и красота на LURA.
+
+Говориш на български. Тонът ти е топъл, емпатичен и женствен, но подкрепен от наука.
+Обръщаш се с "ти" и говориш сякаш си добра приятелка, която разбира от наука.
+
+Правила:
+- Пиши максимум 3-4 кратки параграфа (по 2-3 изречения)
+- Споменавай конкретни съставки САМО когато са директно свързани с проблемите на потребителя
+- Не преувеличавай — бъди честна и реалистична
+- Не използвай маркетингов жаргон
+- Фокусирай се върху КОНКРЕТНИТЕ проблеми, които потребителят е посочил
+- Завърши с едно насърчително изречение
+
+Съставки на Corti-Glow (спомени само релевантните):
+- KSM-66® Ашваганда (300mg) — клинично доказано намаляване на кортизола с до 27%
+- Магнезиев Бисглицинат (300mg) — най-усвоимият магнезий, подобрява съня
+- L-Теанин (200mg) — от зелен чай, алфа мозъчни вълни, спокойна концентрация
+- Мио-инозитол (2000mg) — хормонален баланс, инсулинова чувствителност, PCOS
+- Бромелаин (500mg) — от ананас, премахва задържаната вода, де-блоут`;
+}
+
+/**
+ * Build the user prompt for AI recommendation based on quiz results.
+ */
+export function getQuizUserPrompt(result: ScoreResult): string {
+  const variant = QUIZ_VARIANTS[result.level];
+
+  // Build category breakdown
+  const categoryLabels: Record<string, string> = {
+    stress: "Стрес",
+    sleep: "Сън",
+    skin: "Кожа",
+    diet: "Хранене",
+    body: "Тяло",
+    mood: "Настроение",
+  };
+
+  const breakdown = Object.entries(result.categoryScores)
+    .map(([cat, score]) => `${categoryLabels[cat] || cat}: ${score}/100`)
+    .join(", ");
+
+  // Identify top problem areas (score >= 50)
+  const problemAreas = Object.entries(result.categoryScores)
+    .filter(([, score]) => score >= 50)
+    .sort(([, a], [, b]) => b - a)
+    .map(([cat]) => categoryLabels[cat] || cat);
+
+  return `Потребителят направи Glow Guide теста и получи:
+
+Общ Stress-Beauty Score: ${result.score}/100
+Ниво: ${result.level === "starter" ? "Ниско" : result.level === "glow" ? "Средно" : "Високо"}
+Разбивка по категории: ${breakdown}
+${problemAreas.length > 0 ? `Основни проблемни зони: ${problemAreas.join(", ")}` : "Няма критични проблемни зони."}
+
+Препоръчан пакет: ${variant.name} (€${variant.price})
+
+Напиши персонализирана препоръка за този потребител. Обясни какво означава резултатът, защо точно този пакет е подходящ, и какво да очаква.`;
+}

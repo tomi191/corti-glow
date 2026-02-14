@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { Minus, Plus, Trash2 } from "lucide-react";
+import { Minus, Plus, Trash2, RefreshCw } from "lucide-react";
 import { useCartStore, MAX_CART_QUANTITY, type CartItem as CartItemType } from "@/stores/cart-store";
 import { formatPrice } from "@/lib/utils";
 
@@ -35,9 +35,25 @@ export function CartItem({ item }: CartItemProps) {
           <h3 className="font-medium text-[#2D4A3E] leading-tight mb-1 line-clamp-2">
             {item.title}
           </h3>
-          <p className="text-lg font-bold text-[#2D4A3E]">
-            {formatPrice(item.price)}
-          </p>
+          {item.isSubscription && (
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#B2D8C6]/20 text-[#2D4A3E] text-[10px] font-medium mb-1">
+              <RefreshCw className="w-2.5 h-2.5" />
+              Месечен Абонамент
+            </span>
+          )}
+          <div className="flex items-baseline gap-1.5">
+            <p className="text-lg font-bold text-[#2D4A3E]">
+              {formatPrice(item.price)}
+            </p>
+            {item.isSubscription && item.originalPrice && (
+              <span className="text-xs text-stone-400 line-through">
+                {formatPrice(item.originalPrice)}
+              </span>
+            )}
+            {item.isSubscription && (
+              <span className="text-xs text-stone-500">/мес</span>
+            )}
+          </div>
         </div>
 
         {/* Quantity & Remove */}

@@ -16,6 +16,7 @@ export function CartDrawer() {
     getSubtotal,
     isFreeShipping,
     getRemainingForFreeShipping,
+    hasSubscriptionItem,
   } = useCartStore();
 
   const [mounted, setMounted] = useState(false);
@@ -47,7 +48,8 @@ export function CartDrawer() {
   if (!mounted) return null;
 
   const subtotal = getSubtotal();
-  const freeShipping = isFreeShipping();
+  const hasSub = hasSubscriptionItem();
+  const freeShipping = hasSub || isFreeShipping(); // Subscriptions always get free shipping
   const remaining = getRemainingForFreeShipping();
   const progress = Math.min(100, (subtotal / 80) * 100);
 
@@ -263,7 +265,7 @@ export function CartDrawer() {
                     onClick={closeCart}
                     className="block w-full py-4 bg-[#2D4A3E] text-white rounded-2xl font-semibold shadow-xl shadow-[#2D4A3E]/30 hover:shadow-[#2D4A3E]/40 transition-shadow text-center relative overflow-hidden group"
                   >
-                    <span className="relative z-10">Към Плащане</span>
+                    <span className="relative z-10">{hasSub ? "Към Абонамент" : "Към Плащане"}</span>
                     <motion.div
                       className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"
                     />

@@ -9,6 +9,9 @@ import {
   updateOrderStatus,
   deductStock,
 } from "@/lib/actions/orders";
+import {
+  updateSubscriptionByStripeId,
+} from "@/lib/actions/subscriptions";
 import { sendOrderConfirmationEmail } from "@/lib/email";
 
 export async function POST(request: NextRequest) {
@@ -114,6 +117,76 @@ export async function POST(request: NextRequest) {
           if (order) {
             await updatePaymentStatus(order.id, "refunded");
           }
+        }
+        break;
+      }
+
+      // ================================
+      // Subscription Events
+      // ================================
+
+      case "customer.subscription.created":
+      case "customer.subscription.updated": {
+        const subscription = event.data.object as any;
+        const stripeSubId = subscription.id;
+        const status = subscription.status;
+
+        // Map Stripe status to local status
+        const statusMap: Record<string, string> = {
+          active: "active",
+          past_due: "past_due",
+          canceled: "cancelled",
+          incomplete: "incomplete",
+          trialing: "active",
+          paused: "paused",
+        };
+
+        const localStatus = statusMap[status] || "incomplete";
+
+        await updateSubscriptionByStripeId(stripeSubId, {
+          status: localStatus as any,
+          current_period_start: subscription.current_period_start
+            ? new Date(subscription.current_period_start * 1000).toISOString()
+            : undefined,
+          current_period_end: subscription.current_period_end
+            ? new Date(subscription.current_period_end * 1000).toISOString()
+            : undefined,
+          cancel_at_period_end: subscription.cancel_at_period_end || false,
+          cancelled_at: subscription.canceled_at
+            ? new Date(subscription.canceled_at * 1000).toISOString()
+            : null,
+        });
+        break;
+      }
+
+      case "customer.subscription.deleted": {
+        const subscription = event.data.object as any;
+        await updateSubscriptionByStripeId(subscription.id, {
+          status: "cancelled",
+          cancelled_at: new Date().toISOString(),
+        });
+        break;
+      }
+
+      case "invoice.payment_succeeded": {
+        const invoice = event.data.object as any;
+        // Only handle subscription invoices
+        if (invoice.subscription) {
+          console.log(
+            `Subscription invoice paid: ${invoice.id} for sub ${invoice.subscription}`
+          );
+          // Subscription renewal orders will be created by a separate cron
+          // or handled in a more detailed webhook handler later
+        }
+        break;
+      }
+
+      case "invoice.payment_failed": {
+        const invoice = event.data.object as any;
+        if (invoice.subscription) {
+          await updateSubscriptionByStripeId(invoice.subscription, {
+            status: "past_due",
+          });
         }
         break;
       }

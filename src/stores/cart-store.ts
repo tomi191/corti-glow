@@ -14,6 +14,9 @@ export interface CartItem {
   price: number;
   image: string;
   quantity: number;
+  isSubscription?: boolean;
+  subscriptionPrice?: number;
+  originalPrice?: number;
 }
 
 interface CartState {
@@ -36,6 +39,7 @@ interface CartGetters {
   getShippingProgress: () => number;
   isFreeShipping: () => boolean;
   getRemainingForFreeShipping: () => number;
+  hasSubscriptionItem: () => boolean;
 }
 
 type CartStore = CartState & CartActions & CartGetters;
@@ -50,6 +54,26 @@ export const useCartStore = create<CartStore>()(
       // Actions
       addItem: (item) => {
         set((state) => {
+          // Mixed-cart prevention: subscription and one-time can't mix
+          const isAddingSub = !!item.isSubscription;
+          const hasExistingSub = state.items.some((i) => i.isSubscription);
+          const hasExistingOneTime = state.items.some((i) => !i.isSubscription);
+
+          if (isAddingSub && hasExistingOneTime) {
+            // Clear one-time items, replace with subscription
+            return {
+              items: [{ ...item, quantity: 1 }],
+              isOpen: true,
+            };
+          }
+          if (!isAddingSub && hasExistingSub) {
+            // Clear subscription items, replace with one-time
+            return {
+              items: [{ ...item, quantity: 1 }],
+              isOpen: true,
+            };
+          }
+
           const existing = state.items.find((i) => i.id === item.id);
           if (existing) {
             if (existing.quantity >= MAX_CART_QUANTITY) return { isOpen: true };
@@ -109,6 +133,9 @@ export const useCartStore = create<CartStore>()(
 
       getRemainingForFreeShipping: () =>
         Math.max(SHIPPING_THRESHOLD - get().getSubtotal(), 0),
+
+      hasSubscriptionItem: () =>
+        get().items.some((i) => i.isSubscription),
     }),
     {
       name: "lura-cart",

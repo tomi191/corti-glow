@@ -12,7 +12,11 @@ export { MobileStickyBar } from "./MobileStickyBar";
 
 // Premium 2026 exports
 export { PremiumHero } from "./PremiumHero";
+export { SocialProofBanner } from "./SocialProofBanner";
 export { PremiumFeatures } from "./PremiumFeatures";
+export { GlowGuideCTA } from "./GlowGuideCTA";
+export { GlowGuideCTAMini } from "./GlowGuideCTAMini";
+export { RealResults } from "./RealResults";
 export { PremiumBundles } from "./PremiumBundles";
 export { PremiumTestimonials } from "./PremiumTestimonials";
 export { BentoReviews } from "./BentoReviews";

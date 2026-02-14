@@ -90,10 +90,11 @@ export function PremiumCTA() {
             <MagneticButton
               variant="ghost"
               size="lg"
-              href="#bundles"
+              href="/glow-guide"
               className="text-white border border-white/30 hover:bg-white/10"
             >
-              Виж Пакетите
+              <Sparkles className="w-4 h-4" />
+              Направи Glow Guide
             </MagneticButton>
           </motion.div>
 

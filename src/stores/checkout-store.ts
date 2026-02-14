@@ -58,6 +58,8 @@ interface CheckoutState {
   shippingCalculating: boolean;
   shippingEstimated: boolean; // true = fallback price, false = real API price
   shippingError: string;
+  // Subscription
+  isSubscription: boolean;
 }
 
 interface CheckoutActions {
@@ -77,6 +79,7 @@ interface CheckoutActions {
   setShippingCalculating: (calculating: boolean) => void;
   setShippingEstimated: (estimated: boolean) => void;
   setShippingError: (error: string) => void;
+  setIsSubscription: (isSub: boolean) => void;
   reset: () => void;
   canProceedToShipping: () => boolean;
   canProceedToPayment: () => boolean;
@@ -106,6 +109,7 @@ const initialState: CheckoutState = {
   shippingCalculating: false,
   shippingEstimated: true, // Start with estimated prices
   shippingError: "",
+  isSubscription: false,
 };
 
 export const useCheckoutStore = create<CheckoutStore>()(
@@ -176,6 +180,13 @@ export const useCheckoutStore = create<CheckoutStore>()(
   setShippingEstimated: (estimated) => set({ shippingEstimated: estimated }),
 
   setShippingError: (error) => set({ shippingError: error }),
+
+  setIsSubscription: (isSub) =>
+    set((state) => ({
+      isSubscription: isSub,
+      // Force card-only for subscriptions
+      payment: isSub ? { ...state.payment, method: "card" } : state.payment,
+    })),
 
   reset: () => set(initialState),
 

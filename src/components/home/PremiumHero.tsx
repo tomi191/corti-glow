@@ -3,7 +3,7 @@
 import { useRef } from "react";
 import Image from "next/image";
 import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
-import { Sparkles, CheckCircle, ArrowRight, Star } from "lucide-react";
+import { Sparkles, CheckCircle, ArrowRight } from "lucide-react";
 import { AnimatedBackground } from "@/components/ui/AnimatedBackground";
 import { MagneticButton } from "@/components/ui/MagneticButton";
 
@@ -39,25 +39,20 @@ export function PremiumHero() {
               <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/80 backdrop-blur-sm border border-[#B2D8C6]/30 shadow-lg shadow-[#B2D8C6]/10">
                 <Sparkles className="w-4 h-4 text-[#2D4A3E]" />
                 <span className="text-sm font-medium text-[#2D4A3E]">
-                  #1 Anti-Stress Mocktail 2026
-                </span>
-                <span className="flex items-center gap-0.5 text-[#F4E3B2]">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="w-3 h-3 fill-current" />
-                  ))}
+                  Клинично Доказано | KSM-66® Ашваганда
                 </span>
               </span>
             </motion.div>
 
             {/* Headline */}
             <div>
-              <h1 className="text-3xl sm:text-5xl lg:text-7xl xl:text-8xl font-semibold leading-[0.95] tracking-tight">
-                <span className="text-[#2D4A3E]">Пребори</span>
+              <h1 className="text-3xl sm:text-5xl lg:text-7xl xl:text-8xl leading-[0.95] tracking-tight">
+                <span className="text-[#2D4A3E] font-light">Науката за</span>
                 <br />
-                <span className="text-[#2D4A3E]">стреса.</span>
+                <span className="text-[#2D4A3E] font-bold">Красота</span>
                 <br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#B2D8C6] via-[#2D4A3E] to-[#FFC1CC]">
-                  Glow up.
+                <span className="font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#B2D8C6] via-[#2D4A3E] to-[#FFC1CC]">
+                  Без Кортизол.
                 </span>
               </h1>
             </div>
@@ -69,11 +64,12 @@ export function PremiumHero() {
               transition={{ duration: 0.6, delay: 0.5 }}
               className="text-lg sm:text-xl text-stone-600 font-light leading-relaxed max-w-lg"
             >
-              Запознай се с{" "}
-              <span className="font-semibold text-[#2D4A3E]">Corti-Glow</span> —
-              премиум моктейлът с вкус на горска ягода и лайм, който понижава
-              кортизола, премахва подуването и те кара да{" "}
-              <span className="italic">сияеш</span>.
+              Когато кортизолът спада, кожата, съня и фигурата се
+              трансформират.{" "}
+              <span className="font-semibold text-[#2D4A3E]">Corti-Glow</span>{" "}
+              е вечерният ритуал с 5 научни съставки, който{" "}
+              <span className="font-semibold text-[#2D4A3E]">500+ жени</span>{" "}
+              вече използват.
             </motion.p>
 
             {/* Features */}
@@ -104,11 +100,12 @@ export function PremiumHero() {
               className="flex flex-col sm:flex-row gap-4 pt-4"
             >
               <MagneticButton variant="primary" size="lg" href="/produkt">
-                Поръчай Сега
+                Открий Продукта
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </MagneticButton>
-              <MagneticButton variant="secondary" size="lg" href="/nauka">
-                Виж Науката
+              <MagneticButton variant="secondary" size="lg" href="/glow-guide">
+                <Sparkles className="w-4 h-4" />
+                Направи Glow Guide
               </MagneticButton>
             </motion.div>
 

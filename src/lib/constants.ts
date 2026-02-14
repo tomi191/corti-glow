@@ -36,6 +36,7 @@ export const SITE_CONFIG = {
 // Navigation Links
 export const NAV_LINKS = [
   { href: "/produkt", label: "Магазин" },
+  { href: "/glow-guide", label: "Glow Guide" },
   { href: "/nauka", label: "Наука" },
   { href: "/blog", label: "Блог" },
 ] as const;
