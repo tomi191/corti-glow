@@ -359,6 +359,8 @@ export function InteractiveSciencePage() {
                     { icon: Moon, title: "Сън", desc: "Регулира циркадния ритъм" },
                     { icon: Droplets, title: "Метаболизъм", desc: "Контролира как тялото използва енергия" },
                     { icon: Scale, title: "Тегло", desc: "Влияе на разпределението на мазнини" },
+                    { icon: Sparkles, title: "Кожа", desc: "Разгражда колагена и предизвиква акне" },
+                    { icon: Clock, title: "Цикъл & ПМС", desc: "Нарушава овулацията и засилва ПМС" },
                   ].map((item) => (
                     <div
                       key={item.title}

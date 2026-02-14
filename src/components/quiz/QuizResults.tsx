@@ -24,6 +24,7 @@ const categoryLabels: Record<string, string> = {
   diet: "Хранене",
   body: "Тяло",
   mood: "Настроение",
+  cycle: "Цикъл",
 };
 
 const categoryColors: Record<string, string> = {
@@ -33,6 +34,7 @@ const categoryColors: Record<string, string> = {
   diet: "#B2D8C6",
   body: "#FFC1CC",
   mood: "#F4E3B2",
+  cycle: "#FFC1CC",
 };
 
 export function QuizResults({

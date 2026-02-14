@@ -7,7 +7,7 @@ export interface QuizOption {
 
 export interface QuizQuestion {
   id: string;
-  category: "stress" | "sleep" | "skin" | "diet" | "body" | "mood";
+  category: "stress" | "sleep" | "skin" | "diet" | "body" | "mood" | "cycle";
   question: string;
   subtitle?: string;
   options: QuizOption[];
@@ -24,12 +24,13 @@ export interface QuizVariant {
 
 // Category weights for final score (must sum to 1.0)
 export const CATEGORY_WEIGHTS: Record<string, number> = {
-  stress: 0.25,
-  sleep: 0.20,
-  skin: 0.15,
-  diet: 0.15,
-  body: 0.15,
-  mood: 0.10,
+  stress: 0.20,
+  sleep: 0.17,
+  skin: 0.12,
+  diet: 0.11,
+  body: 0.12,
+  mood: 0.15,
+  cycle: 0.13,
 };
 
 // Score thresholds for variant mapping
@@ -145,6 +146,19 @@ export const QUIZ_QUESTIONS: QuizQuestion[] = [
       { label: "Лек спад 14-16ч, но се справям", value: 1 },
       { label: "Раздразнителна, искам захар и кафе", value: 3 },
       { label: "Пълно изтощение, мъгла в главата, нулева мотивация", value: 4 },
+    ],
+  },
+  {
+    id: "cycle",
+    category: "cycle",
+    question: "Как е цикълът ти?",
+    subtitle: "ПМС и цикълът разкриват много за кортизола.",
+    accentColor: "#FFC1CC",
+    options: [
+      { label: "Редовен, без особен ПМС", value: 0 },
+      { label: "Лек ПМС — раздразнителност или подуване 1-2 дни", value: 1 },
+      { label: "Силен ПМС — болки, настроение, подуване цяла седмица", value: 3 },
+      { label: "Нередовен цикъл, силен ПМС или диагноза PCOS", value: 4 },
     ],
   },
 ];
