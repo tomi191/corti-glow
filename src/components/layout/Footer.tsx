@@ -29,7 +29,7 @@ export function Footer() {
 
           {/* Shop Links */}
           <div>
-            <h4 className="font-medium mb-4 text-[#B2D8C6]">Магазин</h4>
+            <h4 className="font-medium mb-4 text-white/70">Магазин</h4>
             <ul className="space-y-2 text-sm text-stone-200">
               {FOOTER_LINKS.shop.map((link) => (
                 <li key={link.href}>
@@ -43,7 +43,7 @@ export function Footer() {
 
           {/* Help Links */}
           <div>
-            <h4 className="font-medium mb-4 text-[#B2D8C6]">Помощ</h4>
+            <h4 className="font-medium mb-4 text-white/70">Помощ</h4>
             <ul className="space-y-2 text-sm text-stone-200">
               {FOOTER_LINKS.help.map((link) => (
                 <li key={link.href}>
@@ -57,7 +57,7 @@ export function Footer() {
 
           {/* Newsletter */}
           <div>
-            <h4 className="font-medium mb-4 text-[#B2D8C6]">
+            <h4 className="font-medium mb-4 text-white/70">
               Влез в Lura Club
             </h4>
             <p className="text-xs text-stone-200 mb-4">

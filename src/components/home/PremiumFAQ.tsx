@@ -31,7 +31,7 @@ export function PremiumFAQ() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
       />
       {/* Background */}
-      <div className="absolute inset-0 bg-gradient-to-b from-white via-[#2D4A3E]/5 to-white" />
+      <div className="absolute inset-0 bg-white" />
 
       <div className="max-w-4xl mx-auto px-6 relative">
         {/* Header */}
@@ -50,7 +50,7 @@ export function PremiumFAQ() {
             <h2 className="text-2xl sm:text-4xl lg:text-6xl font-semibold text-[#2D4A3E] tracking-tight mb-6">
               Имаш Въпроси?
               <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#B2D8C6] to-[#FFC1CC]">
+              <span className="text-[#B2D8C6]">
                 Имаме Отговори.
               </span>
             </h2>
@@ -114,7 +114,7 @@ export function PremiumFAQ() {
                       role="region"
                     >
                       <div className="px-8 pb-6">
-                        <div className="h-px bg-gradient-to-r from-transparent via-[#B2D8C6]/50 to-transparent mb-6" />
+                        <div className="border-t border-stone-100 mb-6" />
                         <p className="text-stone-600 leading-relaxed">
                           {faq.answer}
                         </p>
@@ -134,7 +134,7 @@ export function PremiumFAQ() {
           transition={{ duration: 0.6, delay: 0.8 }}
           className="mt-16 text-center"
         >
-          <div className="inline-flex items-center gap-4 px-8 py-5 rounded-2xl bg-gradient-to-r from-[#B2D8C6]/20 via-white to-[#FFC1CC]/20 border border-white/50 shadow-lg">
+          <div className="inline-flex items-center gap-4 px-8 py-5 rounded-2xl bg-stone-50 border border-stone-100">
             <MessageCircle className="w-6 h-6 text-[#2D4A3E]" />
             <div className="text-left">
               <p className="text-sm text-stone-500">Не намери отговор?</p>

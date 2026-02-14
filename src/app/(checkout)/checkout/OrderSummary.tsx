@@ -5,11 +5,12 @@ import Image from "next/image";
 import { useCartStore } from "@/stores/cart-store";
 import { useCheckoutStore } from "@/stores/checkout-store";
 import { formatPrice } from "@/lib/utils";
-import { CheckCircle, Shield, Truck, Package } from "lucide-react";
+import { CheckCircle, Shield, Truck, Package, RefreshCw } from "lucide-react";
 
 export function OrderSummary() {
   const [mounted, setMounted] = useState(false);
-  const { items, getSubtotal, isFreeShipping } = useCartStore();
+  const { items, getSubtotal, isFreeShipping, hasSubscriptionItem } = useCartStore();
+  const isSubscription = hasSubscriptionItem();
   const { shipping, discount } = useCheckoutStore();
 
   useEffect(() => {
@@ -35,6 +36,21 @@ export function OrderSummary() {
       <h2 className="text-lg font-semibold text-[#2D4A3E] mb-6">
         Твоята Поръчка
       </h2>
+
+      {/* Subscription Badge */}
+      {isSubscription && (
+        <div className="mb-4 p-3 bg-[#2D4A3E]/5 border border-[#2D4A3E]/20 rounded-xl">
+          <div className="flex items-center gap-2 text-sm font-medium text-[#2D4A3E]">
+            <RefreshCw className="w-4 h-4" />
+            Месечен абонамент
+          </div>
+          {items[0]?.originalPrice && items[0]?.subscriptionPrice && (
+            <p className="text-xs text-[#2D4A3E]/70 mt-1 ml-6">
+              Спестяваш {formatPrice(items[0].originalPrice - items[0].subscriptionPrice)} всеки месец
+            </p>
+          )}
+        </div>
+      )}
 
       {/* Items */}
       <div className="space-y-4 mb-6">
@@ -113,8 +129,12 @@ export function OrderSummary() {
           </div>
         )}
         <div className="flex justify-between text-lg font-bold pt-2 border-t border-stone-100">
-          <span className="text-[#2D4A3E]">Общо</span>
-          <span className="text-[#2D4A3E]">{formatPrice(total)}</span>
+          <span className="text-[#2D4A3E]">
+            {isSubscription ? "Месечно плащане" : "Общо"}
+          </span>
+          <span className="text-[#2D4A3E]">
+            {formatPrice(total)}{isSubscription && " / месец"}
+          </span>
         </div>
       </div>
 

@@ -56,10 +56,10 @@ export function MobileStickyBar() {
           transition={{ type: "spring", stiffness: 300, damping: 30 }}
           className="fixed bottom-0 left-0 right-0 md:hidden z-40"
         >
-          {/* Gradient blur backdrop */}
-          <div className="absolute inset-0 bg-gradient-to-t from-white via-white to-white/80 backdrop-blur-xl" />
+          {/* Solid backdrop */}
+          <div className="absolute inset-0 bg-white border-t border-stone-100" />
 
-          <div className="relative px-4 py-3 border-t border-stone-100">
+          <div className="relative px-4 py-3">
             <AnimatePresence mode="wait">
               {hasItems ? (
                 // Cart has items - show checkout prompt
@@ -73,12 +73,9 @@ export function MobileStickyBar() {
                 >
                   <div className="flex items-center gap-3">
                     <div className="relative">
-                      <motion.div
-                        className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#B2D8C6] to-[#2D4A3E] flex items-center justify-center"
-                        whileHover={{ scale: 1.05 }}
-                      >
+                      <div className="w-12 h-12 rounded-2xl bg-[#2D4A3E] flex items-center justify-center">
                         <ShoppingBag className="w-5 h-5 text-white" />
-                      </motion.div>
+                      </div>
                       <motion.span
                         key={itemCount}
                         initial={{ scale: 0 }}
@@ -111,16 +108,10 @@ export function MobileStickyBar() {
 
                   <Link
                     href="/checkout"
-                    className="group flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-[#2D4A3E] to-[#3D5A4E] text-white rounded-xl text-sm font-semibold shadow-lg shadow-[#2D4A3E]/25 hover:shadow-xl hover:shadow-[#2D4A3E]/30 transition-all duration-300"
+                    className="flex items-center gap-2 px-5 py-3 bg-[#2D4A3E] text-white rounded-xl text-sm font-semibold hover:bg-[#1f352c] transition-colors"
                   >
                     Поръчай
-                    <motion.span
-                      className="inline-block"
-                      animate={{ x: [0, 3, 0] }}
-                      transition={{ duration: 1.5, repeat: Infinity }}
-                    >
-                      <ArrowRight className="w-4 h-4" />
-                    </motion.span>
+                    <ArrowRight className="w-4 h-4" />
                   </Link>
                 </motion.div>
               ) : (
@@ -134,7 +125,7 @@ export function MobileStickyBar() {
                   className="flex items-center justify-between gap-4"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#FFC1CC]/30 to-[#B2D8C6]/30 flex items-center justify-center">
+                    <div className="w-12 h-12 rounded-2xl bg-stone-100 flex items-center justify-center">
                       <Package className="w-5 h-5 text-[#2D4A3E]" />
                     </div>
                     <div>
@@ -148,7 +139,7 @@ export function MobileStickyBar() {
 
                   <Link
                     href="/produkt#bundles"
-                    className="group flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-[#B2D8C6] to-[#9AC8B6] text-[#2D4A3E] rounded-xl text-sm font-semibold shadow-lg shadow-[#B2D8C6]/25 hover:shadow-xl hover:shadow-[#B2D8C6]/30 transition-all duration-300"
+                    className="group flex items-center gap-2 px-5 py-3 bg-[#2D4A3E] text-white rounded-xl text-sm font-semibold hover:bg-[#1f352c] transition-colors"
                   >
                     Виж Пакетите
                     <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
@@ -166,11 +157,11 @@ export function MobileStickyBar() {
               >
                 <div className="flex items-center justify-between text-xs text-stone-500 mb-1">
                   <span>Остават {(80 - subtotal).toFixed(0)} € за безплатна доставка</span>
-                  <span className="text-[#B2D8C6] font-medium">80 €</span>
+                  <span className="text-[#2D4A3E] font-medium">80 €</span>
                 </div>
                 <div className="h-1.5 bg-stone-100 rounded-full overflow-hidden">
                   <motion.div
-                    className="h-full bg-gradient-to-r from-[#B2D8C6] to-[#FFC1CC] rounded-full"
+                    className="h-full bg-[#2D4A3E] rounded-full"
                     initial={{ width: 0 }}
                     animate={{ width: `${Math.min((subtotal / 80) * 100, 100)}%` }}
                     transition={{ duration: 0.5, ease: "easeOut" }}

@@ -20,7 +20,7 @@ export function QuizIntro({ onStart }: QuizIntroProps) {
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: 0.2 }}
-        className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/80 backdrop-blur-sm border border-[#B2D8C6]/30"
+        className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-[#B2D8C6]/30"
       >
         <Sparkles className="w-4 h-4 text-[#2D4A3E]" />
         <span className="text-sm font-medium text-[#2D4A3E]">
@@ -33,7 +33,7 @@ export function QuizIntro({ onStart }: QuizIntroProps) {
         <h1 className="text-3xl sm:text-4xl lg:text-5xl font-semibold text-[#2D4A3E] leading-tight">
           Какъв е Твоят
           <br />
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#B2D8C6] via-[#2D4A3E] to-[#FFC1CC]">
+          <span className="text-[#2D4A3E]">
             Stress-Beauty Score?
           </span>
         </h1>

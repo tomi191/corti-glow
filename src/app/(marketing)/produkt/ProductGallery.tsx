@@ -57,7 +57,7 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
         {/* Zoom button */}
         <button
           onClick={() => setIsZoomed(true)}
-          className="absolute top-4 right-4 p-2 bg-white/80 backdrop-blur-sm rounded-full opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity"
+          className="absolute top-4 right-4 p-2 bg-white border border-stone-100 shadow-sm rounded-full opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity"
           aria-label="Увеличи снимката"
         >
           <ZoomIn className="w-5 h-5 text-stone-600" />
@@ -68,14 +68,14 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
           <>
             <button
               onClick={handlePrev}
-              className="absolute left-3 top-1/2 -translate-y-1/2 p-2 bg-white/80 backdrop-blur-sm rounded-full shadow-lg opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity hover:bg-white"
+              className="absolute left-3 top-1/2 -translate-y-1/2 p-2 bg-white border border-stone-100 shadow-sm rounded-full opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity hover:bg-stone-50"
               aria-label="Предишна снимка"
             >
               <ChevronLeft className="w-5 h-5 text-stone-600" />
             </button>
             <button
               onClick={handleNext}
-              className="absolute right-3 top-1/2 -translate-y-1/2 p-2 bg-white/80 backdrop-blur-sm rounded-full shadow-lg opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity hover:bg-white"
+              className="absolute right-3 top-1/2 -translate-y-1/2 p-2 bg-white border border-stone-100 shadow-sm rounded-full opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity hover:bg-stone-50"
               aria-label="Следваща снимка"
             >
               <ChevronRight className="w-5 h-5 text-stone-600" />
@@ -84,7 +84,7 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
         )}
 
         {/* Image counter */}
-        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 px-3 py-1 bg-white/80 backdrop-blur-sm rounded-full text-xs font-medium text-stone-600">
+        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 px-3 py-1 bg-white border border-stone-100 shadow-sm rounded-full text-xs font-medium text-stone-600">
           {currentIndex + 1} / {images.length}
         </div>
       </div>
@@ -141,7 +141,7 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
             </motion.div>
             <button
               onClick={() => setIsZoomed(false)}
-              className="absolute top-4 right-4 p-2 bg-white/20 backdrop-blur-sm rounded-full text-white hover:bg-white/30 transition"
+              className="absolute top-4 right-4 p-2 bg-white/20 rounded-full text-white hover:bg-white/30 transition"
             >
               <span className="sr-only">Затвори</span>
               ✕

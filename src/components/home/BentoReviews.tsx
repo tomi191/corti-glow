@@ -86,11 +86,10 @@ function ReviewCard({ review, index }: { review: typeof reviews[0]; index: numbe
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 30, filter: "blur(10px)" }}
-      whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.3 }}
-      transition={{ duration: 0.6, delay: index * 0.1 }}
-      whileHover={{ y: -8, transition: { duration: 0.3 } }}
+      transition={{ duration: 0.5, delay: index * 0.05 }}
       className={`
         group relative rounded-3xl overflow-hidden
         ${isLarge ? "md:col-span-2 md:row-span-1" : ""}
@@ -102,8 +101,8 @@ function ReviewCard({ review, index }: { review: typeof reviews[0]; index: numbe
           ? "bg-[#2D4A3E]"
           : "bg-white border border-stone-100"
         }
-        shadow-[0_4px_20px_rgba(0,0,0,0.06)] hover:shadow-[0_20px_60px_rgba(45,74,62,0.15)]
-        transition-all duration-500
+        shadow-sm hover:shadow-md
+        transition-shadow duration-300
       `}
     >
       {/* Background Image */}
@@ -218,17 +217,7 @@ export function BentoReviews() {
 
   return (
     <section ref={ref} className="py-16 md:py-32 relative overflow-hidden bg-[#F5F2EF]">
-      {/* Background pattern */}
-      <div className="absolute inset-0 opacity-50">
-        <svg className="absolute inset-0 w-full h-full" style={{ opacity: 0.03 }}>
-          <defs>
-            <pattern id="dots" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
-              <circle cx="2" cy="2" r="1" fill="#2D4A3E" />
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#dots)" />
-        </svg>
-      </div>
+      {/* Background */}
 
       <div className="max-w-7xl mx-auto px-6 relative">
         {/* Header */}
@@ -245,7 +234,7 @@ export function BentoReviews() {
               <h2 className="text-2xl sm:text-4xl lg:text-6xl font-semibold text-[#2D4A3E] tracking-tight mb-6">
                 Истории на
                 <br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#B2D8C6] via-[#2D4A3E] to-[#FFC1CC]">
+                <span className="text-[#B2D8C6]">
                   Трансформация
                 </span>
               </h2>

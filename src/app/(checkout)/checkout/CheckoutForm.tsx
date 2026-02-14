@@ -38,11 +38,17 @@ export function CheckoutForm() {
     reset: resetCheckout,
   } = useCheckoutStore();
 
-  const { items, getSubtotal, isFreeShipping, clearCart } = useCartStore();
+  const { items, getSubtotal, isFreeShipping, clearCart, hasSubscriptionItem } = useCartStore();
+  const { isSubscription, setIsSubscription } = useCheckoutStore();
   const subtotal = getSubtotal();
   const shippingPrice = isFreeShipping() ? 0 : shipping.price;
   const discountAmount = discount?.amount ?? 0;
   const total = subtotal + shippingPrice - discountAmount;
+
+  // Sync subscription flag from cart to checkout store
+  useEffect(() => {
+    setIsSubscription(hasSubscriptionItem());
+  }, [items, hasSubscriptionItem, setIsSubscription]);
 
   // Track begin_checkout on mount
   useEffect(() => {
@@ -108,48 +114,80 @@ export function CheckoutForm() {
         title: item.title,
       }));
 
-      const response = await fetch("/api/payment", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          customerFirstName: customer.firstName,
-          customerLastName: customer.lastName,
-          customerEmail: customer.email,
-          customerPhone: customer.phone.replace(/\s/g, ""),
-          shippingMethod: shipping.method,
-          shippingAddress,
-          shippingPrice,
-          items: orderItems,
-          subtotal,
-          total,
-          currency: "EUR",
-          paymentMethod: payment.method,
-          ...(discount && { discountCode: discount.code }),
-        }),
-      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      let data: any;
 
-      const data = await response.json();
+      if (isSubscription) {
+        // Subscription flow — call subscription API
+        const response = await fetch("/api/subscriptions", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            customerFirstName: customer.firstName,
+            customerLastName: customer.lastName,
+            customerEmail: customer.email,
+            customerPhone: customer.phone.replace(/\s/g, ""),
+            variantId: items[0].variantId,
+            shippingMethod: shipping.method,
+            shippingAddress,
+          }),
+        });
 
-      if (!response.ok) {
-        throw new Error(data.error || "Failed to create order");
-      }
+        data = await response.json();
 
-      setOrder(data.orderId, data.orderNumber);
+        if (!response.ok) {
+          throw new Error(data.error || "Failed to create subscription");
+        }
 
-      // For COD orders, show success animation then redirect
-      if (payment.method === "cod") {
-        setCodSuccess(true);
-        setTimeout(() => {
-          clearCart();
-          resetCheckout();
-          router.push(`/uspeh?orderNumber=${data.orderNumber}`);
-        }, 1500);
-        return;
-      }
+        // Subscription always uses card — show Stripe form
+        if (data.clientSecret) {
+          setClientSecret(data.clientSecret);
+        }
+      } else {
+        // One-time order flow — call payment API
+        const response = await fetch("/api/payment", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            customerFirstName: customer.firstName,
+            customerLastName: customer.lastName,
+            customerEmail: customer.email,
+            customerPhone: customer.phone.replace(/\s/g, ""),
+            shippingMethod: shipping.method,
+            shippingAddress,
+            shippingPrice,
+            items: orderItems,
+            subtotal,
+            total,
+            currency: "EUR",
+            paymentMethod: payment.method,
+            ...(discount && { discountCode: discount.code }),
+          }),
+        });
 
-      // For card payments, show Stripe form
-      if (data.clientSecret) {
-        setClientSecret(data.clientSecret);
+        data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || "Failed to create order");
+        }
+
+        setOrder(data.orderId, data.orderNumber);
+
+        // For COD orders, show success animation then redirect
+        if (payment.method === "cod") {
+          setCodSuccess(true);
+          setTimeout(() => {
+            clearCart();
+            resetCheckout();
+            router.push(`/uspeh?orderNumber=${data.orderNumber}`);
+          }, 1500);
+          return;
+        }
+
+        // For card payments, show Stripe form
+        if (data.clientSecret) {
+          setClientSecret(data.clientSecret);
+        }
       }
     } catch (err) {
       console.error("Order creation failed:", err);
@@ -354,7 +392,7 @@ export function CheckoutForm() {
           type="button"
           onClick={handleCreateOrder}
           disabled={isSubmitting || !canSubmitOrder()}
-          className="w-full py-4 bg-[#2D4A3E] text-white rounded-xl font-semibold text-lg shadow-xl shadow-[#2D4A3E]/20 hover:bg-[#1f352c] transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          className="w-full py-4 bg-[#2D4A3E] text-white rounded-xl font-semibold text-lg shadow-md hover:bg-[#1f352c] transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
         >
           {isSubmitting ? (
             <>

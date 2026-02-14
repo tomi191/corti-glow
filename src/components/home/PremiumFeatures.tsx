@@ -43,7 +43,7 @@ export function PremiumFeatures() {
   return (
     <section ref={ref} className="py-16 md:py-32 relative overflow-hidden">
       {/* Background */}
-      <div className="absolute inset-0 bg-gradient-to-b from-white via-[#2D4A3E]/5 to-white" />
+      <div className="absolute inset-0 bg-[#F5F2EF]" />
 
       <div className="max-w-7xl mx-auto px-6 relative">
         {/* Header */}
@@ -62,7 +62,7 @@ export function PremiumFeatures() {
             <h2 className="text-2xl sm:text-4xl lg:text-6xl font-semibold text-[#2D4A3E] tracking-tight mb-6">
               Един Моктейл.
               <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#B2D8C6] to-[#FFC1CC]">
+              <span className="text-[#B2D8C6]">
                 Три Резултата.
               </span>
             </h2>
@@ -82,7 +82,7 @@ export function PremiumFeatures() {
         {/* Feature Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {features.map((feature, index) => (
-            <GlassCard key={feature.title} delay={0.2 + index * 0.15} className="p-8">
+            <GlassCard key={feature.title} className="p-8">
               {/* Icon */}
               <div
                 className="w-16 h-16 rounded-2xl flex items-center justify-center mb-6"

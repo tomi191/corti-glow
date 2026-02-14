@@ -12,45 +12,7 @@ export function GlowGuideCTA() {
   return (
     <section ref={ref} className="py-16 md:py-24">
       <div className="max-w-5xl mx-auto px-6">
-        <div className="relative rounded-3xl overflow-hidden bg-gradient-to-br from-[#2D4A3E] via-[#2D4A3E] to-[#3a5f4f] p-8 sm:p-12 lg:p-16">
-          {/* Decorative glow */}
-          <div className="absolute top-0 right-0 w-80 h-80 bg-[#B2D8C6]/20 rounded-full blur-[100px]" />
-          <div className="absolute bottom-0 left-0 w-60 h-60 bg-[#FFC1CC]/15 rounded-full blur-[80px]" />
-
-          {/* Decorative gauge SVG */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={isInView ? { opacity: 0.15, scale: 1 } : {}}
-            transition={{ duration: 0.8, delay: 0.3 }}
-            className="absolute right-8 top-1/2 -translate-y-1/2 hidden lg:block"
-          >
-            <svg width="200" height="200" viewBox="0 0 200 200">
-              <circle
-                cx="100"
-                cy="100"
-                r="85"
-                fill="none"
-                stroke="white"
-                strokeWidth="8"
-                strokeDasharray="534"
-                strokeDashoffset="160"
-                strokeLinecap="round"
-                className="-rotate-90 origin-center"
-              />
-              <text
-                x="100"
-                y="100"
-                textAnchor="middle"
-                dominantBaseline="central"
-                fill="white"
-                fontSize="36"
-                fontWeight="bold"
-              >
-                ?
-              </text>
-            </svg>
-          </motion.div>
-
+        <div className="relative rounded-3xl overflow-hidden bg-[#2D4A3E] p-8 sm:p-12 lg:p-16">
           <div className="relative z-10 max-w-xl">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -70,7 +32,7 @@ export function GlowGuideCTA() {
             >
               Какъв е Твоят
               <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#B2D8C6] to-[#FFC1CC]">
+              <span className="text-[#B2D8C6]">
                 Stress-Beauty Score?
               </span>
             </motion.h2>
@@ -92,7 +54,7 @@ export function GlowGuideCTA() {
             >
               <Link
                 href="/glow-guide"
-                className="inline-flex items-center gap-2 px-8 py-4 bg-white text-[#2D4A3E] rounded-full text-base font-medium shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all"
+                className="inline-flex items-center gap-2 px-8 py-4 bg-white text-[#2D4A3E] rounded-full text-base font-medium hover:bg-stone-50 transition-colors"
               >
                 Започни Безплатния Тест
                 <ArrowRight className="w-5 h-5" />

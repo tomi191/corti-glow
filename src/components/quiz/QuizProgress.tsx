@@ -22,7 +22,7 @@ export function QuizProgress({ current, total }: QuizProgressProps) {
       </div>
       <div className="h-2 bg-stone-100 rounded-full overflow-hidden">
         <motion.div
-          className="h-full bg-gradient-to-r from-[#2D4A3E] to-[#B2D8C6] rounded-full"
+          className="h-full bg-[#2D4A3E] rounded-full"
           initial={{ width: 0 }}
           animate={{ width: `${progress}%` }}
           transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}

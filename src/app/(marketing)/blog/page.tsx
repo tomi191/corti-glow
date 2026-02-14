@@ -44,7 +44,7 @@ export default function BlogPage() {
           </span>
           <h1 className="text-3xl md:text-5xl font-semibold text-[#2D4A3E] mb-6">
             Знание за{" "}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#2D4A3E] via-[#B2D8C6] to-[#FFC1CC]">
+            <span className="text-[#B2D8C6]">
               твоето здраве
             </span>
           </h1>
