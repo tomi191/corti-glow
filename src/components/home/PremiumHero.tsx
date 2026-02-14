@@ -2,12 +2,10 @@
 
 import { useRef } from "react";
 import Image from "next/image";
-import Link from "next/link";
 import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
 import { Sparkles, CheckCircle, ArrowRight, Star } from "lucide-react";
 import { AnimatedBackground } from "@/components/ui/AnimatedBackground";
 import { MagneticButton } from "@/components/ui/MagneticButton";
-import { AnimatedHeading } from "@/components/ui/AnimatedText";
 
 export function PremiumHero() {
   const prefersReducedMotion = useReducedMotion();
@@ -52,7 +50,7 @@ export function PremiumHero() {
             </motion.div>
 
             {/* Headline */}
-            <AnimatedHeading delay={0.3}>
+            <div>
               <h1 className="text-3xl sm:text-5xl lg:text-7xl xl:text-8xl font-semibold leading-[0.95] tracking-tight">
                 <span className="text-[#2D4A3E]">Пребори</span>
                 <br />
@@ -62,7 +60,7 @@ export function PremiumHero() {
                   Glow up.
                 </span>
               </h1>
-            </AnimatedHeading>
+            </div>
 
             {/* Description */}
             <motion.p
@@ -175,8 +173,8 @@ export function PremiumHero() {
 
             {/* Main product */}
             <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
+              initial={{ scale: 0.95 }}
+              animate={{ scale: 1 }}
               transition={{ duration: 0.8, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
               className="relative z-10"
             >

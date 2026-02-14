@@ -18,7 +18,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/blog",
     "/dostavka-i-vrashtane",
     "/prosledi-porachka",
-    "/akount",
   ];
 
   const staticRoutes = staticPages.map((route) => ({

@@ -190,7 +190,7 @@ export const blogPosts: BlogPost[] = [
     featured: true,
   },
   {
-    slug: "5-nachina-da-podobrish-sŭnya-si",
+    slug: "5-nachina-da-podobrish-sunya-si",
     title: "5 начина да подобриш съня си тази седмица",
     excerpt:
       "Качественият сън е основата на доброто здраве. Ето прости промени, които можеш да направиш още днес.",
@@ -371,7 +371,7 @@ export const blogPosts: BlogPost[] = [
     readTime: 5,
   },
   {
-    slug: "kak-stresat-vliyae-na-hormoniте",
+    slug: "kak-stresat-vliyae-na-hormonite",
     title: "Как стресът влияе на хормоните при жените",
     excerpt:
       "Стресът не е само в главата ти – той буквално променя хормоналния ти баланс. Ето какво се случва в тялото.",

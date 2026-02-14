@@ -57,6 +57,10 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: "https://luralab.eu",
+    languages: {
+      bg: "https://luralab.eu",
+      "x-default": "https://luralab.eu",
+    },
   },
   icons: {
     icon: "data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22><circle cx=%2216%22 cy=%2216%22 r=%2214%22 fill=%22%232D4A3E%22/><path d=%22M16 8c-3 2-5 6-5 10 0 2 1 4 3 5 1-2 2-5 2-8 0 3 1 6 2 8 2-1 3-3 3-5 0-4-2-8-5-10z%22 fill=%22%23B2D8C6%22/></svg>",

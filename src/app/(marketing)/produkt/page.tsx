@@ -66,11 +66,6 @@ export default async function ProductPage() {
       priceCurrency: "EUR",
       availability: "https://schema.org/InStock",
     })),
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: "4.9",
-      reviewCount: "487",
-    },
   };
 
   return (
