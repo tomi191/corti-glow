@@ -1,0 +1,37 @@
+# LURA — llms.txt
+
+> LURA is a Bulgarian wellness brand offering Corti-Glow, a science-backed evening mocktail supplement for stress relief, hormonal balance, and beauty from within.
+
+## About LURA
+- Brand: LURA (Лура Лаб ЕООД)
+- Website: https://luralab.eu
+- Language: Bulgarian (bg)
+- Category: Health supplements, wellness, adaptogens
+- Founded: 2026, Sofia, Bulgaria
+
+## Product: Corti-Glow
+- Type: Powdered mocktail supplement (sachets)
+- Flavor: Wild Strawberry & Lime (Горска Ягода и Лайм)
+- Servings: 30 sachets per box
+- Key ingredients: KSM-66 Ashwagandha (600mg), Magnesium Bisglycinate (300mg), Myo-Inositol (2000mg), Bromelain (500mg), L-Theanine (200mg)
+- Benefits: Lowers cortisol up to 27%, improves sleep, reduces bloating, supports hormonal balance
+- Target audience: Women concerned about stress, sleep quality, skin health, and hormonal wellness
+- Price range: 49.99-119.99 EUR
+
+## Key Pages
+- Homepage: https://luralab.eu
+- Product: https://luralab.eu/produkt
+- Science: https://luralab.eu/nauka
+- Blog: https://luralab.eu/blog
+- About: https://luralab.eu/za-nas
+- Help: https://luralab.eu/pomosht
+- Shipping & Returns: https://luralab.eu/dostavka-i-vrashtane
+
+## Scientific References
+- KSM-66 Ashwagandha cortisol reduction: https://pubmed.ncbi.nlm.nih.gov/23439798/
+- Magnesium and sleep quality: https://pubmed.ncbi.nlm.nih.gov/23853635/
+- Myo-Inositol hormonal support: https://pubmed.ncbi.nlm.nih.gov/28724175/
+
+## Contact
+- Email: hello@luralab.eu
+- Address: бул. "Витоша" 10, гр. София, България

@@ -15,6 +15,12 @@ export default function robots(): MetadataRoute.Robots {
           "/_next/",
         ],
       },
+      // Allow AI crawlers for brand visibility in AI search results
+      {
+        userAgent: ["GPTBot", "ChatGPT-User", "ClaudeBot", "anthropic-ai", "PerplexityBot", "Applebot-Extended"],
+        allow: "/",
+        disallow: ["/admin/", "/api/", "/checkout/"],
+      },
     ],
     sitemap: `${BASE_URL}/sitemap.xml`,
   };

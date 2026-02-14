@@ -60,11 +60,33 @@ export default async function ProductPage() {
     description: product.tagline,
     image: `https://luralab.eu${product.image}`,
     brand: { "@type": "Brand", name: "LURA" },
+    sku: "CG-30",
+    category: "Health Supplements",
     offers: variants.map((v) => ({
       "@type": "Offer",
       price: v.price,
       priceCurrency: "EUR",
       availability: "https://schema.org/InStock",
+      url: "https://luralab.eu/produkt",
+      hasMerchantReturnPolicy: {
+        "@type": "MerchantReturnPolicy",
+        applicableCountry: "BG",
+        returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnWindow",
+        merchantReturnDays: 14,
+        returnMethod: "https://schema.org/ReturnByMail",
+      },
+      shippingDetails: {
+        "@type": "OfferShippingDetails",
+        shippingDestination: {
+          "@type": "DefinedRegion",
+          addressCountry: "BG",
+        },
+        deliveryTime: {
+          "@type": "ShippingDeliveryTime",
+          handlingTime: { "@type": "QuantitativeValue", minValue: 0, maxValue: 1, unitCode: "d" },
+          transitTime: { "@type": "QuantitativeValue", minValue: 1, maxValue: 2, unitCode: "d" },
+        },
+      },
     })),
   };
 

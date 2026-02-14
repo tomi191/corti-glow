@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { COMPANY } from "@/lib/constants";
+import { BreadcrumbJsonLd } from "@/components/ui/BreadcrumbJsonLd";
 
 export const metadata: Metadata = {
   title: "Политика за Поверителност",
@@ -9,6 +10,12 @@ export const metadata: Metadata = {
 export default function PrivacyPage() {
   return (
     <section className="py-16 bg-white">
+      <BreadcrumbJsonLd
+        items={[
+          { name: "Начало", url: "https://luralab.eu" },
+          { name: "Поверителност", url: "https://luralab.eu/poveritelnost" },
+        ]}
+      />
       <div className="max-w-3xl mx-auto px-6 prose prose-stone">
         <h1 className="text-3xl font-semibold text-[#2D4A3E] mb-8">
           Политика за Поверителност

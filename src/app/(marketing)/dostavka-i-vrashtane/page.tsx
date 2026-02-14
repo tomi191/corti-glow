@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { BreadcrumbJsonLd } from "@/components/ui/BreadcrumbJsonLd";
 import {
   Truck,
   Package,
@@ -64,6 +65,12 @@ const faqSchema = {
 export default function ShippingPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#F5F2EF] to-white">
+      <BreadcrumbJsonLd
+        items={[
+          { name: "Начало", url: "https://luralab.eu" },
+          { name: "Доставка и Връщане", url: "https://luralab.eu/dostavka-i-vrashtane" },
+        ]}
+      />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
