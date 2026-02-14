@@ -223,7 +223,7 @@ function CortisolGraph() {
 // Sticky Table of Contents
 function StickyToC({ activeSection }: { activeSection: string }) {
   return (
-    <nav className="hidden lg:block sticky top-32 w-64 shrink-0">
+    <nav className="hidden lg:block sticky top-32 w-64 shrink-0 self-start">
       <p className="text-xs font-semibold text-stone-400 uppercase tracking-wider mb-4">
         Съдържание
       </p>
