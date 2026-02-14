@@ -6,6 +6,19 @@ import { HelpCircle, Plus, Minus, MessageCircle } from "lucide-react";
 import { AnimatedHeading } from "@/components/ui/AnimatedText";
 import { homepageFaqs } from "@/data/homepage-faqs";
 
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: homepageFaqs.map((faq) => ({
+    "@type": "Question",
+    name: faq.question,
+    acceptedAnswer: {
+      "@type": "Answer",
+      text: faq.answer,
+    },
+  })),
+};
+
 export function PremiumFAQ() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
@@ -13,6 +26,10 @@ export function PremiumFAQ() {
 
   return (
     <section ref={ref} className="py-16 md:py-32 relative overflow-hidden">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
       {/* Background */}
       <div className="absolute inset-0 bg-gradient-to-b from-white via-[#2D4A3E]/5 to-white" />
 

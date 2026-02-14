@@ -75,6 +75,12 @@ const organizationJsonLd = {
   url: "https://luralab.eu",
   logo: "https://luralab.eu/images/og-image.png",
   email: "hello@luralab.eu",
+  contactPoint: {
+    "@type": "ContactPoint",
+    email: "hello@luralab.eu",
+    contactType: "customer service",
+    availableLanguage: "Bulgarian",
+  },
   address: {
     "@type": "PostalAddress",
     streetAddress: 'бул. "Витоша" 10',
@@ -85,6 +91,19 @@ const organizationJsonLd = {
     "https://instagram.com/luralab",
     "https://facebook.com/luralab",
   ],
+};
+
+const websiteJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: "LURA",
+  url: "https://luralab.eu",
+  inLanguage: "bg",
+  publisher: {
+    "@type": "Organization",
+    name: "LURA",
+    url: "https://luralab.eu",
+  },
 };
 
 export default function RootLayout({
@@ -98,6 +117,10 @@ export default function RootLayout({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
         />
       </head>
       <body className={`${plusJakarta.variable} antialiased font-sans bg-white overflow-x-hidden`}>

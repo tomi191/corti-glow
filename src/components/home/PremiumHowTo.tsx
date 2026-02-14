@@ -62,7 +62,6 @@ export function PremiumHowTo() {
           alt="Corti-Glow pouring into glass"
           fill
           className="object-cover object-center"
-          priority
         />
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#F5F2EF]/50 to-[#F5F2EF]" />
       </motion.div>

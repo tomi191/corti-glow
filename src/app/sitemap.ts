@@ -4,27 +4,25 @@ import { blogPosts } from "@/data/blog";
 const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || "https://luralab.eu";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const lastModified = new Date();
-
-  // Static pages
-  const staticPages = [
-    "",
-    "/produkt",
-    "/nauka",
-    "/za-nas",
-    "/pomosht",
-    "/poveritelnost",
-    "/obshti-usloviya",
-    "/blog",
-    "/dostavka-i-vrashtane",
-    "/prosledi-porachka",
+  // Use realistic last-modified dates per page type
+  const staticPages: { route: string; lastmod: string; freq: "weekly" | "monthly"; priority: number }[] = [
+    { route: "", lastmod: "2026-02-14", freq: "weekly", priority: 1 },
+    { route: "/produkt", lastmod: "2026-02-14", freq: "weekly", priority: 0.9 },
+    { route: "/blog", lastmod: "2026-01-25", freq: "weekly", priority: 0.8 },
+    { route: "/nauka", lastmod: "2026-01-15", freq: "monthly", priority: 0.8 },
+    { route: "/za-nas", lastmod: "2026-01-10", freq: "monthly", priority: 0.7 },
+    { route: "/pomosht", lastmod: "2026-01-10", freq: "monthly", priority: 0.7 },
+    { route: "/dostavka-i-vrashtane", lastmod: "2026-01-10", freq: "monthly", priority: 0.7 },
+    { route: "/poveritelnost", lastmod: "2025-12-01", freq: "monthly", priority: 0.3 },
+    { route: "/obshti-usloviya", lastmod: "2025-12-01", freq: "monthly", priority: 0.3 },
+    { route: "/prosledi-porachka", lastmod: "2026-01-10", freq: "monthly", priority: 0.5 },
   ];
 
-  const staticRoutes = staticPages.map((route) => ({
-    url: `${BASE_URL}${route}`,
-    lastModified,
-    changeFrequency: (route === "" ? "weekly" : "monthly") as "weekly" | "monthly",
-    priority: route === "" ? 1 : route === "/produkt" ? 0.9 : route === "/blog" ? 0.8 : 0.7,
+  const staticRoutes = staticPages.map((page) => ({
+    url: `${BASE_URL}${page.route}`,
+    lastModified: new Date(page.lastmod),
+    changeFrequency: page.freq,
+    priority: page.priority,
   }));
 
   // Blog posts
