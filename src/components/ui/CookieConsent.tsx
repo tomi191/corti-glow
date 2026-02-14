@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Cookie, X } from "lucide-react";
 
 interface CookiePreferences {
   necessary: boolean;
@@ -68,116 +67,104 @@ export function CookieConsent() {
         initial={{ y: 100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         exit={{ y: 100, opacity: 0 }}
-        className="fixed bottom-0 left-0 right-0 z-50 p-4 md:p-6"
+        className="fixed bottom-0 left-0 right-0 z-50"
       >
-        <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-2xl border border-stone-200 overflow-hidden">
-          <div className="p-6">
-            <div className="flex items-start gap-4">
-              <div className="p-3 rounded-full bg-[#B2D8C6]/20">
-                <Cookie className="w-6 h-6 text-[#2D4A3E]" />
-              </div>
-
-              <div className="flex-1">
-                <h3 className="text-lg font-semibold text-[#2D4A3E] mb-2">
-                  Използваме бисквитки 🍪
-                </h3>
-                <p className="text-stone-600 text-sm mb-4">
-                  Използваме бисквитки, за да подобрим вашето изживяване на сайта.
-                  Някои са необходими за работата на сайта, докато други ни помагат
-                  да разберем как го използвате.
-                </p>
-
-                <AnimatePresence>
-                  {showDetails && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      className="mb-4 space-y-3"
-                    >
-                      <label className="flex items-center gap-3 p-3 rounded-lg bg-stone-50">
-                        <input
-                          type="checkbox"
-                          checked={true}
-                          disabled
-                          className="w-4 h-4 rounded accent-[#2D4A3E]"
-                        />
-                        <div>
-                          <span className="font-medium text-[#2D4A3E]">Необходими</span>
-                          <p className="text-xs text-stone-500">Основни за работата на сайта</p>
-                        </div>
-                      </label>
-
-                      <label className="flex items-center gap-3 p-3 rounded-lg bg-stone-50 cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={preferences.analytics}
-                          onChange={(e) => setPreferences(p => ({ ...p, analytics: e.target.checked }))}
-                          className="w-4 h-4 rounded accent-[#2D4A3E]"
-                        />
-                        <div>
-                          <span className="font-medium text-[#2D4A3E]">Аналитични</span>
-                          <p className="text-xs text-stone-500">Помагат ни да разберем как използвате сайта</p>
-                        </div>
-                      </label>
-
-                      <label className="flex items-center gap-3 p-3 rounded-lg bg-stone-50 cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={preferences.marketing}
-                          onChange={(e) => setPreferences(p => ({ ...p, marketing: e.target.checked }))}
-                          className="w-4 h-4 rounded accent-[#2D4A3E]"
-                        />
-                        <div>
-                          <span className="font-medium text-[#2D4A3E]">Маркетингови</span>
-                          <p className="text-xs text-stone-500">За персонализирани реклами</p>
-                        </div>
-                      </label>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-
-                <div className="flex flex-wrap gap-3">
+        <div className="bg-white border-t border-stone-200 shadow-[0_-4px_20px_rgba(0,0,0,0.08)]">
+          <div className="max-w-6xl mx-auto px-4 py-3">
+            {/* Compact bar */}
+            {!showDetails ? (
+              <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+                <p className="text-sm text-stone-600 flex-1">
+                  Използваме бисквитки за подобряване на изживяването.{" "}
                   <button
-                    onClick={acceptAll}
-                    className="px-6 py-2.5 bg-[#2D4A3E] text-white rounded-full font-medium hover:bg-[#1f352c] transition"
+                    onClick={() => setShowDetails(true)}
+                    className="underline text-[#2D4A3E] font-medium"
                   >
-                    Приемам всички
+                    Настройки
                   </button>
-
-                  {showDetails ? (
-                    <button
-                      onClick={acceptSelected}
-                      className="px-6 py-2.5 border border-[#2D4A3E] text-[#2D4A3E] rounded-full font-medium hover:bg-stone-50 transition"
-                    >
-                      Запази избора
-                    </button>
-                  ) : (
-                    <button
-                      onClick={() => setShowDetails(true)}
-                      className="px-6 py-2.5 border border-stone-300 text-stone-600 rounded-full font-medium hover:bg-stone-50 transition"
-                    >
-                      Настройки
-                    </button>
-                  )}
-
+                </p>
+                <div className="flex items-center gap-2 flex-shrink-0">
                   <button
                     onClick={rejectAll}
-                    className="px-6 py-2.5 text-stone-500 hover:text-stone-700 transition"
+                    className="px-4 py-2 text-sm text-stone-500 hover:text-stone-700 transition"
                   >
-                    Само необходими
+                    Отказвам
+                  </button>
+                  <button
+                    onClick={acceptAll}
+                    className="px-5 py-2 bg-[#2D4A3E] text-white text-sm rounded-full font-medium hover:bg-[#1f352c] transition"
+                  >
+                    Приемам
                   </button>
                 </div>
               </div>
+            ) : (
+              /* Expanded settings */
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <p className="text-sm font-medium text-[#2D4A3E]">
+                    Настройки за бисквитки
+                  </p>
+                  <button
+                    onClick={() => setShowDetails(false)}
+                    className="text-xs text-stone-400 hover:text-stone-600"
+                  >
+                    Скрий
+                  </button>
+                </div>
 
-              <button
-                onClick={rejectAll}
-                className="p-2 text-stone-400 hover:text-stone-600 transition"
-                aria-label="Затвори"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
+                <div className="flex flex-wrap gap-4 text-sm">
+                  <label className="flex items-center gap-2 text-stone-500">
+                    <input
+                      type="checkbox"
+                      checked={true}
+                      disabled
+                      className="w-4 h-4 rounded accent-[#2D4A3E]"
+                    />
+                    Необходими
+                  </label>
+                  <label className="flex items-center gap-2 cursor-pointer text-stone-600">
+                    <input
+                      type="checkbox"
+                      checked={preferences.analytics}
+                      onChange={(e) => setPreferences(p => ({ ...p, analytics: e.target.checked }))}
+                      className="w-4 h-4 rounded accent-[#2D4A3E]"
+                    />
+                    Аналитични
+                  </label>
+                  <label className="flex items-center gap-2 cursor-pointer text-stone-600">
+                    <input
+                      type="checkbox"
+                      checked={preferences.marketing}
+                      onChange={(e) => setPreferences(p => ({ ...p, marketing: e.target.checked }))}
+                      className="w-4 h-4 rounded accent-[#2D4A3E]"
+                    />
+                    Маркетингови
+                  </label>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={rejectAll}
+                    className="px-4 py-2 text-sm text-stone-500 hover:text-stone-700 transition"
+                  >
+                    Само необходими
+                  </button>
+                  <button
+                    onClick={acceptSelected}
+                    className="px-5 py-2 border border-[#2D4A3E] text-[#2D4A3E] text-sm rounded-full font-medium hover:bg-stone-50 transition"
+                  >
+                    Запази избора
+                  </button>
+                  <button
+                    onClick={acceptAll}
+                    className="px-5 py-2 bg-[#2D4A3E] text-white text-sm rounded-full font-medium hover:bg-[#1f352c] transition"
+                  >
+                    Приемам всички
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </motion.div>

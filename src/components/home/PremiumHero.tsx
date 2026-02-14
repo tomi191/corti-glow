@@ -29,7 +29,7 @@ export function PremiumHero() {
       <div className="max-w-7xl mx-auto px-6 w-full">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
           {/* Content */}
-          <motion.div style={{ opacity }} className="space-y-8">
+          <motion.div style={{ opacity }} className="space-y-4 md:space-y-8">
             {/* Badge */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -97,7 +97,7 @@ export function PremiumHero() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.7 }}
-              className="flex flex-col sm:flex-row gap-4 pt-4"
+              className="flex flex-col sm:flex-row gap-4 pt-2 md:pt-4"
             >
               <MagneticButton variant="primary" size="lg" href="/produkt">
                 Открий Продукта
@@ -114,7 +114,7 @@ export function PremiumHero() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.6, delay: 0.9 }}
-              className="flex items-center gap-4 pt-4"
+              className="flex items-center gap-4 pt-2 md:pt-4"
             >
               <div className="flex -space-x-3">
                 {[1, 2, 3, 4].map((i) => (
