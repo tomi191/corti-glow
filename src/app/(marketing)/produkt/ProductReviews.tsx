@@ -230,7 +230,7 @@ export function ProductReviews() {
                 {/* Author */}
                 <div className="flex items-center justify-between pt-4 border-t border-stone-100">
                   <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-full bg-[#B2D8C6]/30 flex items-center justify-center text-xs font-bold text-[#2D4A3E]">
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#FFC1CC] to-[#B2D8C6] flex items-center justify-center text-xs font-bold text-[#2D4A3E]">
                       {review.author.charAt(0)}
                     </div>
                     <div>

@@ -61,7 +61,7 @@ export function SocialProofBanner() {
               key={stat.label}
               initial={{ opacity: 0, y: 15 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.4, delay: i * 0.05 }}
+              transition={{ duration: 0.4, delay: i * 0.1 }}
               className="text-center"
             >
               <div className="text-2xl sm:text-3xl font-bold text-white">

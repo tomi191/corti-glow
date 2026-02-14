@@ -31,7 +31,7 @@ export function TrustBar() {
 
 export function GuaranteeBadge() {
   return (
-    <div className="bg-[#B2D8C6]/10 rounded-2xl p-6 border border-[#B2D8C6]/30">
+    <div className="bg-gradient-to-br from-[#B2D8C6]/20 to-[#FFC1CC]/10 rounded-2xl p-6 border border-[#B2D8C6]/30">
       <div className="flex items-start gap-4">
         <div className="w-14 h-14 rounded-full bg-[#B2D8C6] flex items-center justify-center flex-shrink-0">
           <RotateCcw className="w-7 h-7 text-[#2D4A3E]" />

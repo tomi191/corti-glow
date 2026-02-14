@@ -49,7 +49,7 @@ export function CartDrawer() {
 
   const subtotal = getSubtotal();
   const hasSub = hasSubscriptionItem();
-  const freeShipping = hasSub || isFreeShipping();
+  const freeShipping = hasSub || isFreeShipping(); // Subscriptions always get free shipping
   const remaining = getRemainingForFreeShipping();
   const progress = Math.min(100, (subtotal / 80) * 100);
 
@@ -63,7 +63,7 @@ export function CartDrawer() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="fixed inset-0 bg-black/50 z-50"
+            className="fixed inset-0 bg-black/50 backdrop-blur-md z-50"
             onClick={closeCart}
           />
 
@@ -79,11 +79,16 @@ export function CartDrawer() {
             aria-label="Количка"
           >
             {/* Header */}
-            <div className="px-6 py-5 border-b border-stone-100 flex items-center justify-between bg-white">
+            <div className="px-6 py-5 border-b border-stone-100 flex items-center justify-between bg-gradient-to-r from-white to-stone-50">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-[#2D4A3E]/10 flex items-center justify-center">
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ delay: 0.2, type: "spring" }}
+                  className="w-10 h-10 rounded-xl bg-[#2D4A3E]/10 flex items-center justify-center"
+                >
                   <ShoppingBag className="w-5 h-5 text-[#2D4A3E]" />
-                </div>
+                </motion.div>
                 <div>
                   <h2 className="text-lg font-semibold text-[#2D4A3E]">
                     Твоята Количка
@@ -93,22 +98,33 @@ export function CartDrawer() {
                   </p>
                 </div>
               </div>
-              <button
+              <motion.button
+                whileHover={{ scale: 1.1, rotate: 90 }}
+                whileTap={{ scale: 0.9 }}
                 onClick={closeCart}
                 className="p-3 text-stone-400 hover:text-stone-600 rounded-full hover:bg-stone-100 transition-colors"
                 aria-label="Затвори количката"
               >
                 <X className="w-6 h-6" />
-              </button>
+              </motion.button>
             </div>
 
             {/* Free Shipping Progress */}
-            <div className="px-6 py-4 bg-stone-50">
+            <div className="px-6 py-4 bg-gradient-to-r from-[#B2D8C6]/10 to-[#FFC1CC]/10">
               {freeShipping ? (
-                <div className="flex items-center justify-center gap-2 text-[#2D4A3E]">
-                  <Sparkles className="w-5 h-5" />
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="flex items-center justify-center gap-2 text-[#2D4A3E]"
+                >
+                  <motion.div
+                    animate={{ scale: [1, 1.2, 1] }}
+                    transition={{ duration: 0.5, repeat: Infinity, repeatDelay: 2 }}
+                  >
+                    <Sparkles className="w-5 h-5" />
+                  </motion.div>
                   <span className="font-bold text-sm">БЕЗПЛАТНА ДОСТАВКА АКТИВИРАНА!</span>
-                </div>
+                </motion.div>
               ) : (
                 <div className="space-y-2">
                   <div className="flex justify-between text-xs">
@@ -122,7 +138,7 @@ export function CartDrawer() {
                       initial={{ width: 0 }}
                       animate={{ width: `${progress}%` }}
                       transition={{ duration: 0.8, ease: "easeOut" }}
-                      className="h-full bg-[#2D4A3E] rounded-full"
+                      className="h-full bg-gradient-to-r from-[#B2D8C6] to-[#2D4A3E] rounded-full"
                     />
                   </div>
                 </div>
@@ -132,21 +148,31 @@ export function CartDrawer() {
             {/* Body (Scrollable) */}
             <div className="flex-1 overflow-y-auto p-6">
               {items.length === 0 ? (
-                <div className="flex flex-col items-center justify-center h-full text-stone-400 space-y-6">
-                  <div className="w-24 h-24 rounded-full bg-stone-100 flex items-center justify-center">
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="flex flex-col items-center justify-center h-full text-stone-400 space-y-6"
+                >
+                  <motion.div
+                    animate={{ y: [0, -10, 0] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                    className="w-24 h-24 rounded-full bg-stone-100 flex items-center justify-center"
+                  >
                     <ShoppingBag className="w-10 h-10 text-stone-300" />
-                  </div>
+                  </motion.div>
                   <div className="text-center">
                     <p className="font-medium text-stone-600 mb-1">Количката е празна</p>
                     <p className="text-sm text-stone-400">Добави продукти, за да започнеш</p>
                   </div>
-                  <button
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
                     onClick={closeCart}
-                    className="px-6 py-3 bg-[#2D4A3E] text-white rounded-full font-medium text-sm hover:bg-[#1f352c] transition-colors"
+                    className="px-6 py-3 bg-[#2D4A3E] text-white rounded-full font-medium text-sm shadow-lg shadow-[#2D4A3E]/20"
                   >
                     Разгледай Продуктите
-                  </button>
-                </div>
+                  </motion.button>
+                </motion.div>
               ) : (
                 <>
                   <AnimatePresence mode="popLayout">
@@ -167,7 +193,11 @@ export function CartDrawer() {
                   {items.length === 1 &&
                     items[0].variantId === "starter-box" &&
                     items[0].quantity === 1 && (
-                      <div className="mt-4 p-3 rounded-xl bg-stone-50 border border-stone-100">
+                      <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="mt-4 p-3 rounded-xl bg-gradient-to-r from-[#B2D8C6]/15 to-[#FFC1CC]/15 border border-[#B2D8C6]/30"
+                      >
                         <div className="flex items-center gap-2 text-sm">
                           <TrendingUp className="w-4 h-4 text-[#2D4A3E] flex-shrink-0" />
                           <p className="text-stone-600">
@@ -181,7 +211,7 @@ export function CartDrawer() {
                             </Link>
                           </p>
                         </div>
-                      </div>
+                      </motion.div>
                     )}
                 </>
               )}
@@ -189,7 +219,12 @@ export function CartDrawer() {
 
             {/* Footer */}
             {items.length > 0 && (
-              <div className="border-t border-stone-100 p-6 bg-white space-y-4">
+              <motion.div
+                initial={{ y: 100 }}
+                animate={{ y: 0 }}
+                transition={{ type: "spring", damping: 25 }}
+                className="border-t border-stone-100 p-6 bg-gradient-to-t from-stone-50 to-white space-y-4"
+              >
                 {/* Trust badges */}
                 <div className="flex justify-center gap-6 pb-4 border-b border-stone-100">
                   {[
@@ -212,21 +247,30 @@ export function CartDrawer() {
                     </p>
                   </div>
                   {freeShipping && (
-                    <div className="flex items-center gap-1 px-3 py-1 rounded-full bg-[#B2D8C6]/20 text-[#2D4A3E]">
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      className="flex items-center gap-1 px-3 py-1 rounded-full bg-[#B2D8C6]/20 text-[#2D4A3E]"
+                    >
                       <CheckCircle className="w-4 h-4" />
                       <span className="text-xs font-medium">Безплатна доставка</span>
-                    </div>
+                    </motion.div>
                   )}
                 </div>
 
                 {/* Checkout Button */}
-                <Link
-                  href="/checkout"
-                  onClick={closeCart}
-                  className="block w-full py-4 bg-[#2D4A3E] text-white rounded-2xl font-semibold hover:bg-[#1f352c] transition-colors text-center"
-                >
-                  {hasSub ? "Към Абонамент" : "Към Плащане"}
-                </Link>
+                <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                  <Link
+                    href="/checkout"
+                    onClick={closeCart}
+                    className="block w-full py-4 bg-[#2D4A3E] text-white rounded-2xl font-semibold shadow-xl shadow-[#2D4A3E]/30 hover:shadow-[#2D4A3E]/40 transition-shadow text-center relative overflow-hidden group"
+                  >
+                    <span className="relative z-10">{hasSub ? "Към Абонамент" : "Към Плащане"}</span>
+                    <motion.div
+                      className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"
+                    />
+                  </Link>
+                </motion.div>
 
                 <button
                   onClick={closeCart}
@@ -239,7 +283,7 @@ export function CartDrawer() {
                   <Shield className="w-3 h-3" />
                   Защитено с SSL криптиране
                 </p>
-              </div>
+              </motion.div>
             )}
           </motion.div>
         </>

@@ -66,7 +66,21 @@ export function PremiumIngredients() {
   return (
     <section ref={ref} className="py-16 md:py-32 relative overflow-hidden">
       {/* Background */}
-      <div className="absolute inset-0 bg-[#F5F2EF]" />
+      <div className="absolute inset-0">
+        <div className="absolute inset-0 bg-gradient-to-br from-[#F5F2EF] via-white to-[#B2D8C6]/10" />
+        <motion.div
+          animate={{
+            backgroundPosition: ["0% 0%", "100% 100%"],
+          }}
+          transition={{ duration: 20, repeat: Infinity, repeatType: "reverse" }}
+          className="absolute inset-0 opacity-30"
+          style={{
+            backgroundImage:
+              "radial-gradient(circle at 20% 50%, #B2D8C6 0%, transparent 50%), radial-gradient(circle at 80% 50%, #FFC1CC 0%, transparent 50%)",
+            backgroundSize: "100% 100%",
+          }}
+        />
+      </div>
 
       <div className="max-w-7xl mx-auto px-6 relative">
         {/* Header */}
@@ -85,7 +99,7 @@ export function PremiumIngredients() {
             <h2 className="text-2xl sm:text-4xl lg:text-6xl font-semibold text-[#2D4A3E] tracking-tight mb-6">
               Всяка Съставка
               <br />
-              <span className="text-[#B2D8C6]">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#B2D8C6] via-[#2D4A3E] to-[#FFC1CC]">
                 с Мисия
               </span>
             </h2>
@@ -250,7 +264,7 @@ export function PremiumIngredients() {
           ].map((badge) => (
             <div
               key={badge.label}
-              className="flex items-center gap-2 px-6 py-3 rounded-full bg-white border border-stone-100 shadow-sm"
+              className="flex items-center gap-2 px-6 py-3 rounded-full bg-white/80 backdrop-blur-sm border border-white/50 shadow-lg"
             >
               <badge.icon className="w-5 h-5 text-[#2D4A3E]" />
               <span className="text-sm font-medium text-[#2D4A3E]">

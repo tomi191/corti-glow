@@ -208,7 +208,7 @@ function CortisolGraph() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: isAnimated ? 1 : 0, y: isAnimated ? 0 : 20 }}
         transition={{ delay: 1.5 }}
-        className="mt-6 p-4 bg-[#B2D8C6]/15 rounded-xl flex items-center justify-between"
+        className="mt-6 p-4 bg-gradient-to-r from-[#B2D8C6]/20 to-[#FFC1CC]/20 rounded-xl flex items-center justify-between"
       >
         <div className="flex items-center gap-3">
           <TrendingDown className="w-6 h-6 text-[#2D4A3E]" />
@@ -249,7 +249,7 @@ function StickyToC({ activeSection }: { activeSection: string }) {
       </ul>
 
       {/* Quick CTA */}
-      <div className="mt-8 p-4 bg-[#B2D8C6]/15 rounded-2xl">
+      <div className="mt-8 p-4 bg-gradient-to-br from-[#B2D8C6]/20 to-[#FFC1CC]/20 rounded-2xl">
         <p className="text-sm text-[#2D4A3E] font-medium mb-3">
           Готова да опиташ?
         </p>
@@ -294,8 +294,10 @@ export function InteractiveSciencePage() {
       {/* Hero */}
       <section className="relative py-12 md:py-20 lg:py-32 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-[#F5F2EF] to-white" />
-        <div
+        <motion.div
           className="absolute top-20 right-20 w-96 h-96 rounded-full bg-[#B2D8C6]/20 blur-3xl"
+          animate={{ scale: [1, 1.2, 1] }}
+          transition={{ duration: 8, repeat: Infinity }}
         />
 
         <div className="max-w-4xl mx-auto px-6 text-center relative">
@@ -311,7 +313,7 @@ export function InteractiveSciencePage() {
               <h1 className="text-3xl md:text-6xl lg:text-7xl font-semibold text-[#2D4A3E] tracking-tight mb-6">
                 Науката зад
                 <br />
-                <span className="text-[#B2D8C6]">
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#B2D8C6] to-[#FFC1CC]">
                   Corti-Glow
                 </span>
               </h1>
@@ -453,7 +455,7 @@ export function InteractiveSciencePage() {
 
               {/* Ingredients Flat Lay Image */}
               <ScrollReveal animation="scale-up" delay={0.1}>
-                <div className="relative w-full aspect-[16/9] mb-8 md:mb-12 rounded-3xl overflow-hidden shadow-md">
+                <div className="relative w-full aspect-[16/9] mb-8 md:mb-12 rounded-3xl overflow-hidden shadow-2xl">
                   <Image
                     src="/images/ingredients-flatlay.webp"
                     alt="Corti-Glow ingredients - ashwagandha, lime, strawberry"

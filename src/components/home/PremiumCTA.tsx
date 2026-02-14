@@ -15,7 +15,28 @@ export function PremiumCTA() {
   return (
     <section ref={ref} className="py-16 md:py-32 relative overflow-hidden">
       {/* Background */}
-      <div className="absolute inset-0 bg-[#2D4A3E]" />
+      <div className="absolute inset-0 bg-[#2D4A3E]">
+        <motion.div
+          animate={{
+            scale: [1, 1.2, 1],
+            opacity: [0.3, 0.5, 0.3],
+          }}
+          transition={{ duration: 8, repeat: Infinity }}
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full bg-gradient-to-r from-[#B2D8C6] to-[#FFC1CC] blur-[200px]"
+        />
+
+        {/* Decorative shapes */}
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
+          className="absolute top-20 left-20 w-40 h-40 border border-white/10 rounded-full"
+        />
+        <motion.div
+          animate={{ rotate: -360 }}
+          transition={{ duration: 80, repeat: Infinity, ease: "linear" }}
+          className="absolute bottom-20 right-20 w-60 h-60 border border-white/10 rounded-full"
+        />
+      </div>
 
       <div className="max-w-5xl mx-auto px-6 relative">
         {/* Main Content */}
@@ -34,7 +55,7 @@ export function PremiumCTA() {
             <h2 className="text-2xl sm:text-4xl lg:text-7xl font-semibold text-white tracking-tight mb-8">
               Готова ли си за
               <br />
-              <span className="text-[#B2D8C6]">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#B2D8C6] via-white to-[#FFC1CC]">
                 Трансформацията?
               </span>
             </h2>
@@ -61,7 +82,7 @@ export function PremiumCTA() {
               variant="secondary"
               size="lg"
               href="/produkt"
-              className="bg-white text-[#2D4A3E] hover:bg-stone-50 border-0"
+              className="bg-white text-[#2D4A3E] hover:bg-white/90"
             >
               Поръчай Сега
               <ArrowRight className="w-5 h-5" />
@@ -88,16 +109,17 @@ export function PremiumCTA() {
               { icon: Shield, label: "14-дневна гаранция" },
               { icon: Truck, label: `Безплатна доставка над ${SHIPPING_THRESHOLD} €` },
               { icon: Timer, label: "Експресна доставка" },
-            ].map((badge) => (
-              <div
+            ].map((badge, index) => (
+              <motion.div
                 key={badge.label}
+                whileHover={{ scale: 1.05 }}
                 className="flex items-center gap-3"
               >
                 <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center">
                   <badge.icon className="w-5 h-5 text-[#B2D8C6]" />
                 </div>
                 <span className="text-white/80 text-sm">{badge.label}</span>
-              </div>
+              </motion.div>
             ))}
           </motion.div>
         </div>

@@ -13,6 +13,20 @@ export function PremiumTestimonials() {
 
   return (
     <section ref={ref} className="py-32 relative overflow-hidden bg-[#2D4A3E]">
+      {/* Background effects */}
+      <div className="absolute inset-0">
+        <motion.div
+          animate={{ scale: [1, 1.2, 1], opacity: [0.1, 0.15, 0.1] }}
+          transition={{ duration: 10, repeat: Infinity }}
+          className="absolute top-0 right-0 w-[600px] h-[600px] rounded-full bg-[#B2D8C6] blur-[150px]"
+        />
+        <motion.div
+          animate={{ scale: [1, 1.3, 1], opacity: [0.1, 0.2, 0.1] }}
+          transition={{ duration: 12, repeat: Infinity, delay: 2 }}
+          className="absolute bottom-0 left-0 w-[500px] h-[500px] rounded-full bg-[#FFC1CC] blur-[120px]"
+        />
+      </div>
+
       <div className="max-w-7xl mx-auto px-6 relative">
         {/* Header */}
         <div className="text-center max-w-3xl mx-auto mb-20">
@@ -30,7 +44,7 @@ export function PremiumTestimonials() {
             <h2 className="text-4xl sm:text-5xl lg:text-6xl font-semibold text-white tracking-tight">
               Real Women.
               <br />
-              <span className="text-[#B2D8C6]">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#B2D8C6] to-[#FFC1CC]">
                 Real Glow.
               </span>
             </h2>
@@ -47,7 +61,7 @@ export function PremiumTestimonials() {
               transition={{ duration: 0.6, delay: 0.2 + index * 0.1 }}
             >
               <GlassCard
-                className="p-6 h-full bg-white/10 border-white/10"
+                className="p-6 h-full bg-white/10 backdrop-blur-xl border-white/10"
                 hover
               >
                 {/* Quote icon */}

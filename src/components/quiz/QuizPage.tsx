@@ -107,7 +107,7 @@ export function QuizPage() {
         >
           <button
             onClick={handleBack}
-            className="flex items-center gap-1.5 text-sm text-stone-500 hover:text-[#2D4A3E] transition-colors bg-white rounded-full px-4 py-2 border border-stone-200"
+            className="flex items-center gap-1.5 text-sm text-stone-500 hover:text-[#2D4A3E] transition-colors bg-white/80 backdrop-blur-sm rounded-full px-4 py-2 border border-stone-200"
           >
             <ArrowLeft className="w-4 h-4" />
             Назад

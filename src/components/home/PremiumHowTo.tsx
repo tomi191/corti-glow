@@ -66,8 +66,25 @@ export function PremiumHowTo() {
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#F5F2EF]/50 to-[#F5F2EF]" />
       </motion.div>
 
-      {/* Background below hero image */}
-      <div className="absolute inset-0 top-[50vh]" />
+      {/* Background Pattern */}
+      <div className="absolute inset-0 top-[50vh]">
+        <svg className="absolute inset-0 w-full h-full opacity-[0.03]">
+          <pattern
+            id="grid"
+            width="60"
+            height="60"
+            patternUnits="userSpaceOnUse"
+          >
+            <path
+              d="M 60 0 L 0 0 0 60"
+              fill="none"
+              stroke="#2D4A3E"
+              strokeWidth="1"
+            />
+          </pattern>
+          <rect width="100%" height="100%" fill="url(#grid)" />
+        </svg>
+      </div>
 
       <div className="max-w-7xl mx-auto px-6 relative pt-[35vh]">
         {/* Header */}
@@ -86,7 +103,7 @@ export function PremiumHowTo() {
             <h2 className="text-2xl sm:text-4xl lg:text-6xl font-semibold text-[#2D4A3E] tracking-tight mb-6">
               Толкова Лесно.
               <br />
-              <span className="text-[#B2D8C6]">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#B2D8C6] to-[#FFC1CC]">
                 Толкова Вкусно.
               </span>
             </h2>
@@ -105,7 +122,7 @@ export function PremiumHowTo() {
         {/* Steps - Horizontal Timeline */}
         <div className="relative mb-12 md:mb-24">
           {/* Connection Line */}
-          <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-stone-200 hidden md:block" />
+          <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-gradient-to-r from-[#B2D8C6] via-[#FFC1CC] to-[#F4E3B2] hidden md:block" />
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {steps.map((step, index) => (
@@ -118,7 +135,8 @@ export function PremiumHowTo() {
               >
                 <GlassCard className="p-8 text-center bg-white" hover>
                   {/* Step Number */}
-                  <div
+                  <motion.div
+                    whileHover={{ scale: 1.1, rotate: 5 }}
                     className="w-16 h-16 mx-auto mb-6 rounded-full flex items-center justify-center relative"
                     style={{ backgroundColor: `${step.color}30` }}
                   >
@@ -126,7 +144,7 @@ export function PremiumHowTo() {
                     <span className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-[#2D4A3E] text-white text-xs font-bold flex items-center justify-center">
                       {step.step}
                     </span>
-                  </div>
+                  </motion.div>
 
                   {/* Time Badge */}
                   <span
@@ -165,7 +183,7 @@ export function PremiumHowTo() {
 
           <div className="relative">
             {/* Progress Bar */}
-            <div className="absolute left-1/2 top-0 bottom-0 w-1 bg-stone-200 -translate-x-1/2 rounded-full hidden md:block" />
+            <div className="absolute left-1/2 top-0 bottom-0 w-1 bg-gradient-to-b from-[#B2D8C6] via-[#FFC1CC] to-[#F4E3B2] -translate-x-1/2 rounded-full hidden md:block" />
 
             <div className="space-y-8 md:space-y-12">
               {results.map((result, index) => (

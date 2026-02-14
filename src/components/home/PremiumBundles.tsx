@@ -36,7 +36,19 @@ export function PremiumBundles() {
   return (
     <section ref={ref} id="bundles" className="py-16 md:py-32 relative overflow-hidden">
       {/* Background */}
-      <div className="absolute inset-0 bg-white" />
+      <div className="absolute inset-0">
+        <div className="absolute inset-0 bg-gradient-to-b from-white via-[#FFC1CC]/5 to-white" />
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
+          className="absolute top-1/4 -right-40 w-[600px] h-[600px] rounded-full border border-[#B2D8C6]/10"
+        />
+        <motion.div
+          animate={{ rotate: -360 }}
+          transition={{ duration: 80, repeat: Infinity, ease: "linear" }}
+          className="absolute bottom-1/4 -left-40 w-[500px] h-[500px] rounded-full border border-[#FFC1CC]/10"
+        />
+      </div>
 
       <div className="max-w-7xl mx-auto px-6 relative">
         {/* Header */}
@@ -55,7 +67,7 @@ export function PremiumBundles() {
             <h2 className="text-2xl sm:text-4xl lg:text-6xl font-semibold text-[#2D4A3E] tracking-tight mb-6">
               Започни Своята
               <br />
-              <span className="text-[#B2D8C6]">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#2D4A3E] via-[#B2D8C6] to-[#FFC1CC]">
                 Трансформация
               </span>
             </h2>
@@ -144,17 +156,25 @@ export function PremiumBundles() {
 
                 {/* Visual */}
                 <div className="relative h-32 mb-6 flex items-center justify-center">
-                  <div className="flex gap-2">
+                  <motion.div
+                    animate={
+                      hoveredId === variant.id
+                        ? { scale: 1.1, rotate: 3 }
+                        : { scale: 1, rotate: 0 }
+                    }
+                    transition={{ type: "spring", stiffness: 300 }}
+                    className="flex gap-2"
+                  >
                     {[...Array(variant.quantity)].map((_, i) => (
                       <div
                         key={i}
-                        className="w-12 h-20 rounded-lg bg-[#FFC1CC] shadow-sm"
+                        className="w-12 h-20 rounded-lg bg-gradient-to-b from-[#FFC1CC] to-[#FFC1CC]/80 shadow-lg"
                         style={{
                           transform: `rotate(${(i - 1) * 5}deg)`,
                         }}
                       />
                     ))}
-                  </div>
+                  </motion.div>
                 </div>
 
                 {/* Price */}

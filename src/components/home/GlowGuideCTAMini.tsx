@@ -19,7 +19,7 @@ export function GlowGuideCTAMini() {
         >
           <Link
             href="/glow-guide"
-            className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 py-5 px-6 rounded-2xl bg-[#F5F2EF] border border-stone-100 hover:border-stone-200 transition-all group"
+            className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 py-5 px-6 rounded-2xl bg-gradient-to-r from-[#F5F2EF] to-[#B2D8C6]/10 border border-stone-100 hover:border-[#B2D8C6]/30 transition-all group"
           >
             <span className="flex items-center gap-2 text-sm text-stone-500">
               <Sparkles className="w-4 h-4 text-[#B2D8C6]" />

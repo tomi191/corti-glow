@@ -141,7 +141,7 @@ export function WhyCortiGlow() {
               transition={{ delay: index * 0.1 }}
               className="bg-stone-50 rounded-2xl p-6 text-center hover:shadow-lg transition-shadow"
             >
-              <div className="w-12 h-12 rounded-xl bg-[#B2D8C6]/30 flex items-center justify-center mx-auto mb-4">
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#B2D8C6] to-[#FFC1CC] flex items-center justify-center mx-auto mb-4">
                 <benefit.icon className="w-6 h-6 text-[#2D4A3E]" />
               </div>
               <h3 className="font-semibold text-[#2D4A3E] mb-2">
