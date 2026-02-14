@@ -10,6 +10,11 @@ export const metadata: Metadata = {
   title: "Помощ и Поддръжка",
   description: "Имате въпроси? Свържете се с нас или проверете FAQ секцията.",
   alternates: { canonical: "https://luralab.eu/pomosht" },
+  openGraph: {
+    title: "Помощ и Поддръжка | LURA",
+    description:
+      "Свържете се с нас по имейл или телефон. Отговаряме в рамките на 24 часа.",
+  },
 };
 
 const contactMethods = [

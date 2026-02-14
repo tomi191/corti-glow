@@ -7,6 +7,11 @@ export const metadata: Metadata = {
   title: "За Нас",
   description: "Запознайте се с LURA - марката за женско здраве.",
   alternates: { canonical: "https://luralab.eu/za-nas" },
+  openGraph: {
+    title: "За Нас | LURA",
+    description:
+      "Научно обоснован уелнес за модерната жена. Създадено от жени, за жени.",
+  },
 };
 
 const values = [
@@ -62,8 +67,8 @@ export default function AboutPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
             <div className="relative aspect-[4/5] rounded-3xl overflow-hidden">
               <Image
-                src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=1888&auto=format&fit=crop"
-                alt="LURA founder"
+                src="/images/lifestyle-evening-mocktail.webp"
+                alt="Вечерен ритуал с Corti-Glow моктейл"
                 fill
                 className="object-cover"
               />

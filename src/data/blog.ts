@@ -101,8 +101,8 @@ export const blogPosts: BlogPost[] = [
       },
     ],
     sources: [
-      { title: "A Prospective Study on Ashwagandha Root", publication: "Indian J Psychol Med", year: 2012 },
-      { title: "Effects of Magnesium on Stress and Sleep", publication: "Nutrients", year: 2017 },
+      { title: "A Prospective Study on Ashwagandha Root", publication: "Indian J Psychol Med", year: 2012, url: "https://pubmed.ncbi.nlm.nih.gov/23439798/" },
+      { title: "Effects of Magnesium on Stress and Sleep", publication: "Nutrients", year: 2017, url: "https://pubmed.ncbi.nlm.nih.gov/28445426/" },
     ],
     content: `
 # Какво е кортизол и защо е важен за здравето ти?

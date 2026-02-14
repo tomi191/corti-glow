@@ -7,6 +7,11 @@ export const metadata: Metadata = {
   description:
     "Научете как Corti-Glow помага за намаляване на кортизола и подобрява хормоналния баланс с клинично доказани съставки.",
   alternates: { canonical: "https://luralab.eu/nauka" },
+  openGraph: {
+    title: "Науката зад Corti-Glow | LURA",
+    description:
+      "Клинично доказани съставки за намаляване на кортизола с до 27%. Ашваганда, магнезий и мио-инозитол.",
+  },
 };
 
 export default function SciencePage() {

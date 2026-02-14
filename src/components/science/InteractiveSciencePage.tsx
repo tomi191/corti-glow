@@ -517,26 +517,32 @@ export function InteractiveSciencePage() {
                   {[
                     {
                       title: "KSM-66® Ashwagandha Study",
-                      journal: "Journal of Clinical Medicine, 2019",
+                      journal: "Indian J Psychol Med, 2012",
                       result: "27.9% намаление на кортизола след 60 дни",
-                      participants: "60 участника",
+                      participants: "64 участника",
+                      url: "https://pubmed.ncbi.nlm.nih.gov/23439798/",
                     },
                     {
                       title: "Magnesium and Sleep Quality",
                       journal: "Journal of Research in Medical Sciences, 2012",
                       result: "Подобрен сън и намален стрес",
                       participants: "46 участника",
+                      url: "https://pubmed.ncbi.nlm.nih.gov/23853635/",
                     },
                     {
                       title: "Myo-Inositol for PCOS",
                       journal: "European Review for Medical and Pharmacological Sciences, 2017",
                       result: "Подобрен хормонален баланс",
                       participants: "50 участника",
+                      url: "https://pubmed.ncbi.nlm.nih.gov/28724175/",
                     },
                   ].map((study, i) => (
-                    <div
+                    <a
                       key={study.title}
-                      className="p-6 bg-gradient-to-r from-stone-50 to-white rounded-2xl border border-stone-100"
+                      href={study.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block p-6 bg-gradient-to-r from-stone-50 to-white rounded-2xl border border-stone-100 hover:border-[#B2D8C6]/50 hover:shadow-lg transition-all"
                     >
                       <div className="flex items-start gap-4">
                         <div className="w-12 h-12 rounded-xl bg-[#2D4A3E] flex items-center justify-center text-white font-bold">
@@ -546,10 +552,10 @@ export function InteractiveSciencePage() {
                           <h4 className="font-semibold text-[#2D4A3E] mb-1">{study.title}</h4>
                           <p className="text-sm text-stone-400 mb-2">{study.journal}</p>
                           <p className="text-[#2D4A3E] font-medium">{study.result}</p>
-                          <p className="text-xs text-stone-400 mt-1">{study.participants}</p>
+                          <p className="text-xs text-stone-400 mt-1">{study.participants} · PubMed ↗</p>
                         </div>
                       </div>
-                    </div>
+                    </a>
                   ))}
                 </div>
               </ScrollReveal>

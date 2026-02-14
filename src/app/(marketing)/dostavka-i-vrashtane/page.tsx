@@ -22,6 +22,11 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "https://luralab.eu/dostavka-i-vrashtane",
   },
+  openGraph: {
+    title: "Доставка и Връщане | LURA",
+    description:
+      "Безплатна доставка над 80 €. 1-2 работни дни с Еконт. 14-дневна гаранция за връщане.",
+  },
 };
 
 const shippingFaqs = [
