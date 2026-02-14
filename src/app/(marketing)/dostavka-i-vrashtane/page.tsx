@@ -246,10 +246,10 @@ export default function ShippingPage() {
                   <p className="text-sm text-stone-600 mt-1">
                     Изпрати ни имейл на{" "}
                     <a
-                      href="mailto:hello@luralab.eu"
+                      href="mailto:contact@luralab.eu"
                       className="text-[#2D4A3E] underline"
                     >
-                      hello@luralab.eu
+                      contact@luralab.eu
                     </a>{" "}
                     с номера на поръчката и причината за връщане.
                   </p>
@@ -327,11 +327,11 @@ export default function ShippingPage() {
 
           <div className="flex flex-col md:flex-row gap-4 justify-center">
             <a
-              href="mailto:hello@luralab.eu"
+              href="mailto:contact@luralab.eu"
               className="flex items-center justify-center gap-2 px-6 py-3 bg-[#B2D8C6] text-[#2D4A3E] rounded-full font-medium hover:bg-[#FFC1CC] transition"
             >
               <Mail className="w-5 h-5" />
-              hello@luralab.eu
+              contact@luralab.eu
             </a>
             <Link
               href="/pomosht"

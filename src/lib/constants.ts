@@ -16,7 +16,7 @@ export const CARRIERS = ["Спиди", "Еконт"] as const;
 export const COMPANY = {
   name: '"Лура Лаб" ЕООД',
   address: 'гр. София, бул. "Витоша" 10',
-  email: "hello@luralab.eu",
+  email: "contact@luralab.eu",
   eik: "207712345",
 } as const;
 

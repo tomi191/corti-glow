@@ -139,10 +139,10 @@ export function PremiumFAQ() {
             <div className="text-left">
               <p className="text-sm text-stone-500">Не намери отговор?</p>
               <a
-                href="mailto:hello@luralab.eu"
+                href="mailto:contact@luralab.eu"
                 className="font-medium text-[#2D4A3E] hover:underline"
               >
-                Пиши ни на hello@luralab.eu
+                Пиши ни на contact@luralab.eu
               </a>
             </div>
           </div>

@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
-import { Plus_Jakarta_Sans } from "next/font/google";
+import { DM_Sans } from "next/font/google";
 import { SmoothScrollProvider } from "@/components/providers/SmoothScroll";
 import { CookieConsent } from "@/components/ui/CookieConsent";
 import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
 import "./globals.css";
 
-const plusJakarta = Plus_Jakarta_Sans({
-  variable: "--font-plus-jakarta",
-  subsets: ["latin"],
-  weight: ["300", "400", "600", "700"],
+const dmSans = DM_Sans({
+  variable: "--font-dm-sans",
+  subsets: ["latin", "latin-ext"],
+  weight: ["300", "400", "500", "600", "700"],
   display: "swap",
 });
 
@@ -74,10 +74,10 @@ const organizationJsonLd = {
   legalName: '"Лура Лаб" ЕООД',
   url: "https://luralab.eu",
   logo: "https://luralab.eu/images/og-image.png",
-  email: "hello@luralab.eu",
+  email: "contact@luralab.eu",
   contactPoint: {
     "@type": "ContactPoint",
-    email: "hello@luralab.eu",
+    email: "contact@luralab.eu",
     contactType: "customer service",
     availableLanguage: "Bulgarian",
   },
@@ -123,7 +123,7 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
         />
       </head>
-      <body className={`${plusJakarta.variable} antialiased font-sans bg-white overflow-x-hidden`}>
+      <body className={`${dmSans.variable} antialiased font-sans bg-white overflow-x-hidden`}>
         <GoogleAnalytics />
         <SmoothScrollProvider>{children}</SmoothScrollProvider>
         <CookieConsent />

@@ -78,8 +78,8 @@ export default async function SuccessPage({ searchParams }: SuccessPageProps) {
             <p className="font-medium text-stone-800">Имаш въпрос?</p>
             <p className="text-sm text-stone-500">
               Пиши ни на{" "}
-              <a href="mailto:hello@luralab.eu" className="text-[#2D4A3E] underline">
-                hello@luralab.eu
+              <a href="mailto:contact@luralab.eu" className="text-[#2D4A3E] underline">
+                contact@luralab.eu
               </a>
             </p>
           </div>
