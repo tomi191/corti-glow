@@ -6,7 +6,7 @@ import {
 } from "@/data/glow-guide";
 
 export interface QuizAnswers {
-  [questionId: string]: number; // questionId → selected option value (0-4)
+  [questionId: string]: number; // questionId → selected option value (0-5, where 5 = menopause marker)
 }
 
 export interface CategoryScores {
@@ -81,7 +81,7 @@ export function validateAnswers(
 
   for (const id of questionIds) {
     const val = ans[id];
-    if (typeof val !== "number" || val < 0 || val > 4) return false;
+    if (typeof val !== "number" || val < 0 || val > 5) return false;
   }
 
   return true;

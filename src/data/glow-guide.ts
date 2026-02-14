@@ -2,7 +2,7 @@
 
 export interface QuizOption {
   label: string;
-  value: number; // 0-4 score
+  value: number; // 0-5 score (5 = menopause marker, clamped to 4 in scoring)
 }
 
 export interface QuizQuestion {
@@ -159,6 +159,7 @@ export const QUIZ_QUESTIONS: QuizQuestion[] = [
       { label: "Лек ПМС — раздразнителност или подуване 1-2 дни", value: 1 },
       { label: "Силен ПМС — болки, настроение, подуване цяла седмица", value: 3 },
       { label: "Нередовен цикъл, силен ПМС или диагноза PCOS", value: 4 },
+      { label: "Нямам цикъл — менопауза или пременопауза", value: 5 },
     ],
   },
 ];

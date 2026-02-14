@@ -11,7 +11,7 @@ import { createRateLimiter, getClientIp } from "@/lib/rate-limit";
 const limiter = createRateLimiter(10, 5 * 60 * 1000);
 
 const quizSchema = z.object({
-  answers: z.record(z.string(), z.number().min(0).max(4)),
+  answers: z.record(z.string(), z.number().min(0).max(5)),
 });
 
 export async function POST(request: NextRequest) {
@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
     let aiRecommendation = "";
     try {
       aiRecommendation = await generateText(
-        getQuizUserPrompt(result),
+        getQuizUserPrompt(result, validated.data.answers),
         getQuizSystemPrompt()
       );
     } catch (err) {

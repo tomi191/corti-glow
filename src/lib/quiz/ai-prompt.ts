@@ -1,4 +1,4 @@
-import type { CategoryScores, ScoreResult } from "./scoring";
+import type { CategoryScores, QuizAnswers, ScoreResult } from "./scoring";
 import { QUIZ_VARIANTS } from "@/data/glow-guide";
 
 /**
@@ -33,14 +33,24 @@ export function getQuizSystemPrompt(): string {
 - diet — хранителни навици и кофеин/захар
 - body — физически симптоми (подуване, тегло)
 - mood — енергия и настроение следобед
-- cycle — менструален цикъл и ПМС`;
+- cycle — менструален цикъл и ПМС
+
+ВАЖНО — МЕНОПАУЗА:
+Ако потребителят е в менопауза или пременопауза:
+- НЕ говори за овулация, цикъл или ПМС
+- Фокусирай се върху: горещи вълни, нощно изпотяване, сън, тревожност, настроение
+- Спомени магнезий за терморегулация и ашваганда за нощен кортизол
+- Мио-инозитолът помага за инсулинова чувствителност (БЕЗ да споменаваш овулация)
+- Бъди особено емпатична — менопаузата е голяма хормонална промяна`;
 }
 
 /**
  * Build the user prompt for AI recommendation based on quiz results.
+ * When answers are provided, detects menopause (cycle === 5) for tailored advice.
  */
-export function getQuizUserPrompt(result: ScoreResult): string {
+export function getQuizUserPrompt(result: ScoreResult, answers?: QuizAnswers): string {
   const variant = QUIZ_VARIANTS[result.level];
+  const isMenopause = answers?.cycle === 5;
 
   // Build category breakdown
   const categoryLabels: Record<string, string> = {
@@ -50,7 +60,7 @@ export function getQuizUserPrompt(result: ScoreResult): string {
     diet: "Хранене",
     body: "Тяло",
     mood: "Настроение",
-    cycle: "Цикъл",
+    cycle: isMenopause ? "Менопауза" : "Цикъл",
   };
 
   const breakdown = Object.entries(result.categoryScores)
@@ -63,13 +73,17 @@ export function getQuizUserPrompt(result: ScoreResult): string {
     .sort(([, a], [, b]) => b - a)
     .map(([cat]) => categoryLabels[cat] || cat);
 
+  const menopauseContext = isMenopause
+    ? "\nКОНТЕКСТ: Потребителят е в МЕНОПАУЗА или ПРЕМЕНОПАУЗА. НЕ споменавай овулация, цикъл или ПМС. Фокусирай се върху горещи вълни, нощно изпотяване, сън и тревожност."
+    : "";
+
   return `Потребителят направи Glow Guide теста и получи:
 
 Общ Stress-Beauty Score: ${result.score}/100
 Ниво: ${result.level === "starter" ? "Ниско" : result.level === "glow" ? "Средно" : "Високо"}
 Разбивка по категории: ${breakdown}
 ${problemAreas.length > 0 ? `Основни проблемни зони: ${problemAreas.join(", ")}` : "Няма критични проблемни зони."}
-
+${menopauseContext}
 Препоръчан пакет: ${variant.name} (€${variant.price})
 
 Напиши персонализирана препоръка за този потребител. Обясни какво означава резултатът, защо точно този пакет е подходящ, и какво да очаква.`;
