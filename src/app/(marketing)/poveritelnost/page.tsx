@@ -4,7 +4,14 @@ import { BreadcrumbJsonLd } from "@/components/ui/BreadcrumbJsonLd";
 
 export const metadata: Metadata = {
   title: "Политика за Поверителност",
-  description: "Политика за поверителност на LURA",
+  description: "Политика за поверителност на LURA — как събираме, използваме и защитаваме личните ви данни.",
+  alternates: {
+    canonical: "https://luralab.eu/poveritelnost",
+  },
+  openGraph: {
+    title: "Политика за Поверителност | LURA",
+    description: "Как събираме, използваме и защитаваме личните ви данни.",
+  },
 };
 
 export default function PrivacyPage() {

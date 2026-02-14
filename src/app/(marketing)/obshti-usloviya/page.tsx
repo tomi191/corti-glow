@@ -4,7 +4,14 @@ import { BreadcrumbJsonLd } from "@/components/ui/BreadcrumbJsonLd";
 
 export const metadata: Metadata = {
   title: "Общи Условия",
-  description: "Общи условия за ползване на LURA",
+  description: "Общи условия за ползване на уебсайта luralab.eu — поръчки, плащания, доставка и връщане.",
+  alternates: {
+    canonical: "https://luralab.eu/obshti-usloviya",
+  },
+  openGraph: {
+    title: "Общи Условия | LURA",
+    description: "Условия за поръчки, плащания, доставка и връщане на продукти от LURA.",
+  },
 };
 
 export default function TermsPage() {
