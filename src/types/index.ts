@@ -37,6 +37,7 @@ export interface ProductVariant {
   quantity: number;
   isBestSeller?: boolean;
   savings?: number;
+  image?: string;
 }
 
 // Cart Types
