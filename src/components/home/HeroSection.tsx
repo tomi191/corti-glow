@@ -32,7 +32,7 @@ export function HeroSection() {
 
           <div className="pt-4 flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
             <Link
-              href="/produkt"
+              href="/produkt/corti-glow"
               className="inline-flex justify-center items-center px-8 py-4 bg-[#2D4A3E] text-white rounded-full font-medium hover:bg-[#1f352c] transition-all shadow-lg shadow-[#2D4A3E]/20 text-sm tracking-wide"
             >
               Поръчай Corti-Glow

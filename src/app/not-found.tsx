@@ -22,7 +22,7 @@ export default function NotFound() {
             Към Началото
           </Link>
           <Link
-            href="/produkt"
+            href="/magazin"
             className="inline-flex items-center justify-center gap-2 px-6 py-3 border border-[#2D4A3E] text-[#2D4A3E] rounded-full font-medium hover:bg-stone-100 transition-all"
           >
             <ArrowLeft className="w-4 h-4" />

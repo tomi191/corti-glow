@@ -8,9 +8,11 @@ import { AddToCartButton } from "@/components/cart";
 
 interface ProductBundlesProps {
   variants: ProductVariant[];
+  productSlug: string;
+  productName: string;
 }
 
-export function ProductBundles({ variants }: ProductBundlesProps) {
+export function ProductBundles({ variants, productSlug, productName }: ProductBundlesProps) {
   const [selectedId, setSelectedId] = useState(
     variants.find((v) => v.isBestSeller)?.id || variants[0].id
   );
@@ -124,9 +126,9 @@ export function ProductBundles({ variants }: ProductBundlesProps) {
         <div ref={buttonRef}>
           <AddToCartButton
             id={selectedVariant.id}
-            productId="corti-glow"
+            productId={productSlug}
             variantId={selectedVariant.id}
-            title={`Corti-Glow (${selectedVariant.name})`}
+            title={`${productName} (${selectedVariant.name})`}
             price={selectedVariant.price}
             image={selectedVariant.image || "/images/product-hero-box.webp"}
             variant="primary"
@@ -155,9 +157,9 @@ export function ProductBundles({ variants }: ProductBundlesProps) {
             </div>
             <AddToCartButton
               id={selectedVariant.id}
-              productId="corti-glow"
+              productId={productSlug}
               variantId={selectedVariant.id}
-              title={`Corti-Glow (${selectedVariant.name})`}
+              title={`${productName} (${selectedVariant.name})`}
               price={selectedVariant.price}
               image={selectedVariant.image || "/images/product-hero-box.webp"}
               variant="primary"

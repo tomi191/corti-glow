@@ -48,10 +48,10 @@ export async function POST(request: NextRequest) {
       author: author as "dr-maria" | "lura-team",
     }, {
       internalLinks: {
-        "Corti-Glow": "/produkt",
+        "Corti-Glow": "/produkt/corti-glow",
         "кортизол": "/nauka",
         "блога": "/blog",
-        "пакетни предложения": "/produkt#bundles",
+        "пакетни предложения": "/produkt/corti-glow#bundles",
       },
     });
 

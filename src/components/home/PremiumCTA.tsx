@@ -81,7 +81,7 @@ export function PremiumCTA() {
             <MagneticButton
               variant="secondary"
               size="lg"
-              href="/produkt"
+              href="/produkt/corti-glow"
               className="bg-white text-[#2D4A3E] hover:bg-white/90"
             >
               Поръчай Сега

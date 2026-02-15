@@ -120,7 +120,7 @@ export default function OrdersPage() {
               Все още нямаш направени поръчки с този имейл
             </p>
             <Link
-              href="/produkt"
+              href="/magazin"
               className="inline-flex px-6 py-3 bg-[#2D4A3E] text-white rounded-full font-medium hover:bg-[#1f352c] transition"
             >
               Разгледай Продукти

@@ -1,33 +1,71 @@
 import type { Metadata } from "next";
 import { ChevronDown, CheckCircle, Shield, Truck, Clock, Star } from "lucide-react";
 import { notFound } from "next/navigation";
-import { getProduct } from "@/lib/actions/products";
+import { getProduct, listProducts } from "@/lib/actions/products";
 import { faqs } from "@/data/faqs";
-import { ProductBundles } from "./ProductBundles";
-import { ProductGallery } from "./ProductGallery";
-import { TrustBar, GuaranteeBadge, PaymentMethods } from "./TrustBar";
-import { ProductReviews } from "./ProductReviews";
-import { WhyCortiGlow } from "./WhyCortiGlow";
-import { HowToUseVisual } from "./HowToUseVisual";
+import { ProductBundles } from "../ProductBundles";
+import { ProductGallery } from "../ProductGallery";
+import { TrustBar, GuaranteeBadge, PaymentMethods } from "../TrustBar";
+import { ProductReviews } from "../ProductReviews";
+import { WhyCortiGlow } from "../WhyCortiGlow";
+import { HowToUseVisual } from "../HowToUseVisual";
 import type { ProductVariant } from "@/types";
 import type { ProductVariantDB, ProductIngredientDB, ProductFeatureDB, ProductHowToUseDB } from "@/lib/supabase/types";
 import { BreadcrumbJsonLd } from "@/components/ui/BreadcrumbJsonLd";
 
 export const revalidate = 3600; // 1 hour ISR
 
-export const metadata: Metadata = {
-  title: "Corti-Glow - Анти-Стрес Моктейл за Хормонален Баланс",
-  description:
-    "Corti-Glow е вкусен моктейл с Горска Ягода и Лайм, който понижава кортизола с до 27%, премахва подуването и подобрява съня. 500+ доволни клиенти.",
-  openGraph: {
-    title: "Corti-Glow - Анти-Стрес Моктейл | LURA",
-    description:
-      "Научно доказана формула за хормонален баланс. 14-дневна гаранция за връщане.",
-  },
-  alternates: {
-    canonical: "https://luralab.eu/produkt",
-  },
+// Hardcoded gallery for corti-glow (until DB images are richer)
+const CORTI_GLOW_GALLERY = [
+  "/images/product-hero-box.webp",
+  "/images/product-sachet-marble.webp",
+  "/images/product-sachet-open.webp",
+  "/images/product-pouring.webp",
+  "/images/product-glass-ready.webp",
+  "/images/product-hand-sachet.webp",
+  "/images/product-splash-pour.webp",
+  "/images/lifestyle-evening-mocktail.webp",
+  "/images/lifestyle-sofa-mocktail.webp",
+  "/images/lifestyle-nightstand-ritual.webp",
+  "/images/mocktail-ashwagandha-flatlay.webp",
+];
+
+type Props = {
+  params: Promise<{ slug: string }>;
 };
+
+export async function generateStaticParams() {
+  const { products } = await listProducts();
+  return products.map((p) => ({ slug: p.slug }));
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { slug } = await params;
+  const { product } = await getProduct(slug);
+
+  if (!product) {
+    return { title: "Продукт не е намерен" };
+  }
+
+  const title = product.meta_title || `${product.name} | LURA`;
+  const description =
+    product.meta_description ||
+    product.tagline ||
+    `${product.name} - премиум добавка от LURA`;
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      images: [{ url: `https://luralab.eu${product.image}`, width: 1200, height: 630 }],
+    },
+    alternates: {
+      canonical: `https://luralab.eu/produkt/${slug}`,
+    },
+  };
+}
 
 function mapVariants(dbVariants: ProductVariantDB[]): ProductVariant[] {
   return dbVariants.map((v) => ({
@@ -43,8 +81,9 @@ function mapVariants(dbVariants: ProductVariantDB[]): ProductVariant[] {
   }));
 }
 
-export default async function ProductPage() {
-  const { product, error } = await getProduct("corti-glow");
+export default async function ProductPage({ params }: Props) {
+  const { slug } = await params;
+  const { product, error } = await getProduct(slug);
 
   if (!product || error) {
     if (error) console.error(error);
@@ -56,24 +95,13 @@ export default async function ProductPage() {
   const features = product.features as unknown as ProductFeatureDB[];
   const howToUse = product.how_to_use as unknown as ProductHowToUseDB[];
 
-  // Full gallery: product shots → lifestyle shots
-  const galleryImages = [
-    "/images/product-hero-box.webp",
-    "/images/product-sachet-marble.webp",
-    "/images/product-sachet-open.webp",
-    "/images/product-pouring.webp",
-    "/images/product-glass-ready.webp",
-    "/images/product-hand-sachet.webp",
-    "/images/product-splash-pour.webp",
-    "/images/lifestyle-evening-mocktail.webp",
-    "/images/lifestyle-sofa-mocktail.webp",
-    "/images/lifestyle-nightstand-ritual.webp",
-    "/images/mocktail-ashwagandha-flatlay.webp",
-  ];
-  // Use DB images if they have more, otherwise use curated gallery
-  const images = product.images?.length > galleryImages.length
-    ? product.images
-    : galleryImages;
+  // Use curated gallery for corti-glow, DB images for other products
+  const images =
+    slug === "corti-glow" && !(product.images?.length > CORTI_GLOW_GALLERY.length)
+      ? CORTI_GLOW_GALLERY
+      : product.images?.length > 0
+        ? product.images
+        : [product.image];
 
   const productSchema = {
     "@context": "https://schema.org",
@@ -82,14 +110,14 @@ export default async function ProductPage() {
     description: product.tagline,
     image: `https://luralab.eu${product.image}`,
     brand: { "@type": "Brand", name: "LURA" },
-    sku: "CG-30",
+    sku: product.sku || product.slug,
     category: "Health Supplements",
     offers: variants.map((v) => ({
       "@type": "Offer",
       price: v.price,
       priceCurrency: "EUR",
       availability: "https://schema.org/InStock",
-      url: "https://luralab.eu/produkt",
+      url: `https://luralab.eu/produkt/${slug}`,
       hasMerchantReturnPolicy: {
         "@type": "MerchantReturnPolicy",
         applicableCountry: "BG",
@@ -137,7 +165,8 @@ export default async function ProductPage() {
       <BreadcrumbJsonLd
         items={[
           { name: "Начало", url: "https://luralab.eu" },
-          { name: "Магазин", url: "https://luralab.eu/produkt" },
+          { name: "Магазин", url: "https://luralab.eu/magazin" },
+          { name: product.name, url: `https://luralab.eu/produkt/${slug}` },
         ]}
       />
       <script
@@ -215,7 +244,11 @@ export default async function ProductPage() {
               </div>
 
               {/* Bundle Selection */}
-              <ProductBundles variants={variants} />
+              <ProductBundles
+                variants={variants}
+                productSlug={slug}
+                productName={product.name}
+              />
 
               {/* Quick Benefits */}
               <div className="grid grid-cols-3 gap-4 py-4 border-y border-stone-100">

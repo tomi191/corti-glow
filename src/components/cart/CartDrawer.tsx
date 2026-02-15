@@ -203,7 +203,7 @@ export function CartDrawer() {
                           <p className="text-stone-600">
                             Спести <strong className="text-[#2D4A3E]">58 €</strong> с 3-пакета!{" "}
                             <Link
-                              href="/produkt"
+                              href="/magazin"
                               onClick={closeCart}
                               className="text-[#2D4A3E] font-medium underline underline-offset-2 hover:text-[#1f352c]"
                             >

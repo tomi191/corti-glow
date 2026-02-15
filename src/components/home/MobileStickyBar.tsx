@@ -147,7 +147,7 @@ export function MobileStickyBar() {
                   </div>
 
                   <Link
-                    href="/produkt#bundles"
+                    href="/produkt/corti-glow#bundles"
                     className="group flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-[#B2D8C6] to-[#9AC8B6] text-[#2D4A3E] rounded-xl text-sm font-semibold shadow-lg shadow-[#B2D8C6]/25 hover:shadow-xl hover:shadow-[#B2D8C6]/30 transition-all duration-300"
                   >
                     Виж Пакетите

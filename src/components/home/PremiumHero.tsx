@@ -99,7 +99,7 @@ export function PremiumHero() {
               transition={{ duration: 0.6, delay: 0.7 }}
               className="flex flex-col sm:flex-row gap-4 pt-2 md:pt-4"
             >
-              <MagneticButton variant="primary" size="lg" href="/produkt">
+              <MagneticButton variant="primary" size="lg" href="/produkt/corti-glow">
                 Открий Продукта
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </MagneticButton>

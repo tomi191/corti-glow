@@ -214,7 +214,7 @@ export default async function BlogPage() {
             хормонален баланс.
           </p>
           <Link
-            href="/produkt"
+            href="/produkt/corti-glow"
             className="inline-flex items-center gap-2 px-8 py-4 bg-[#B2D8C6] text-[#2D4A3E] rounded-full font-semibold hover:bg-[#FFC1CC] transition"
           >
             Опитай Corti-Glow

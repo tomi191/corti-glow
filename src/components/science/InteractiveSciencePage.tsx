@@ -254,7 +254,7 @@ function StickyToC({ activeSection }: { activeSection: string }) {
           Готова да опиташ?
         </p>
         <Link
-          href="/produkt"
+          href="/produkt/corti-glow"
           className="flex items-center gap-2 text-sm text-[#2D4A3E] font-semibold hover:gap-3 transition-all"
         >
           Виж продукта
@@ -321,10 +321,22 @@ export function InteractiveSciencePage() {
           </ScrollReveal>
 
           <ScrollReveal animation="fade-up" delay={0.2}>
-            <p className="text-base md:text-xl text-stone-600 font-light max-w-2xl mx-auto">
+            <p className="text-base md:text-xl text-stone-600 font-light max-w-2xl mx-auto mb-8">
               Разбери как хроничният стрес влияе на тялото ти и как нашата формула
               помага да възстановиш баланса.
             </p>
+          </ScrollReveal>
+
+          <ScrollReveal animation="fade-up" delay={0.3}>
+            <div className="relative w-full max-w-3xl mx-auto aspect-[16/9] rounded-2xl overflow-hidden shadow-xl">
+              <Image
+                src="/images/science-hero.webp"
+                alt="Науката зад Corti-Glow — лабораторни съставки и натурални екстракти"
+                fill
+                className="object-cover"
+                priority
+              />
+            </div>
           </ScrollReveal>
         </div>
       </section>
@@ -592,7 +604,7 @@ export function InteractiveSciencePage() {
             <MagneticButton
               variant="secondary"
               size="lg"
-              href="/produkt"
+              href="/produkt/corti-glow"
               className="bg-white text-[#2D4A3E]"
             >
               Виж Продукта

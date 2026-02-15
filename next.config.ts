@@ -9,13 +9,18 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "images.unsplash.com",
-      },
-      {
-        protocol: "https",
         hostname: "tuxmzjykblzcfldumkul.supabase.co",
       },
     ],
+  },
+  async redirects() {
+    return [
+      {
+        source: "/produkt",
+        destination: "/produkt/corti-glow",
+        permanent: true,
+      },
+    ];
   },
   async headers() {
     return [

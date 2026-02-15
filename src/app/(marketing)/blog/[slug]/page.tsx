@@ -382,7 +382,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
             Научно обоснована формула за хормонален баланс и управление на стреса.
           </p>
           <Link
-            href="/produkt"
+            href="/produkt/corti-glow"
             className="inline-flex items-center gap-2 px-6 py-3 bg-[#2D4A3E] text-white rounded-full font-medium hover:bg-[#1f352c] transition"
           >
             Виж Продукта

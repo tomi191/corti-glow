@@ -19,7 +19,7 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { formatPrice } from "@/lib/utils";
-import type { Product, ProductStatus } from "@/lib/supabase/types";
+import type { Product, ProductStatus, ProductVariantDB } from "@/lib/supabase/types";
 import { ProductModal } from "./ProductModal";
 
 const statusOptions = [
@@ -40,6 +40,13 @@ const statusLabels: Record<ProductStatus, string> = {
   draft: "Чернова",
   archived: "Архивиран",
 };
+
+function getVariantPriceInfo(variants: unknown): { minPrice: number; count: number } | null {
+  if (!Array.isArray(variants) || variants.length === 0) return null;
+  const typed = variants as ProductVariantDB[];
+  const prices = typed.map((v) => v.price);
+  return { minPrice: Math.min(...prices), count: typed.length };
+}
 
 export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -351,14 +358,26 @@ export default function ProductsPage() {
                         </div>
                       </td>
                       <td className="px-6 py-4 text-right">
-                        <div>
-                          <p className="font-bold text-stone-800">{formatPrice(product.price)}</p>
-                          {product.compare_at_price && (
-                            <p className="text-xs text-stone-400 line-through">
-                              {formatPrice(product.compare_at_price)}
-                            </p>
-                          )}
-                        </div>
+                        {(() => {
+                          const info = getVariantPriceInfo(product.variants);
+                          return (
+                            <div>
+                              <p className="font-bold text-stone-800">
+                                {info ? `от ${formatPrice(info.minPrice)}` : formatPrice(product.price)}
+                              </p>
+                              {!info && product.compare_at_price && (
+                                <p className="text-xs text-stone-400 line-through">
+                                  {formatPrice(product.compare_at_price)}
+                                </p>
+                              )}
+                              {info && info.count > 1 && (
+                                <p className="text-xs text-stone-400">
+                                  {info.count} варианта
+                                </p>
+                              )}
+                            </div>
+                          );
+                        })()}
                       </td>
                       <td className="px-6 py-4 text-center">
                         {product.published ? (
@@ -461,14 +480,21 @@ export default function ProductsPage() {
                             )}
                           </div>
                         </div>
-                        <div className="text-right">
-                          <p className="font-bold text-stone-800">{formatPrice(product.price)}</p>
-                          {product.compare_at_price && (
-                            <p className="text-xs text-stone-400 line-through">
-                              {formatPrice(product.compare_at_price)}
-                            </p>
-                          )}
-                        </div>
+                        {(() => {
+                          const info = getVariantPriceInfo(product.variants);
+                          return (
+                            <div className="text-right">
+                              <p className="font-bold text-stone-800">
+                                {info ? `от ${formatPrice(info.minPrice)}` : formatPrice(product.price)}
+                              </p>
+                              {info && info.count > 1 && (
+                                <p className="text-xs text-stone-400">
+                                  {info.count} варианта
+                                </p>
+                              )}
+                            </div>
+                          );
+                        })()}
                       </div>
                       <div className="flex items-center gap-2 mt-2">
                         <span

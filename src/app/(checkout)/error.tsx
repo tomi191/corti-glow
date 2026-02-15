@@ -32,7 +32,7 @@ export default function CheckoutError({
             Опитай отново
           </button>
           <Link
-            href="/produkt"
+            href="/magazin"
             className="inline-flex items-center justify-center gap-2 px-6 py-3 border border-[#2D4A3E] text-[#2D4A3E] rounded-full font-medium hover:bg-stone-100 transition-all"
           >
             <ShoppingCart className="w-4 h-4" />
