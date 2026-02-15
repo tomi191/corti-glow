@@ -16,14 +16,15 @@ export const getProduct = unstable_cache(
                 .select("*")
                 .eq("slug", slug)
                 .eq("status", "active") // Only active products
-                .single();
+                .eq("published", true)  // Only published products
+                .maybeSingle();
 
             if (error) {
                 console.error(`Error fetching product ${slug}:`, error);
                 return { product: null, error: error.message };
             }
 
-            return { product: product as Product, error: null };
+            return { product: product as unknown as Product, error: null };
         } catch (err) {
             console.error(`Unexpected error fetching product ${slug}:`, err);
             return { product: null, error: "Failed to fetch product" };

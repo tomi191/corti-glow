@@ -555,4 +555,5 @@ export interface ProductHowToUseDB {
   step: number;
   title: string;
   description: string;
+  image?: string;
 }

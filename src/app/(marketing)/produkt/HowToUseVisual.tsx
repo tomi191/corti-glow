@@ -2,8 +2,9 @@
 
 import Image from "next/image";
 import { motion, useReducedMotion } from "framer-motion";
+import type { ProductHowToUseDB } from "@/lib/supabase/types";
 
-const steps = [
+const defaultSteps = [
   {
     number: 1,
     title: "Разтвори",
@@ -24,8 +25,27 @@ const steps = [
   },
 ];
 
-export function HowToUseVisual() {
+const fallbackImages = [
+  "/images/product-sachet-open.webp",
+  "/images/product-pouring.webp",
+  "/images/product-glass-ready.webp",
+];
+
+interface HowToUseVisualProps {
+  steps?: ProductHowToUseDB[];
+}
+
+export function HowToUseVisual({ steps: dbSteps }: HowToUseVisualProps) {
   const prefersReducedMotion = useReducedMotion();
+
+  const steps = dbSteps && dbSteps.length > 0
+    ? dbSteps.map((s, i) => ({
+        number: s.step,
+        title: s.title,
+        description: s.description,
+        image: s.image || fallbackImages[i] || fallbackImages[0],
+      }))
+    : defaultSteps;
 
   return (
     <section className="py-16 bg-[#F5F2EF]">

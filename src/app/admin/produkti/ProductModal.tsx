@@ -11,7 +11,7 @@ interface ProductModalProps {
   onSave: () => void;
 }
 
-type TabType = "general" | "inventory" | "variants" | "ingredients" | "features" | "seo";
+type TabType = "general" | "inventory" | "variants" | "ingredients" | "features" | "how_to_use" | "seo";
 
 const tabs: { id: TabType; label: string }[] = [
   { id: "general", label: "Основни" },
@@ -19,6 +19,7 @@ const tabs: { id: TabType; label: string }[] = [
   { id: "variants", label: "Варианти" },
   { id: "ingredients", label: "Съставки" },
   { id: "features", label: "Функции" },
+  { id: "how_to_use", label: "Употреба" },
   { id: "seo", label: "SEO" },
 ];
 
@@ -192,6 +193,31 @@ export function ProductModal({ product, onClose, onSave }: ProductModalProps) {
     const newFeatures = [...features];
     newFeatures[index] = { ...newFeatures[index], [field]: value };
     setFeatures(newFeatures);
+  };
+
+  const addHowToUseStep = () => {
+    setHowToUse([
+      ...howToUse,
+      {
+        step: howToUse.length + 1,
+        title: "",
+        description: "",
+      },
+    ]);
+  };
+
+  const removeHowToUseStep = (index: number) => {
+    setHowToUse(
+      howToUse
+        .filter((_, i) => i !== index)
+        .map((s, i) => ({ ...s, step: i + 1 }))
+    );
+  };
+
+  const updateHowToUseStep = (index: number, field: keyof ProductHowToUseDB, value: string | number) => {
+    const newSteps = [...howToUse];
+    newSteps[index] = { ...newSteps[index], [field]: value };
+    setHowToUse(newSteps);
   };
 
   return (
@@ -947,6 +973,31 @@ export function ProductModal({ product, onClose, onSave }: ProductModalProps) {
                               </button>
                             </div>
                           </div>
+
+                          {/* Image URL */}
+                          <div>
+                            <label className="block text-xs font-medium text-stone-500 mb-1">Снимка URL</label>
+                            <div className="flex gap-3">
+                              <input
+                                type="text"
+                                value={variant.image || ""}
+                                onChange={(e) => updateVariant(index, "image", e.target.value || undefined)}
+                                placeholder="/images/product-bundle-1.webp"
+                                className="flex-1 px-3 py-2 border border-stone-200 rounded-lg text-sm focus:outline-none focus:border-[#2D4A3E]"
+                              />
+                              {variant.image && (
+                                <div className="w-10 h-10 rounded-lg border border-stone-200 overflow-hidden flex-shrink-0">
+                                  <Image
+                                    src={variant.image}
+                                    alt={variant.name}
+                                    width={40}
+                                    height={40}
+                                    className="w-full h-full object-cover"
+                                  />
+                                </div>
+                              )}
+                            </div>
+                          </div>
                         </div>
                       </div>
                     );
@@ -1116,6 +1167,99 @@ export function ProductModal({ product, onClose, onSave }: ProductModalProps) {
                         rows={2}
                         className="w-full px-3 py-2 border border-stone-200 rounded-lg text-sm focus:outline-none focus:border-[#2D4A3E] resize-none"
                       />
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* How To Use Tab */}
+          {activeTab === "how_to_use" && (
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <p className="text-sm text-stone-500">
+                  Стъпки за употреба ({howToUse.length})
+                </p>
+                <button
+                  onClick={addHowToUseStep}
+                  className="flex items-center gap-2 px-3 py-1.5 text-sm text-[#2D4A3E] hover:bg-[#2D4A3E]/5 rounded-lg transition"
+                >
+                  <Plus className="w-4 h-4" />
+                  Добави стъпка
+                </button>
+              </div>
+
+              {howToUse.length === 0 ? (
+                <div className="text-center py-12 bg-stone-50 rounded-xl border-2 border-dashed border-stone-200">
+                  <Package className="w-10 h-10 text-stone-300 mx-auto mb-3" />
+                  <p className="text-stone-500 font-medium">Няма добавени стъпки</p>
+                  <p className="text-xs text-stone-400 mt-1 mb-4">Добавете стъпки като: Разтвори, Разбъркай, Наслади се</p>
+                  <button
+                    onClick={addHowToUseStep}
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-[#2D4A3E] text-white rounded-lg text-sm font-medium hover:bg-[#1a2e26] transition"
+                  >
+                    <Plus className="w-4 h-4" />
+                    Добави първа стъпка
+                  </button>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {howToUse.map((step, index) => (
+                    <div
+                      key={index}
+                      className="p-4 border border-stone-200 rounded-xl space-y-3"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <div className="w-8 h-8 rounded-full bg-[#2D4A3E] text-white flex items-center justify-center text-sm font-bold">
+                            {step.step}
+                          </div>
+                          <span className="text-sm font-medium text-stone-700">
+                            {step.title || `Стъпка ${step.step}`}
+                          </span>
+                        </div>
+                        <button
+                          onClick={() => removeHowToUseStep(index)}
+                          className="p-1.5 text-red-500 hover:bg-red-50 rounded-lg transition"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-xs font-medium text-stone-500 mb-1">Заглавие</label>
+                          <input
+                            type="text"
+                            value={step.title}
+                            onChange={(e) => updateHowToUseStep(index, "title", e.target.value)}
+                            placeholder="напр. Разтвори"
+                            className="w-full px-3 py-2 border border-stone-200 rounded-lg text-sm focus:outline-none focus:border-[#2D4A3E]"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-stone-500 mb-1">Снимка URL (по избор)</label>
+                          <input
+                            type="text"
+                            value={step.image || ""}
+                            onChange={(e) => updateHowToUseStep(index, "image", e.target.value)}
+                            placeholder="/images/step-1.webp"
+                            className="w-full px-3 py-2 border border-stone-200 rounded-lg text-sm focus:outline-none focus:border-[#2D4A3E]"
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-medium text-stone-500 mb-1">Описание</label>
+                        <textarea
+                          value={step.description}
+                          onChange={(e) => updateHowToUseStep(index, "description", e.target.value)}
+                          placeholder="Разтвори 1 саше в 250мл студена вода"
+                          rows={2}
+                          className="w-full px-3 py-2 border border-stone-200 rounded-lg text-sm focus:outline-none focus:border-[#2D4A3E] resize-none"
+                        />
+                      </div>
                     </div>
                   ))}
                 </div>

@@ -2,7 +2,28 @@
 
 import Image from "next/image";
 import { motion, useReducedMotion } from "framer-motion";
-import { Check, X, Beaker, Award, Heart, Sparkles } from "lucide-react";
+import {
+  Check, X, Beaker, Award, Heart, Sparkles,
+  Droplets, Shield, Leaf, Sun, Moon, Zap, Brain, Flame, type LucideIcon,
+} from "lucide-react";
+import type { ProductFeatureDB } from "@/lib/supabase/types";
+
+const iconMap: Record<string, LucideIcon> = {
+  beaker: Beaker,
+  award: Award,
+  heart: Heart,
+  sparkles: Sparkles,
+  droplets: Droplets,
+  shield: Shield,
+  leaf: Leaf,
+  sun: Sun,
+  moon: Moon,
+  zap: Zap,
+  brain: Brain,
+  flame: Flame,
+  star: Sparkles,
+  check: Check,
+};
 
 const comparisons = [
   {
@@ -42,7 +63,7 @@ const comparisons = [
   },
 ];
 
-const benefits = [
+const defaultBenefits = [
   {
     icon: Beaker,
     title: "5 Активни Съставки",
@@ -65,8 +86,20 @@ const benefits = [
   },
 ];
 
-export function WhyCortiGlow() {
+interface WhyCortiGlowProps {
+  features?: ProductFeatureDB[];
+}
+
+export function WhyCortiGlow({ features: dbFeatures }: WhyCortiGlowProps) {
   const prefersReducedMotion = useReducedMotion();
+
+  const benefits = dbFeatures && dbFeatures.length > 0
+    ? dbFeatures.map((f) => ({
+        icon: iconMap[f.icon.toLowerCase()] || Sparkles,
+        title: f.title,
+        description: f.description,
+      }))
+    : defaultBenefits;
 
   return (
     <section className="py-16 bg-white">

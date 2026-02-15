@@ -10,7 +10,7 @@ import { ProductReviews } from "./ProductReviews";
 import { WhyCortiGlow } from "./WhyCortiGlow";
 import { HowToUseVisual } from "./HowToUseVisual";
 import type { ProductVariant } from "@/types";
-import type { ProductVariantDB, ProductIngredientDB } from "@/lib/supabase/types";
+import type { ProductVariantDB, ProductIngredientDB, ProductFeatureDB, ProductHowToUseDB } from "@/lib/supabase/types";
 import { BreadcrumbJsonLd } from "@/components/ui/BreadcrumbJsonLd";
 
 export const revalidate = 3600; // 1 hour ISR
@@ -53,6 +53,8 @@ export default async function ProductPage() {
 
   const variants = mapVariants(product.variants as unknown as ProductVariantDB[]);
   const ingredients = product.ingredients as unknown as ProductIngredientDB[];
+  const features = product.features as unknown as ProductFeatureDB[];
+  const howToUse = product.how_to_use as unknown as ProductHowToUseDB[];
 
   // Full gallery: product shots → lifestyle shots
   const galleryImages = [
@@ -291,10 +293,10 @@ export default async function ProductPage() {
       </section>
 
       {/* Why Corti-Glow Section */}
-      <WhyCortiGlow />
+      <WhyCortiGlow features={features} />
 
       {/* How To Use Section */}
-      <HowToUseVisual />
+      <HowToUseVisual steps={howToUse} />
 
       {/* Reviews Section */}
       <ProductReviews />
