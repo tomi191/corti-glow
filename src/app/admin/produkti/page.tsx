@@ -59,6 +59,7 @@ export default function ProductsPage() {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+  const [menuPos, setMenuPos] = useState<{ top: number; left: number } | null>(null);
   const limit = 20;
 
   const fetchProducts = async () => {
@@ -387,57 +388,21 @@ export default function ProductsPage() {
                         )}
                       </td>
                       <td className="px-6 py-4">
-                        <div className="relative">
-                          <button
-                            onClick={() => setOpenMenuId(openMenuId === product.id ? null : product.id)}
-                            className="p-2 hover:bg-stone-100 rounded-lg transition"
-                          >
-                            <MoreVertical className="w-4 h-4 text-stone-500" />
-                          </button>
-
-                          {openMenuId === product.id && (
-                            <div className="absolute right-0 top-full mt-1 w-48 bg-white border border-stone-200 rounded-xl shadow-lg z-10 py-1">
-                              <button
-                                onClick={() => handleEdit(product)}
-                                className="w-full px-4 py-2 text-left text-sm hover:bg-stone-50 flex items-center gap-2"
-                              >
-                                <Edit className="w-4 h-4" />
-                                Редактирай
-                              </button>
-                              <button
-                                onClick={() => handleTogglePublished(product)}
-                                className="w-full px-4 py-2 text-left text-sm hover:bg-stone-50 flex items-center gap-2"
-                              >
-                                {product.published ? (
-                                  <>
-                                    <EyeOff className="w-4 h-4" />
-                                    Скрий
-                                  </>
-                                ) : (
-                                  <>
-                                    <Eye className="w-4 h-4" />
-                                    Публикувай
-                                  </>
-                                )}
-                              </button>
-                              <button
-                                onClick={() => handleArchive(product)}
-                                className="w-full px-4 py-2 text-left text-sm hover:bg-stone-50 flex items-center gap-2"
-                              >
-                                <Archive className="w-4 h-4" />
-                                {product.status === "archived" ? "Възстанови" : "Архивирай"}
-                              </button>
-                              <hr className="my-1 border-stone-100" />
-                              <button
-                                onClick={() => handleDelete(product)}
-                                className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
-                              >
-                                <Trash2 className="w-4 h-4" />
-                                Изтрий
-                              </button>
-                            </div>
-                          )}
-                        </div>
+                        <button
+                          onClick={(e) => {
+                            if (openMenuId === product.id) {
+                              setOpenMenuId(null);
+                              setMenuPos(null);
+                            } else {
+                              const rect = e.currentTarget.getBoundingClientRect();
+                              setOpenMenuId(product.id);
+                              setMenuPos({ top: rect.bottom + 4, left: rect.right - 192 });
+                            }
+                          }}
+                          className="p-2 hover:bg-stone-100 rounded-lg transition"
+                        >
+                          <MoreVertical className="w-4 h-4 text-stone-500" />
+                        </button>
                       </td>
                     </tr>
                   ))}
@@ -557,13 +522,62 @@ export default function ProductsPage() {
         )}
       </div>
 
-      {/* Click outside to close menu */}
-      {openMenuId && (
-        <div
-          className="fixed inset-0 z-0"
-          onClick={() => setOpenMenuId(null)}
-        />
-      )}
+      {/* Context menu (fixed position to escape overflow-hidden) */}
+      {openMenuId && menuPos && (() => {
+        const menuProduct = products.find((p) => p.id === openMenuId);
+        if (!menuProduct) return null;
+        return (
+          <>
+            <div
+              className="fixed inset-0 z-40"
+              onClick={() => { setOpenMenuId(null); setMenuPos(null); }}
+            />
+            <div
+              className="fixed w-48 bg-white border border-stone-200 rounded-xl shadow-lg z-50 py-1"
+              style={{ top: menuPos.top, left: menuPos.left }}
+            >
+              <button
+                onClick={() => handleEdit(menuProduct)}
+                className="w-full px-4 py-2 text-left text-sm hover:bg-stone-50 flex items-center gap-2"
+              >
+                <Edit className="w-4 h-4" />
+                Редактирай
+              </button>
+              <button
+                onClick={() => handleTogglePublished(menuProduct)}
+                className="w-full px-4 py-2 text-left text-sm hover:bg-stone-50 flex items-center gap-2"
+              >
+                {menuProduct.published ? (
+                  <>
+                    <EyeOff className="w-4 h-4" />
+                    Скрий
+                  </>
+                ) : (
+                  <>
+                    <Eye className="w-4 h-4" />
+                    Публикувай
+                  </>
+                )}
+              </button>
+              <button
+                onClick={() => handleArchive(menuProduct)}
+                className="w-full px-4 py-2 text-left text-sm hover:bg-stone-50 flex items-center gap-2"
+              >
+                <Archive className="w-4 h-4" />
+                {menuProduct.status === "archived" ? "Възстанови" : "Архивирай"}
+              </button>
+              <hr className="my-1 border-stone-100" />
+              <button
+                onClick={() => handleDelete(menuProduct)}
+                className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
+              >
+                <Trash2 className="w-4 h-4" />
+                Изтрий
+              </button>
+            </div>
+          </>
+        );
+      })()}
 
       {/* Product Modal */}
       {isModalOpen && (
