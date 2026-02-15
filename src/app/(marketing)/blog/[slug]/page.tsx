@@ -157,7 +157,16 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     .filter((p) => p.category === post.category && p.slug !== post.slug)
     .slice(0, 2);
 
-  const rawHtml = markdownToHtml(post.content);
+  let rawHtml = markdownToHtml(post.content);
+
+  // Remove hero image from content if post has a featured image (prevents duplication)
+  if (post.image) {
+    rawHtml = rawHtml.replace(
+      /<figure class="blog-image"[^>]*>\s*<img[^>]*hero[^>]*\/?>[\s\S]*?<\/figure>/i,
+      ""
+    );
+  }
+
   const { html: contentHtml, headings } = addHeadingIds(rawHtml);
 
   // Schema markup
