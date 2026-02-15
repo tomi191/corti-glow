@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { Check, X, Beaker, Award, Heart, Sparkles } from "lucide-react";
 
@@ -81,52 +82,68 @@ export function WhyCortiGlow() {
           </p>
         </div>
 
-        {/* Comparison Table */}
-        <div className="bg-gradient-to-br from-stone-50 to-white rounded-3xl p-8 mb-12 overflow-hidden">
-          <div className="grid grid-cols-3 gap-4 mb-6">
-            <div className="col-span-1" />
-            <div className="text-center">
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-[#2D4A3E] text-white rounded-full text-sm font-medium">
-                <Sparkles className="w-4 h-4" />
-                Corti-Glow
-              </div>
-            </div>
-            <div className="text-center text-stone-500 text-sm font-medium">
-              Други продукти
+        {/* Comparison Table with Image */}
+        <div className="grid lg:grid-cols-5 gap-8 mb-12 items-center">
+          {/* Lifestyle Image */}
+          <div className="hidden lg:block lg:col-span-2">
+            <div className="relative aspect-[3/4] rounded-3xl overflow-hidden shadow-lg">
+              <Image
+                src="/images/product-glass-ready.webp"
+                alt="Corti-Glow готов моктейл"
+                fill
+                className="object-cover"
+                sizes="(max-width: 1024px) 0px, 40vw"
+              />
             </div>
           </div>
 
-          <div className="space-y-3">
-            {comparisons.map((item, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, x: -20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.05 }}
-                className="grid grid-cols-3 gap-4 items-center py-3 border-b border-stone-100 last:border-0"
-              >
-                <div className="text-sm text-stone-700">{item.feature}</div>
-                <div className="text-center">
-                  <div className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-[#B2D8C6]">
-                    <Check className="w-5 h-5 text-[#2D4A3E]" />
+          {/* Table */}
+          <div className="lg:col-span-3 bg-gradient-to-br from-stone-50 to-white rounded-3xl p-8 overflow-hidden">
+            <div className="grid grid-cols-3 gap-4 mb-6">
+              <div className="col-span-1" />
+              <div className="text-center">
+                <div className="inline-flex items-center gap-2 px-4 py-2 bg-[#2D4A3E] text-white rounded-full text-sm font-medium">
+                  <Sparkles className="w-4 h-4" />
+                  Corti-Glow
+                </div>
+              </div>
+              <div className="text-center text-stone-500 text-sm font-medium">
+                Други продукти
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              {comparisons.map((item, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, x: -20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.05 }}
+                  className="grid grid-cols-3 gap-4 items-center py-3 border-b border-stone-100 last:border-0"
+                >
+                  <div className="text-sm text-stone-700">{item.feature}</div>
+                  <div className="text-center">
+                    <div className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-[#B2D8C6]">
+                      <Check className="w-5 h-5 text-[#2D4A3E]" />
+                    </div>
                   </div>
-                </div>
-                <div className="text-center">
-                  {item.others === true ? (
-                    <div className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-green-100">
-                      <Check className="w-5 h-5 text-green-600" />
-                    </div>
-                  ) : item.others === false ? (
-                    <div className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-red-100">
-                      <X className="w-5 h-5 text-red-500" />
-                    </div>
-                  ) : (
-                    <span className="text-xs text-stone-400">{item.others}</span>
-                  )}
-                </div>
-              </motion.div>
-            ))}
+                  <div className="text-center">
+                    {item.others === true ? (
+                      <div className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-green-100">
+                        <Check className="w-5 h-5 text-green-600" />
+                      </div>
+                    ) : item.others === false ? (
+                      <div className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-red-100">
+                        <X className="w-5 h-5 text-red-500" />
+                      </div>
+                    ) : (
+                      <span className="text-xs text-stone-400">{item.others}</span>
+                    )}
+                  </div>
+                </motion.div>
+              ))}
+            </div>
           </div>
         </div>
 

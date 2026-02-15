@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { Star, Verified, ChevronDown, Quote, TrendingUp } from "lucide-react";
+import { Star, Verified, ChevronDown, TrendingUp } from "lucide-react";
 
 const reviews = [
   {
@@ -17,6 +18,7 @@ const reviews = [
     verified: true,
     helpful: 47,
     stat: "-4 см талия",
+    image: "/images/review-morning-glow.webp",
   },
   {
     id: 2,
@@ -42,6 +44,7 @@ const reviews = [
     verified: true,
     helpful: 28,
     stat: "2000mg инозитол",
+    image: "/images/review-balance-pcos.webp",
   },
   {
     id: 4,
@@ -116,6 +119,7 @@ const reviews = [
     verified: true,
     helpful: 31,
     stat: "Резултат от ден 2",
+    image: "/images/review-transformation.webp",
   },
 ];
 
@@ -230,9 +234,21 @@ export function ProductReviews() {
                 {/* Author */}
                 <div className="flex items-center justify-between pt-4 border-t border-stone-100">
                   <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#FFC1CC] to-[#B2D8C6] flex items-center justify-center text-xs font-bold text-[#2D4A3E]">
-                      {review.author.charAt(0)}
-                    </div>
+                    {review.image ? (
+                      <div className="w-8 h-8 rounded-full overflow-hidden relative flex-shrink-0">
+                        <Image
+                          src={review.image}
+                          alt={review.author}
+                          fill
+                          className="object-cover"
+                          sizes="32px"
+                        />
+                      </div>
+                    ) : (
+                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#FFC1CC] to-[#B2D8C6] flex items-center justify-center text-xs font-bold text-[#2D4A3E]">
+                        {review.author.charAt(0)}
+                      </div>
+                    )}
                     <div>
                       <div className="flex items-center gap-1">
                         <span className="text-sm font-medium text-[#2D4A3E]">

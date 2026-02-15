@@ -18,6 +18,8 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
     if (!isZoomed) return;
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") setIsZoomed(false);
+      if (e.key === "ArrowLeft") handlePrev();
+      if (e.key === "ArrowRight") handleNext();
     };
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
@@ -91,6 +93,7 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
 
       {/* Thumbnails */}
       {images.length > 1 && (
+        <div className="relative">
         <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
           {images.map((img, idx) => (
             <button
@@ -110,6 +113,11 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
               />
             </button>
           ))}
+        </div>
+        {/* Fade hint for scrollable thumbnails */}
+        {images.length > 5 && (
+          <div className="absolute right-0 top-0 bottom-2 w-12 bg-gradient-to-l from-white to-transparent pointer-events-none" />
+        )}
         </div>
       )}
 
@@ -131,6 +139,7 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
               animate={{ scale: 1 }}
               exit={{ scale: 0.9 }}
               className="relative max-w-4xl max-h-[90vh] w-full aspect-square"
+              onClick={(e) => e.stopPropagation()}
             >
               <Image
                 src={images[currentIndex]}
@@ -139,6 +148,32 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
                 className="object-contain"
               />
             </motion.div>
+
+            {/* Modal navigation arrows */}
+            {images.length > 1 && (
+              <>
+                <button
+                  onClick={(e) => { e.stopPropagation(); handlePrev(); }}
+                  className="absolute left-4 top-1/2 -translate-y-1/2 p-3 bg-white/20 backdrop-blur-sm rounded-full text-white hover:bg-white/30 transition"
+                  aria-label="Предишна снимка"
+                >
+                  <ChevronLeft className="w-6 h-6" />
+                </button>
+                <button
+                  onClick={(e) => { e.stopPropagation(); handleNext(); }}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 p-3 bg-white/20 backdrop-blur-sm rounded-full text-white hover:bg-white/30 transition"
+                  aria-label="Следваща снимка"
+                >
+                  <ChevronRight className="w-6 h-6" />
+                </button>
+              </>
+            )}
+
+            {/* Image counter */}
+            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full text-sm text-white">
+              {currentIndex + 1} / {images.length}
+            </div>
+
             <button
               onClick={() => setIsZoomed(false)}
               className="absolute top-4 right-4 p-2 bg-white/20 backdrop-blur-sm rounded-full text-white hover:bg-white/30 transition"

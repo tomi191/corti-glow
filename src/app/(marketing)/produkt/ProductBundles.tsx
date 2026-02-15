@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import Image from "next/image";
 import type { ProductVariant } from "@/types";
 import { formatPrice } from "@/lib/utils";
 import { AddToCartButton } from "@/components/cart";
@@ -39,62 +40,85 @@ export function ProductBundles({ variants }: ProductBundlesProps) {
         <p className="text-sm font-medium text-stone-700">Избери пакет:</p>
 
         <div className="space-y-3">
-          {variants.map((variant) => (
-            <label
-              key={variant.id}
-              className={`flex items-center gap-4 p-4 rounded-xl border-2 cursor-pointer transition ${
-                selectedId === variant.id
-                  ? "border-[#2D4A3E] bg-[#2D4A3E]/5"
-                  : "border-stone-200 hover:border-stone-300"
-              }`}
-            >
-              <input
-                type="radio"
-                name="bundle"
-                value={variant.id}
-                checked={selectedId === variant.id}
-                onChange={() => setSelectedId(variant.id)}
-                className="sr-only"
-              />
+          {variants.map((variant) => {
+            const perServing = variant.quantity > 0
+              ? (variant.price / (variant.quantity * 30)).toFixed(2)
+              : null;
+            const variantImage = variant.image || "/images/product-hero-box.webp";
 
-              <div
-                className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+            return (
+              <label
+                key={variant.id}
+                className={`flex items-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition ${
                   selectedId === variant.id
-                    ? "border-[#2D4A3E]"
-                    : "border-stone-300"
+                    ? "border-[#2D4A3E] bg-[#2D4A3E]/5"
+                    : "border-stone-200 hover:border-stone-300"
                 }`}
               >
-                {selectedId === variant.id && (
-                  <div className="w-2.5 h-2.5 rounded-full bg-[#2D4A3E]" />
-                )}
-              </div>
+                <input
+                  type="radio"
+                  name="bundle"
+                  value={variant.id}
+                  checked={selectedId === variant.id}
+                  onChange={() => setSelectedId(variant.id)}
+                  className="sr-only"
+                />
 
-              <div className="flex-1">
-                <div className="flex items-center gap-2">
-                  <span className="font-medium text-stone-900">
-                    {variant.name}
-                  </span>
-                  {variant.isBestSeller && (
-                    <span className="text-[11px] font-bold uppercase tracking-wider text-[#2D4A3E] bg-[#B2D8C6]/30 px-2.5 py-1 rounded-full">
-                      Най-популярен
-                    </span>
+                {/* Product thumbnail */}
+                <div className="w-10 h-10 rounded-lg overflow-hidden bg-stone-100 flex-shrink-0 relative">
+                  <Image
+                    src={variantImage}
+                    alt={variant.name}
+                    fill
+                    className="object-cover"
+                    sizes="40px"
+                  />
+                </div>
+
+                <div
+                  className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
+                    selectedId === variant.id
+                      ? "border-[#2D4A3E]"
+                      : "border-stone-300"
+                  }`}
+                >
+                  {selectedId === variant.id && (
+                    <div className="w-2.5 h-2.5 rounded-full bg-[#2D4A3E]" />
                   )}
                 </div>
-                <p className="text-xs text-stone-500">{variant.description}</p>
-              </div>
 
-              <div className="text-right">
-                <p className="font-bold text-[#2D4A3E]">
-                  {formatPrice(variant.price)}
-                </p>
-                {variant.compareAtPrice && (
-                  <p className="text-xs text-stone-400 line-through">
-                    {formatPrice(variant.compareAtPrice)}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium text-stone-900">
+                      {variant.name}
+                    </span>
+                    {variant.isBestSeller && (
+                      <span className="text-[11px] font-bold uppercase tracking-wider text-[#2D4A3E] bg-[#B2D8C6]/30 px-2.5 py-1 rounded-full">
+                        Най-популярен
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-xs text-stone-500">{variant.description}</p>
+                </div>
+
+                <div className="text-right flex-shrink-0">
+                  <p className="font-bold text-[#2D4A3E]">
+                    {formatPrice(variant.price)}
                   </p>
-                )}
-              </div>
-            </label>
-          ))}
+                  {variant.compareAtPrice && (
+                    <p className="text-xs text-stone-400 line-through">
+                      {formatPrice(variant.compareAtPrice)}
+                    </p>
+                  )}
+                  {perServing && (
+                    <p className="text-[10px] text-[#B2D8C6] font-medium">
+                      {perServing} €/доза
+                    </p>
+                  )}
+                </div>
+              </label>
+            );
+          })}
         </div>
 
         <div ref={buttonRef}>
@@ -104,6 +128,7 @@ export function ProductBundles({ variants }: ProductBundlesProps) {
             variantId={selectedVariant.id}
             title={`Corti-Glow (${selectedVariant.name})`}
             price={selectedVariant.price}
+            image={selectedVariant.image || "/images/product-hero-box.webp"}
             variant="primary"
             className="py-4 text-base"
           />
@@ -134,6 +159,7 @@ export function ProductBundles({ variants }: ProductBundlesProps) {
               variantId={selectedVariant.id}
               title={`Corti-Glow (${selectedVariant.name})`}
               price={selectedVariant.price}
+              image={selectedVariant.image || "/images/product-hero-box.webp"}
               variant="primary"
               className="py-3 px-6 text-sm !w-auto flex-shrink-0"
             />

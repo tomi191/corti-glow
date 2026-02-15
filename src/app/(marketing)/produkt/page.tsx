@@ -8,6 +8,7 @@ import { ProductGallery } from "./ProductGallery";
 import { TrustBar, GuaranteeBadge, PaymentMethods } from "./TrustBar";
 import { ProductReviews } from "./ProductReviews";
 import { WhyCortiGlow } from "./WhyCortiGlow";
+import { HowToUseVisual } from "./HowToUseVisual";
 import type { ProductVariant } from "@/types";
 import type { ProductVariantDB, ProductIngredientDB } from "@/lib/supabase/types";
 import { BreadcrumbJsonLd } from "@/components/ui/BreadcrumbJsonLd";
@@ -38,6 +39,7 @@ function mapVariants(dbVariants: ProductVariantDB[]): ProductVariant[] {
     quantity: v.quantity,
     isBestSeller: v.is_best_seller,
     savings: v.savings,
+    image: v.image,
   }));
 }
 
@@ -88,6 +90,26 @@ export default async function ProductPage() {
         },
       },
     })),
+    aggregateRating: {
+      "@type": "AggregateRating",
+      ratingValue: "4.9",
+      reviewCount: "487",
+      bestRating: "5",
+      worstRating: "1",
+    },
+  };
+
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqs.map((faq) => ({
+      "@type": "Question",
+      name: faq.question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: faq.answer,
+      },
+    })),
   };
 
   return (
@@ -101,6 +123,10 @@ export default async function ProductPage() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
       />
 
       {/* Trust Bar */}
@@ -225,27 +251,6 @@ export default async function ProductPage() {
 
                 <details className="group">
                   <summary className="flex justify-between items-center cursor-pointer py-3 border-b border-stone-100">
-                    <span className="font-medium text-[#2D4A3E]">Как да използвам</span>
-                    <ChevronDown className="w-5 h-5 text-stone-400 group-open:rotate-180 transition-transform" />
-                  </summary>
-                  <div className="py-4 space-y-4">
-                    <div className="flex gap-3">
-                      <span className="w-7 h-7 rounded-full bg-[#B2D8C6] text-[#2D4A3E] flex items-center justify-center text-sm font-bold flex-shrink-0">1</span>
-                      <p className="text-sm text-stone-600">Разтвори 1 саше в 250мл студена вода</p>
-                    </div>
-                    <div className="flex gap-3">
-                      <span className="w-7 h-7 rounded-full bg-[#B2D8C6] text-[#2D4A3E] flex items-center justify-center text-sm font-bold flex-shrink-0">2</span>
-                      <p className="text-sm text-stone-600">Разбъркай добре, добави лед по желание</p>
-                    </div>
-                    <div className="flex gap-3">
-                      <span className="w-7 h-7 rounded-full bg-[#B2D8C6] text-[#2D4A3E] flex items-center justify-center text-sm font-bold flex-shrink-0">3</span>
-                      <p className="text-sm text-stone-600">Пий веднъж дневно, за предпочитане вечер</p>
-                    </div>
-                  </div>
-                </details>
-
-                <details className="group">
-                  <summary className="flex justify-between items-center cursor-pointer py-3 border-b border-stone-100">
                     <span className="font-medium text-[#2D4A3E]">Доставка & Връщане</span>
                     <ChevronDown className="w-5 h-5 text-stone-400 group-open:rotate-180 transition-transform" />
                   </summary>
@@ -267,6 +272,9 @@ export default async function ProductPage() {
 
       {/* Why Corti-Glow Section */}
       <WhyCortiGlow />
+
+      {/* How To Use Section */}
+      <HowToUseVisual />
 
       {/* Reviews Section */}
       <ProductReviews />

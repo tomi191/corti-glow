@@ -383,6 +383,7 @@ export interface ProductVariantDB {
   quantity: number;
   is_best_seller?: boolean;
   savings?: number;
+  image?: string;
 }
 
 export interface ProductFeatureDB {
