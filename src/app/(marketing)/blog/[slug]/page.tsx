@@ -1,49 +1,50 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Clock, User, Calendar, ArrowRight, CheckCircle2, RefreshCw } from "lucide-react";
+import Image from "next/image";
+import { ArrowLeft, Clock, Calendar, ArrowRight, CheckCircle2, RefreshCw } from "lucide-react";
 import {
-  blogPosts,
   getPostBySlug,
+  getPublishedPosts,
+  getAllPublishedSlugs,
   categoryLabels,
   categoryColors,
-  type BlogPost,
-} from "@/data/blog";
+} from "@/lib/blog";
+import type { BlogPostRow } from "@/lib/supabase/types";
 import { BreadcrumbJsonLd } from "@/components/ui/BreadcrumbJsonLd";
+
+export const revalidate = 300; // 5 min ISR
 
 interface BlogPostPageProps {
   params: Promise<{ slug: string }>;
 }
 
 export async function generateStaticParams() {
-  return blogPosts.map((post) => ({
-    slug: post.slug,
-  }));
+  const slugs = await getAllPublishedSlugs();
+  return slugs.map((slug) => ({ slug }));
 }
 
 export async function generateMetadata({
   params,
 }: BlogPostPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const post = getPostBySlug(slug);
+  const post = await getPostBySlug(slug);
 
   if (!post) {
-    return {
-      title: "Статията не е намерена",
-    };
+    return { title: "Статията не е намерена" };
   }
 
   return {
-    title: post.title,
-    description: post.excerpt,
+    title: post.meta_title || post.title,
+    description: post.meta_description || post.excerpt,
     alternates: { canonical: `https://luralab.eu/blog/${slug}` },
     openGraph: {
-      title: post.title,
-      description: post.excerpt,
+      title: post.meta_title || post.title,
+      description: post.meta_description || post.excerpt,
       type: "article",
-      publishedTime: post.publishedAt,
-      modifiedTime: post.updatedAt,
-      authors: [post.author.name],
+      publishedTime: post.published_at,
+      modifiedTime: post.updated_at,
+      authors: [(post.author as { name?: string })?.name || "LURA"],
       images: post.image
         ? [{ url: `https://luralab.eu${post.image}` }]
         : undefined,
@@ -52,67 +53,55 @@ export async function generateMetadata({
 }
 
 // Generate Article schema for SEO
-function generateArticleSchema(post: BlogPost, url: string) {
+function generateArticleSchema(post: BlogPostRow, url: string) {
+  const author = post.author as { name?: string; credentials?: string; image?: string } | null;
   return {
     "@context": "https://schema.org",
     "@type": "Article",
     headline: post.title,
     description: post.excerpt,
-    image: `https://luralab.eu${post.image}`,
+    image: post.image ? `https://luralab.eu${post.image}` : undefined,
     author: {
       "@type": "Person",
-      name: post.author.name,
-      jobTitle: post.author.credentials || undefined,
+      name: author?.name || "LURA",
+      jobTitle: author?.credentials || undefined,
+      image: author?.image ? `https://luralab.eu${author.image}` : undefined,
     },
     publisher: {
       "@type": "Organization",
       name: "LURA Wellness",
-      logo: {
-        "@type": "ImageObject",
-        url: "https://luralab.eu/logo.png",
-      },
+      logo: { "@type": "ImageObject", url: "https://luralab.eu/logo.png" },
     },
-    datePublished: post.publishedAt,
-    dateModified: post.updatedAt || post.publishedAt,
+    datePublished: post.published_at,
+    dateModified: post.updated_at || post.published_at,
     mainEntityOfPage: url,
   };
 }
 
 // Generate FAQ schema for SEO
-function generateFAQSchema(post: BlogPost) {
-  if (!post.faq || post.faq.length === 0) return null;
+function generateFAQSchema(post: BlogPostRow) {
+  const faq = post.faq as { question: string; answer: string }[] | null;
+  if (!faq || !Array.isArray(faq) || faq.length === 0) return null;
 
   return {
     "@context": "https://schema.org",
     "@type": "FAQPage",
-    mainEntity: post.faq.map((item) => ({
+    mainEntity: faq.map((item) => ({
       "@type": "Question",
       name: item.question,
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: item.answer,
-      },
+      acceptedAnswer: { "@type": "Answer", text: item.answer },
     })),
   };
 }
 
-export default async function BlogPostPage({ params }: BlogPostPageProps) {
-  const { slug } = await params;
-  const post = getPostBySlug(slug);
-
-  if (!post) {
-    notFound();
+// Simple markdown to HTML (for posts stored as markdown)
+function markdownToHtml(content: string): string {
+  // If content already contains HTML tags, return as-is
+  if (/<[a-z][\s\S]*>/i.test(content.trim().slice(0, 100))) {
+    return content;
   }
 
-  const url = `https://luralab.eu/blog/${post.slug}`;
-
-  // Get related posts (same category, excluding current)
-  const relatedPosts = blogPosts
-    .filter((p) => p.category === post.category && p.slug !== post.slug)
-    .slice(0, 2);
-
-  // Simple markdown to HTML (basic conversion)
-  const contentHtml = post.content
+  return content
     .replace(/^> (.*$)/gim, '<blockquote class="border-l-4 border-[#B2D8C6] pl-4 my-6 text-stone-600 italic">$1</blockquote>')
     .replace(/^### (.*$)/gim, '<h3 class="text-xl font-semibold text-[#2D4A3E] mt-8 mb-4">$1</h3>')
     .replace(/^## (.*$)/gim, '<h2 class="text-2xl font-semibold text-[#2D4A3E] mt-10 mb-4">$1</h2>')
@@ -127,6 +116,28 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     .replace(/\n\n/g, '</p><p class="text-stone-600 mb-4 leading-relaxed">')
     .replace(/^(?!<[hulo])/gm, '<p class="text-stone-600 mb-4 leading-relaxed">')
     .replace(/(?<![>])$/gm, '</p>');
+}
+
+export default async function BlogPostPage({ params }: BlogPostPageProps) {
+  const { slug } = await params;
+  const post = await getPostBySlug(slug);
+
+  if (!post) {
+    notFound();
+  }
+
+  const url = `https://luralab.eu/blog/${post.slug}`;
+  const author = post.author as { name?: string; credentials?: string; bio?: string; image?: string } | null;
+  const keyTakeaways = post.key_takeaways as string[] | null;
+  const sources = post.sources as { title: string; publication?: string; year?: number; url?: string }[] | null;
+
+  // Get related posts (same category, excluding current)
+  const allPosts = await getPublishedPosts();
+  const relatedPosts = allPosts
+    .filter((p) => p.category === post.category && p.slug !== post.slug)
+    .slice(0, 2);
+
+  const contentHtml = markdownToHtml(post.content);
 
   // Schema markup
   const articleSchema = generateArticleSchema(post, url);
@@ -176,7 +187,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
             </span>
             <span className="flex items-center gap-1 text-sm text-stone-500">
               <Clock className="w-4 h-4" />
-              {post.readTime} мин четене
+              {post.read_time} мин четене
             </span>
           </div>
 
@@ -188,34 +199,46 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
 
           {/* Author with E-E-A-T signals */}
           <div className="flex items-start gap-4 p-4 bg-white rounded-xl border border-stone-100 shadow-sm">
-            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#B2D8C6] to-[#FFC1CC] flex items-center justify-center text-lg font-bold text-[#2D4A3E]">
-              {post.author.name.charAt(0)}
-            </div>
+            {author?.image ? (
+              <Image
+                src={author.image}
+                alt={author.name || ""}
+                width={48}
+                height={48}
+                className="w-12 h-12 rounded-full object-cover"
+              />
+            ) : (
+              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#B2D8C6] to-[#FFC1CC] flex items-center justify-center text-lg font-bold text-[#2D4A3E]">
+                {(author?.name || "L").charAt(0)}
+              </div>
+            )}
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-1">
                 <span className="font-semibold text-[#2D4A3E]">
-                  {post.author.name}
+                  {author?.name || "LURA"}
                 </span>
-                {post.author.credentials && (
+                {author?.credentials && (
                   <span className="px-2 py-0.5 text-xs bg-[#B2D8C6]/20 text-[#2D4A3E] rounded-full">
-                    {post.author.credentials}
+                    {author.credentials}
                   </span>
                 )}
               </div>
-              <p className="text-sm text-stone-500 mb-2">{post.author.bio}</p>
+              {author?.bio && (
+                <p className="text-sm text-stone-500 mb-2">{author.bio}</p>
+              )}
               <div className="flex items-center gap-4 text-xs text-stone-400">
                 <span className="flex items-center gap-1">
                   <Calendar className="w-3 h-3" />
-                  {new Date(post.publishedAt).toLocaleDateString("bg-BG", {
+                  {new Date(post.published_at).toLocaleDateString("bg-BG", {
                     day: "numeric",
                     month: "long",
                     year: "numeric",
                   })}
                 </span>
-                {post.updatedAt && (
+                {post.updated_at && post.updated_at !== post.published_at && (
                   <span className="flex items-center gap-1">
                     <RefreshCw className="w-3 h-3" />
-                    Обновена: {new Date(post.updatedAt).toLocaleDateString("bg-BG", {
+                    Обновена: {new Date(post.updated_at).toLocaleDateString("bg-BG", {
                       day: "numeric",
                       month: "short",
                       year: "numeric",
@@ -228,8 +251,25 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         </div>
       </div>
 
+      {/* Featured Image */}
+      {post.image && (
+        <div className="px-6 pb-8">
+          <div className="max-w-3xl mx-auto">
+            <div className="relative w-full aspect-[16/9] rounded-2xl overflow-hidden shadow-lg">
+              <Image
+                src={post.image}
+                alt={post.title}
+                fill
+                className="object-cover"
+                priority
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Key Takeaways - for featured snippets */}
-      {post.keyTakeaways && post.keyTakeaways.length > 0 && (
+      {keyTakeaways && Array.isArray(keyTakeaways) && keyTakeaways.length > 0 && (
         <div className="px-6 py-8 bg-[#B2D8C6]/10 border-y border-[#B2D8C6]/20">
           <div className="max-w-3xl mx-auto">
             <h2 className="text-lg font-semibold text-[#2D4A3E] mb-4 flex items-center gap-2">
@@ -237,7 +277,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
               Ключови изводи
             </h2>
             <ul className="space-y-2">
-              {post.keyTakeaways.map((takeaway, index) => (
+              {keyTakeaways.map((takeaway, index) => (
                 <li key={index} className="flex items-start gap-3 text-stone-600">
                   <span className="w-6 h-6 rounded-full bg-[#2D4A3E] text-white text-sm flex items-center justify-center flex-shrink-0 mt-0.5">
                     {index + 1}
@@ -259,14 +299,14 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
       </article>
 
       {/* Sources */}
-      {post.sources && post.sources.length > 0 && (
+      {sources && Array.isArray(sources) && sources.length > 0 && (
         <section className="px-6 pb-8">
           <div className="max-w-3xl mx-auto border-t border-stone-200 pt-8">
             <h3 className="text-sm font-semibold text-stone-500 uppercase tracking-wider mb-4">
               Източници
             </h3>
             <ul className="space-y-2 text-sm text-stone-500">
-              {post.sources.map((source, index) => (
+              {sources.map((source, index) => (
                 <li key={index} className="flex items-start gap-2">
                   <span className="text-stone-400">[{index + 1}]</span>
                   <span>

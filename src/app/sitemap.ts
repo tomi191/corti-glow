@@ -1,9 +1,9 @@
 import { MetadataRoute } from "next";
-import { blogPosts } from "@/data/blog";
+import { getPublishedPosts } from "@/lib/blog";
 
 const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || "https://luralab.eu";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Use realistic last-modified dates per page type
   const staticPages: { route: string; lastmod: string; freq: "weekly" | "monthly"; priority: number }[] = [
     { route: "", lastmod: "2026-02-14", freq: "weekly", priority: 1 },
@@ -25,10 +25,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: page.priority,
   }));
 
-  // Blog posts
-  const blogRoutes = blogPosts.map((post) => ({
+  // Blog posts from Supabase (or fallback)
+  const posts = await getPublishedPosts();
+  const blogRoutes = posts.map((post) => ({
     url: `${BASE_URL}/blog/${post.slug}`,
-    lastModified: new Date(post.publishedAt),
+    lastModified: new Date(post.updated_at || post.published_at),
     changeFrequency: "monthly" as const,
     priority: 0.6,
   }));

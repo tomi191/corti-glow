@@ -328,6 +328,90 @@ export interface Database {
         };
         Relationships: [];
       };
+      blog_posts: {
+        Row: {
+          id: string;
+          slug: string;
+          title: string;
+          excerpt: string;
+          content: string;
+          image: string;
+          category: "hormoni" | "stress" | "sŭn" | "hranene" | "wellness";
+          author: Json;
+          published_at: string;
+          updated_at: string;
+          read_time: number;
+          featured: boolean;
+          published: boolean;
+          tldr: string | null;
+          key_takeaways: Json;
+          faq: Json;
+          sources: Json;
+          meta_title: string | null;
+          meta_description: string | null;
+          keywords: Json;
+          content_type: string | null;
+          ai_generated: boolean;
+          ai_model: string | null;
+          word_count: number | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          slug: string;
+          title: string;
+          excerpt: string;
+          content: string;
+          image?: string;
+          category: "hormoni" | "stress" | "sŭn" | "hranene" | "wellness";
+          author: Json;
+          published_at?: string;
+          updated_at?: string;
+          read_time?: number;
+          featured?: boolean;
+          published?: boolean;
+          tldr?: string | null;
+          key_takeaways?: Json;
+          faq?: Json;
+          sources?: Json;
+          meta_title?: string | null;
+          meta_description?: string | null;
+          keywords?: Json;
+          content_type?: string | null;
+          ai_generated?: boolean;
+          ai_model?: string | null;
+          word_count?: number | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          slug?: string;
+          title?: string;
+          excerpt?: string;
+          content?: string;
+          image?: string;
+          category?: "hormoni" | "stress" | "sŭn" | "hranene" | "wellness";
+          author?: Json;
+          published_at?: string;
+          updated_at?: string;
+          read_time?: number;
+          featured?: boolean;
+          published?: boolean;
+          tldr?: string | null;
+          key_takeaways?: Json;
+          faq?: Json;
+          sources?: Json;
+          meta_title?: string | null;
+          meta_description?: string | null;
+          keywords?: Json;
+          content_type?: string | null;
+          ai_generated?: boolean;
+          ai_model?: string | null;
+          word_count?: number | null;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: {
       customers: {
@@ -372,6 +456,12 @@ export type DiscountInsert = Database["public"]["Tables"]["discounts"]["Insert"]
 export type DiscountUpdate = Database["public"]["Tables"]["discounts"]["Update"];
 export type DiscountType = Discount["type"];
 export type DiscountAppliesTo = Discount["applies_to"];
+
+// Blog post types
+export type BlogPostRow = Database["public"]["Tables"]["blog_posts"]["Row"];
+export type BlogPostInsert = Database["public"]["Tables"]["blog_posts"]["Insert"];
+export type BlogPostUpdate = Database["public"]["Tables"]["blog_posts"]["Update"];
+export type BlogCategory = BlogPostRow["category"];
 
 // JSON field types for products
 export interface ProductVariantDB {

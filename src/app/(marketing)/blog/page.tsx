@@ -3,14 +3,15 @@ import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight, Clock } from "lucide-react";
 import {
-  blogPosts,
+  getPublishedPosts,
   getFeaturedPosts,
-  getCategoriesWithCounts,
   categoryLabels,
   categoryColors,
-  type BlogCategory,
-} from "@/data/blog";
+} from "@/lib/blog";
+import type { BlogPostRow } from "@/lib/supabase/types";
 import { BreadcrumbJsonLd } from "@/components/ui/BreadcrumbJsonLd";
+
+export const revalidate = 300; // 5 min ISR
 
 export const metadata: Metadata = {
   title: "Блог | Здраве, Хормони и Уелнес",
@@ -23,10 +24,30 @@ export const metadata: Metadata = {
   },
 };
 
-export default function BlogPage() {
-  const featuredPosts = getFeaturedPosts();
-  const categories = getCategoriesWithCounts();
-  const recentPosts = blogPosts.slice(0, 6);
+type BlogCategory = BlogPostRow["category"];
+
+export default async function BlogPage() {
+  const [allPosts, featuredPosts] = await Promise.all([
+    getPublishedPosts(),
+    getFeaturedPosts(),
+  ]);
+
+  // Calculate category counts
+  const categoryCounts = allPosts.reduce(
+    (acc, post) => {
+      acc[post.category] = (acc[post.category] || 0) + 1;
+      return acc;
+    },
+    {} as Record<string, number>
+  );
+
+  const categories = Object.entries(categoryCounts).map(([category, count]) => ({
+    category: category as BlogCategory,
+    label: categoryLabels[category as BlogCategory],
+    count,
+  }));
+
+  const recentPosts = allPosts.slice(0, 6);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#F5F2EF] to-white">
@@ -82,48 +103,51 @@ export default function BlogPage() {
               Препоръчани статии
             </h2>
             <div className="grid md:grid-cols-2 gap-8">
-              {featuredPosts.map((post) => (
-                <Link
-                  key={post.slug}
-                  href={`/blog/${post.slug}`}
-                  className="group bg-white rounded-2xl overflow-hidden shadow-lg border border-stone-100 hover:shadow-xl transition"
-                >
-                  <div className="aspect-[16/9] relative bg-stone-100 overflow-hidden">
-                    <Image
-                      src={post.image}
-                      alt={post.title}
-                      fill
-                      className="object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
-                  </div>
-                  <div className="p-6">
-                    <div className="flex items-center gap-3 mb-3">
-                      <span
-                        className="px-3 py-1 rounded-full text-xs font-medium"
-                        style={{
-                          backgroundColor: `${categoryColors[post.category]}30`,
-                        }}
-                      >
-                        {categoryLabels[post.category]}
-                      </span>
-                      <span className="flex items-center gap-1 text-xs text-stone-500">
-                        <Clock className="w-3 h-3" />
-                        {post.readTime} мин
-                      </span>
+              {featuredPosts.map((post) => {
+                const author = post.author as { name?: string } | null;
+                return (
+                  <Link
+                    key={post.slug}
+                    href={`/blog/${post.slug}`}
+                    className="group bg-white rounded-2xl overflow-hidden shadow-lg border border-stone-100 hover:shadow-xl transition"
+                  >
+                    <div className="aspect-[16/9] relative bg-stone-100 overflow-hidden">
+                      <Image
+                        src={post.image}
+                        alt={post.title}
+                        fill
+                        className="object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
                     </div>
-                    <h3 className="text-xl font-semibold text-[#2D4A3E] mb-2 group-hover:text-[#B2D8C6] transition">
-                      {post.title}
-                    </h3>
-                    <p className="text-stone-600 text-sm mb-4">{post.excerpt}</p>
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-stone-500">{post.author.name}</span>
-                      <span className="text-[#2D4A3E] font-medium flex items-center gap-1 group-hover:gap-2 transition-all">
-                        Прочети <ArrowRight className="w-4 h-4" />
-                      </span>
+                    <div className="p-6">
+                      <div className="flex items-center gap-3 mb-3">
+                        <span
+                          className="px-3 py-1 rounded-full text-xs font-medium"
+                          style={{
+                            backgroundColor: `${categoryColors[post.category]}30`,
+                          }}
+                        >
+                          {categoryLabels[post.category]}
+                        </span>
+                        <span className="flex items-center gap-1 text-xs text-stone-500">
+                          <Clock className="w-3 h-3" />
+                          {post.read_time} мин
+                        </span>
+                      </div>
+                      <h3 className="text-xl font-semibold text-[#2D4A3E] mb-2 group-hover:text-[#B2D8C6] transition">
+                        {post.title}
+                      </h3>
+                      <p className="text-stone-600 text-sm mb-4">{post.excerpt}</p>
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-stone-500">{author?.name || "LURA"}</span>
+                        <span className="text-[#2D4A3E] font-medium flex items-center gap-1 group-hover:gap-2 transition-all">
+                          Прочети <ArrowRight className="w-4 h-4" />
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                </Link>
-              ))}
+                  </Link>
+                );
+              })}
             </div>
           </div>
         </section>
@@ -153,7 +177,7 @@ export default function BlogPage() {
                   </span>
                   <span className="flex items-center gap-1 text-xs text-stone-500">
                     <Clock className="w-3 h-3" />
-                    {post.readTime} мин
+                    {post.read_time} мин
                   </span>
                 </div>
                 <h3 className="text-lg font-semibold text-[#2D4A3E] mb-2 group-hover:text-[#B2D8C6] transition line-clamp-2">
@@ -164,7 +188,7 @@ export default function BlogPage() {
                 </p>
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-stone-500">
-                    {new Date(post.publishedAt).toLocaleDateString("bg-BG", {
+                    {new Date(post.published_at).toLocaleDateString("bg-BG", {
                       day: "numeric",
                       month: "short",
                     })}

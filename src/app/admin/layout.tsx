@@ -8,6 +8,7 @@ import {
   Package,
   ShoppingBag,
   Tag,
+  FileText,
   Users,
   Settings,
   LogOut,
@@ -36,6 +37,11 @@ const navItems = [
     href: "/admin/promocii",
     label: "Промоции",
     icon: Tag,
+  },
+  {
+    href: "/admin/blog",
+    label: "Блог",
+    icon: FileText,
   },
   {
     href: "/admin/klienti",

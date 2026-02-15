@@ -19,7 +19,8 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@content-engine/*": ["./content-engine/*"]
     }
   },
   "include": [
