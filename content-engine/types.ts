@@ -48,6 +48,7 @@ export interface BlogGenerationResult {
   keyTakeaways?: string[];
   faq?: Array<{ question: string; answer: string }>;
   sources?: Array<{ title: string; publication?: string; year?: number }>;
+  imagePrompts?: Array<{ id: string; prompt: string; section: string }>;
 }
 
 export interface BlogQualityScore {
