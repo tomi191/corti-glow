@@ -1,6 +1,6 @@
 "use client";
 
-import { Shield, Truck, CreditCard, RotateCcw, Lock, Award } from "lucide-react";
+import { Shield, Truck, RotateCcw, Lock, Award } from "lucide-react";
 
 export function TrustBar() {
   return (

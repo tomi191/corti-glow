@@ -52,7 +52,7 @@ export function AddToCartButton({
         className
       )}
     >
-      {children || "Добави в Количката"}
+      {children || "Започни трансформацията"}
     </button>
   );
 }

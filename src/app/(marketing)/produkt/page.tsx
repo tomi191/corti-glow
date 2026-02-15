@@ -53,7 +53,25 @@ export default async function ProductPage() {
 
   const variants = mapVariants(product.variants as unknown as ProductVariantDB[]);
   const ingredients = product.ingredients as unknown as ProductIngredientDB[];
-  const images = product.images?.length > 0 ? product.images : [product.image];
+
+  // Full gallery: product shots → lifestyle shots
+  const galleryImages = [
+    "/images/product-hero-box.webp",
+    "/images/product-sachet-marble.webp",
+    "/images/product-sachet-open.webp",
+    "/images/product-pouring.webp",
+    "/images/product-glass-ready.webp",
+    "/images/product-hand-sachet.webp",
+    "/images/product-splash-pour.webp",
+    "/images/lifestyle-evening-mocktail.webp",
+    "/images/lifestyle-sofa-mocktail.webp",
+    "/images/lifestyle-nightstand-ritual.webp",
+    "/images/mocktail-ashwagandha-flatlay.webp",
+  ];
+  // Use DB images if they have more, otherwise use curated gallery
+  const images = product.images?.length > galleryImages.length
+    ? product.images
+    : galleryImages;
 
   const productSchema = {
     "@context": "https://schema.org",
@@ -136,8 +154,10 @@ export default async function ProductPage() {
       <section className="py-12 md:py-16 bg-white">
         <div className="max-w-6xl mx-auto px-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
-            {/* Product Gallery */}
-            <ProductGallery images={images} productName={product.name} />
+            {/* Product Gallery — sticky on desktop */}
+            <div className="lg:sticky lg:top-24 lg:self-start">
+              <ProductGallery images={images} productName={product.name} />
+            </div>
 
             {/* Product Info */}
             <div className="space-y-6">
@@ -289,6 +309,7 @@ export default async function ProductPage() {
             {faqs.map((faq, index) => (
               <details
                 key={index}
+                name="faq"
                 className="group p-5 bg-stone-50 rounded-xl cursor-pointer hover:bg-stone-100 transition"
               >
                 <summary className="flex justify-between items-center font-medium text-[#2D4A3E]">

@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 
 const steps = [
   {
@@ -25,6 +25,8 @@ const steps = [
 ];
 
 export function HowToUseVisual() {
+  const prefersReducedMotion = useReducedMotion();
+
   return (
     <section className="py-16 bg-[#F5F2EF]">
       <div className="max-w-6xl mx-auto px-6">
@@ -46,10 +48,10 @@ export function HowToUseVisual() {
           {steps.map((step, index) => (
             <motion.div
               key={step.number}
-              initial={{ opacity: 0, y: 30 }}
+              initial={prefersReducedMotion ? false : { opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: index * 0.15 }}
+              transition={prefersReducedMotion ? { duration: 0 } : { delay: index * 0.15 }}
               className="text-center"
             >
               {/* Image */}

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { Star, Verified, ChevronDown, TrendingUp } from "lucide-react";
 
 const reviews = [
@@ -137,7 +137,17 @@ const stats = {
 
 export function ProductReviews() {
   const [showAll, setShowAll] = useState(false);
+  const [expandedIds, setExpandedIds] = useState<Set<number>>(new Set());
+  const prefersReducedMotion = useReducedMotion();
   const displayedReviews = showAll ? reviews : reviews.slice(0, 3);
+
+  const toggleExpand = (id: number) => {
+    setExpandedIds((prev) => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+  };
 
   return (
     <section className="py-16 bg-[#F5F2EF]">
@@ -195,10 +205,10 @@ export function ProductReviews() {
             {displayedReviews.map((review, index) => (
               <motion.div
                 key={review.id}
-                initial={{ opacity: 0, y: 20 }}
+                initial={prefersReducedMotion ? false : { opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ delay: index * 0.1 }}
+                exit={prefersReducedMotion ? undefined : { opacity: 0, y: -20 }}
+                transition={prefersReducedMotion ? { duration: 0 } : { delay: index * 0.1 }}
                 className="bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow"
               >
                 {/* Rating */}
@@ -217,9 +227,15 @@ export function ProductReviews() {
                 </h3>
 
                 {/* Content */}
-                <p className="text-sm text-stone-600 mb-4 line-clamp-3">
+                <p className={`text-sm text-stone-600 mb-1 ${expandedIds.has(review.id) ? "" : "line-clamp-3"}`}>
                   {review.content}
                 </p>
+                <button
+                  onClick={() => toggleExpand(review.id)}
+                  className="text-xs text-[#B2D8C6] hover:text-[#2D4A3E] transition-colors mb-4"
+                >
+                  {expandedIds.has(review.id) ? "Скрий" : "Прочети повече"}
+                </button>
 
                 {/* Stat badge */}
                 {review.stat && (

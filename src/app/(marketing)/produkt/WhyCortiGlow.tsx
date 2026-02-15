@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { Check, X, Beaker, Award, Heart, Sparkles } from "lucide-react";
 
 const comparisons = [
@@ -66,6 +66,8 @@ const benefits = [
 ];
 
 export function WhyCortiGlow() {
+  const prefersReducedMotion = useReducedMotion();
+
   return (
     <section className="py-16 bg-white">
       <div className="max-w-6xl mx-auto px-6">
@@ -116,10 +118,10 @@ export function WhyCortiGlow() {
               {comparisons.map((item, index) => (
                 <motion.div
                   key={index}
-                  initial={{ opacity: 0, x: -20 }}
+                  initial={prefersReducedMotion ? false : { opacity: 0, x: -20 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
-                  transition={{ delay: index * 0.05 }}
+                  transition={prefersReducedMotion ? { duration: 0 } : { delay: index * 0.05 }}
                   className="grid grid-cols-3 gap-4 items-center py-3 border-b border-stone-100 last:border-0"
                 >
                   <div className="text-sm text-stone-700">{item.feature}</div>
@@ -152,10 +154,10 @@ export function WhyCortiGlow() {
           {benefits.map((benefit, index) => (
             <motion.div
               key={index}
-              initial={{ opacity: 0, y: 20 }}
+              initial={prefersReducedMotion ? false : { opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: index * 0.1 }}
+              transition={prefersReducedMotion ? { duration: 0 } : { delay: index * 0.1 }}
               className="bg-stone-50 rounded-2xl p-6 text-center hover:shadow-lg transition-shadow"
             >
               <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#B2D8C6] to-[#FFC1CC] flex items-center justify-center mx-auto mb-4">
