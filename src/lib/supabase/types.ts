@@ -412,6 +412,61 @@ export interface Database {
         };
         Relationships: [];
       };
+      blog_comments: {
+        Row: {
+          id: string;
+          blog_post_id: string;
+          parent_id: string | null;
+          author_name: string;
+          author_email: string;
+          content: string;
+          status: "pending" | "approved" | "rejected";
+          website: string;
+          ip_address: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          blog_post_id: string;
+          parent_id?: string | null;
+          author_name: string;
+          author_email: string;
+          content: string;
+          status?: "pending" | "approved" | "rejected";
+          website?: string;
+          ip_address?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          blog_post_id?: string;
+          parent_id?: string | null;
+          author_name?: string;
+          author_email?: string;
+          content?: string;
+          status?: "pending" | "approved" | "rejected";
+          website?: string;
+          ip_address?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "blog_comments_blog_post_id_fkey";
+            columns: ["blog_post_id"];
+            referencedRelation: "blog_posts";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "blog_comments_parent_id_fkey";
+            columns: ["parent_id"];
+            referencedRelation: "blog_comments";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
     };
     Views: {
       customers: {
@@ -462,6 +517,11 @@ export type BlogPostRow = Database["public"]["Tables"]["blog_posts"]["Row"];
 export type BlogPostInsert = Database["public"]["Tables"]["blog_posts"]["Insert"];
 export type BlogPostUpdate = Database["public"]["Tables"]["blog_posts"]["Update"];
 export type BlogCategory = BlogPostRow["category"];
+
+// Blog comment types
+export type BlogComment = Database["public"]["Tables"]["blog_comments"]["Row"];
+export type BlogCommentInsert = Database["public"]["Tables"]["blog_comments"]["Insert"];
+export type BlogCommentUpdate = Database["public"]["Tables"]["blog_comments"]["Update"];
 
 // JSON field types for products
 export interface ProductVariantDB {

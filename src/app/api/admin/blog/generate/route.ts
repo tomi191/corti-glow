@@ -46,6 +46,13 @@ export async function POST(request: NextRequest) {
       category,
       targetWordCount: Math.min(Math.max(targetWordCount, 500), 5000),
       author: author as "dr-maria" | "lura-team",
+    }, {
+      internalLinks: {
+        "Corti-Glow": "/produkt",
+        "кортизол": "/nauka",
+        "блога": "/blog",
+        "пакетни предложения": "/produkt#bundles",
+      },
     });
 
     return NextResponse.json({
@@ -68,6 +75,7 @@ export async function POST(request: NextRequest) {
         content_type: contentType,
         ai_generated: true,
         ai_model: config.defaultTextModel,
+        image_prompts: result.imagePrompts || [],
       },
     });
   } catch (error) {

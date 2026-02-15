@@ -12,6 +12,7 @@ import {
 } from "@/lib/blog";
 import type { BlogPostRow } from "@/lib/supabase/types";
 import { BreadcrumbJsonLd } from "@/components/ui/BreadcrumbJsonLd";
+import { TableOfContents, TableOfContentsMobile, CommentSection } from "@/components/blog";
 
 export const revalidate = 300; // 5 min ISR
 
@@ -118,6 +119,25 @@ function markdownToHtml(content: string): string {
     .replace(/(?<![>])$/gm, '</p>');
 }
 
+// Add IDs to H2 headings and extract TOC items
+function addHeadingIds(html: string): { html: string; headings: { id: string; text: string }[] } {
+  const headings: { id: string; text: string }[] = [];
+  let counter = 0;
+
+  const processed = html.replace(/<h2([^>]*)>(.*?)<\/h2>/gi, (match, attrs, content) => {
+    // Skip if already has an id
+    if (/id="/.test(attrs)) return match;
+
+    counter++;
+    const id = `section-${counter}`;
+    const text = content.replace(/<[^>]*>/g, "").trim();
+    headings.push({ id, text });
+    return `<h2${attrs} id="${id}">${content}</h2>`;
+  });
+
+  return { html: processed, headings };
+}
+
 export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const { slug } = await params;
   const post = await getPostBySlug(slug);
@@ -137,7 +157,8 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     .filter((p) => p.category === post.category && p.slug !== post.slug)
     .slice(0, 2);
 
-  const contentHtml = markdownToHtml(post.content);
+  const rawHtml = markdownToHtml(post.content);
+  const { html: contentHtml, headings } = addHeadingIds(rawHtml);
 
   // Schema markup
   const articleSchema = generateArticleSchema(post, url);
@@ -290,12 +311,23 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         </div>
       )}
 
-      {/* Content */}
+      {/* Content with TOC */}
       <article className="px-6 pb-20">
-        <div
-          className="max-w-3xl mx-auto prose prose-stone prose-lg"
-          dangerouslySetInnerHTML={{ __html: contentHtml }}
-        />
+        <div className="max-w-4xl mx-auto flex gap-8">
+          {/* Desktop TOC Sidebar */}
+          <TableOfContents headings={headings} />
+
+          {/* Article Content */}
+          <div className="flex-1 min-w-0">
+            {/* Mobile TOC */}
+            <TableOfContentsMobile headings={headings} />
+
+            <div
+              className="prose prose-stone prose-lg blog-content"
+              dangerouslySetInnerHTML={{ __html: contentHtml }}
+            />
+          </div>
+        </div>
       </article>
 
       {/* Sources */}
@@ -349,6 +381,9 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           </Link>
         </div>
       </section>
+
+      {/* Comments */}
+      <CommentSection slug={post.slug} />
 
       {/* Related Posts */}
       {relatedPosts.length > 0 && (
