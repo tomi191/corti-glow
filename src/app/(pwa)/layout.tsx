@@ -4,17 +4,16 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { UserButton } from "@clerk/nextjs";
 import {
-  LayoutDashboard,
-  BookHeart,
-  TrendingUp,
-  User,
+  Home,
+  ClipboardCheck,
+  Settings,
 } from "lucide-react";
+import BoxBreathingFAB from "@/components/pwa/BoxBreathingFAB";
 
 const navItems = [
-  { href: "/app", label: "Начало", icon: LayoutDashboard },
-  { href: "/app/log", label: "Дневник", icon: BookHeart },
-  { href: "/app/progress", label: "Прогрес", icon: TrendingUp },
-  { href: "/app/profile", label: "Профил", icon: User },
+  { href: "/app", label: "Начало", icon: Home },
+  { href: "/app/checkin", label: "Чек-Ин", icon: ClipboardCheck },
+  { href: "/app/settings", label: "Настройки", icon: Settings },
 ];
 
 export default function PWALayout({
@@ -45,6 +44,9 @@ export default function PWALayout({
       <main className="flex-1 px-4 py-6 pb-24">
         {children}
       </main>
+
+      {/* Breathing FAB - between content and nav */}
+      <BoxBreathingFAB />
 
       {/* Bottom navigation */}
       <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-stone-200 pb-safe">
