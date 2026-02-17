@@ -557,3 +557,14 @@ export interface ProductHowToUseDB {
   description: string;
   image?: string;
 }
+
+// Push subscriptions (not in Database interface to avoid Supabase type inference issues)
+export interface PushSubscriptionRow {
+  id: string;
+  clerk_user_id: string;
+  endpoint: string;
+  p256dh: string;
+  auth_key: string;
+  created_at: string;
+  updated_at: string;
+}

@@ -13,7 +13,16 @@ import {
   Calendar,
   Clock,
   Repeat,
+  Bell,
+  Loader2,
 } from "lucide-react";
+import {
+  isPushSupported,
+  isIOSInBrowser,
+  registerServiceWorker,
+  subscribeToPush,
+  getExistingSubscription,
+} from "@/lib/push-notifications";
 
 export default function ProfilePage() {
   const { user, isLoaded } = useUser();
@@ -24,15 +33,18 @@ export default function ProfilePage() {
     lastPeriodDate,
     cycleLength,
     periodDuration,
+    pushEnabled,
     setLastPeriodDate,
     setCycleLength,
     setPeriodDuration,
+    setPushEnabled,
   } = usePwaStore();
 
   const [date, setDate] = useState("");
   const [length, setLength] = useState(28);
   const [duration, setDuration] = useState(5);
   const [saved, setSaved] = useState(false);
+  const [pushLoading, setPushLoading] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -64,6 +76,59 @@ export default function ProfilePage() {
     setPeriodDuration(duration);
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
+  }
+
+  async function handlePushToggle() {
+    if (pushLoading) return;
+    setPushLoading(true);
+
+    try {
+      if (pushEnabled) {
+        // Disable: unsubscribe
+        const reg = await registerServiceWorker();
+        if (reg) {
+          const sub = await getExistingSubscription(reg);
+          if (sub) {
+            await fetch("/api/push/unsubscribe", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ endpoint: sub.endpoint }),
+            });
+            await sub.unsubscribe();
+          }
+        }
+        setPushEnabled(false);
+      } else {
+        // Enable: subscribe
+        const reg = await registerServiceWorker();
+        if (!reg) return;
+
+        const sub = await subscribeToPush(reg);
+        if (!sub) return;
+
+        const res = await fetch("/api/push/subscribe", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            subscription: {
+              endpoint: sub.endpoint,
+              keys: {
+                p256dh: btoa(String.fromCharCode(...new Uint8Array(sub.getKey("p256dh")!))),
+                auth: btoa(String.fromCharCode(...new Uint8Array(sub.getKey("auth")!))),
+              },
+            },
+          }),
+        });
+
+        if (res.ok) {
+          setPushEnabled(true);
+        }
+      }
+    } catch (err) {
+      console.error("Push toggle error:", err);
+    } finally {
+      setPushLoading(false);
+    }
   }
 
   return (
@@ -184,6 +249,58 @@ export default function ProfilePage() {
             "Запази"
           )}
         </button>
+      </motion.section>
+
+      {/* Notifications */}
+      <motion.section
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.15 }}
+        className="glass rounded-[2rem] p-5 space-y-4"
+      >
+        <h3 className="text-xs font-bold uppercase tracking-widest text-brand-forest/60">
+          Известия
+        </h3>
+
+        {isIOSInBrowser() ? (
+          <p className="text-sm text-stone-500">
+            Първо добави приложението на началния екран, за да получаваш известия.
+          </p>
+        ) : isPushSupported() ? (
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl bg-brand-sage/30 flex items-center justify-center">
+                <Bell className="w-4 h-4 text-brand-forest" />
+              </div>
+              <span className="text-sm font-medium text-stone-700">
+                Напомняния за чек-ин
+              </span>
+            </div>
+
+            <button
+              onClick={handlePushToggle}
+              disabled={pushLoading}
+              className={`relative w-12 h-7 rounded-full transition-colors ${
+                pushEnabled ? "bg-brand-forest" : "bg-stone-300"
+              }`}
+              aria-label={pushEnabled ? "Изключи известията" : "Включи известията"}
+            >
+              {pushLoading ? (
+                <Loader2 className="w-4 h-4 text-white absolute top-1.5 left-1/2 -translate-x-1/2 animate-spin" />
+              ) : (
+                <span
+                  className={`block w-5 h-5 bg-white rounded-full shadow transition-transform ${
+                    pushEnabled ? "translate-x-6" : "translate-x-1"
+                  }`}
+                />
+              )}
+            </button>
+          </div>
+        ) : (
+          <p className="text-sm text-stone-500">
+            Браузърът ти не поддържа push известия.
+          </p>
+        )}
       </motion.section>
 
       {/* Account actions */}

@@ -27,6 +27,8 @@ interface PwaState {
   periodDuration: number;
   checkIns: DailyCheckIn[];
   hasSeenTour: boolean;
+  pushEnabled: boolean;
+  iosInstallDismissed: boolean;
   // Transient (not persisted)
   isBreathingOpen: boolean;
 }
@@ -42,6 +44,8 @@ interface PwaActions {
   setCycleLength: (length: number) => void;
   setPeriodDuration: (days: number) => void;
   markTourSeen: () => void;
+  setPushEnabled: (enabled: boolean) => void;
+  dismissIOSInstall: () => void;
   openBreathing: () => void;
   closeBreathing: () => void;
 }
@@ -66,6 +70,8 @@ export const usePwaStore = create<PwaStore>()(
       periodDuration: 5,
       checkIns: [],
       hasSeenTour: false,
+      pushEnabled: false,
+      iosInstallDismissed: false,
       isBreathingOpen: false,
 
       // Actions
@@ -109,6 +115,8 @@ export const usePwaStore = create<PwaStore>()(
       },
 
       markTourSeen: () => set({ hasSeenTour: true }),
+      setPushEnabled: (enabled) => set({ pushEnabled: enabled }),
+      dismissIOSInstall: () => set({ iosInstallDismissed: true }),
       setLastPeriodDate: (date) => set({ lastPeriodDate: date }),
       setCycleLength: (length) => set({ cycleLength: length }),
       setPeriodDuration: (days) => set({ periodDuration: days }),
@@ -152,6 +160,8 @@ export const usePwaStore = create<PwaStore>()(
         periodDuration: state.periodDuration,
         checkIns: state.checkIns,
         hasSeenTour: state.hasSeenTour,
+        pushEnabled: state.pushEnabled,
+        iosInstallDismissed: state.iosInstallDismissed,
         // isBreathingOpen intentionally excluded
       }),
       onRehydrateStorage: () => (state, error) => {

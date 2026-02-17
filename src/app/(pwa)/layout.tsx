@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { UserButton } from "@clerk/nextjs";
@@ -11,6 +12,8 @@ import {
   User,
 } from "lucide-react";
 import BoxBreathingFAB from "@/components/pwa/BoxBreathingFAB";
+import IOSInstallBanner from "@/components/pwa/IOSInstallBanner";
+import { registerServiceWorker } from "@/lib/push-notifications";
 
 const navItems = [
   { href: "/app", label: "Начало", icon: Home },
@@ -26,6 +29,10 @@ export default function PWALayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+
+  useEffect(() => {
+    registerServiceWorker();
+  }, []);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -54,6 +61,9 @@ export default function PWALayout({
 
       {/* Breathing FAB */}
       <BoxBreathingFAB />
+
+      {/* iOS Add to Home Screen banner */}
+      <IOSInstallBanner />
 
       {/* 5-tab glass navigation */}
       <nav className="fixed bottom-0 w-full z-40 glass px-4 py-3 pb-safe border-t border-stone-200/50 rounded-t-[2rem]">
