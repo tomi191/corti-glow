@@ -6,6 +6,7 @@ import {
   type DailyCheckIn,
   type CyclePhase,
   type PhaseInfo,
+  type SymptomOption,
   getCycleDay,
   getCyclePhase,
   getPhaseInfo,
@@ -13,7 +14,11 @@ import {
 } from "@/lib/pwa-logic";
 
 function getToday(): string {
-  return new Date().toISOString().split("T")[0];
+  const d = new Date();
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
+  const dd = String(d.getDate()).padStart(2, "0");
+  return `${yyyy}-${mm}-${dd}`;
 }
 
 interface PwaState {
@@ -21,7 +26,6 @@ interface PwaState {
   cycleLength: number;
   periodDuration: number;
   checkIns: DailyCheckIn[];
-  onboardingCompleted: boolean;
   // Transient (not persisted)
   isBreathingOpen: boolean;
 }
@@ -31,12 +35,11 @@ interface PwaActions {
     periodStarted: boolean;
     sleep: number;
     stress: number;
-    symptoms: string[];
+    symptoms: SymptomOption[];
   }) => void;
   setLastPeriodDate: (date: string) => void;
   setCycleLength: (length: number) => void;
   setPeriodDuration: (days: number) => void;
-  completeOnboarding: () => void;
   openBreathing: () => void;
   closeBreathing: () => void;
 }
@@ -59,19 +62,21 @@ export const usePwaStore = create<PwaStore>()(
       cycleLength: 28,
       periodDuration: 5,
       checkIns: [],
-      onboardingCompleted: false,
       isBreathingOpen: false,
 
       // Actions
       saveCheckIn: ({ periodStarted, sleep, stress, symptoms }) => {
         const today = getToday();
-        const glowScore = calculateGlowScore(sleep, stress);
+        // Clamp numeric values to valid ranges
+        const clampedSleep = Math.max(0, Math.min(10, Math.round(sleep)));
+        const clampedStress = Math.max(0, Math.min(10, Math.round(stress)));
+        const glowScore = calculateGlowScore(clampedSleep, clampedStress);
 
         const entry: DailyCheckIn = {
           date: today,
           periodStarted,
-          sleep,
-          stress,
+          sleep: clampedSleep,
+          stress: clampedStress,
           symptoms,
           glowScore,
         };
@@ -79,7 +84,15 @@ export const usePwaStore = create<PwaStore>()(
         set((state) => {
           // Replace same-day entry or add new
           const filtered = state.checkIns.filter((c) => c.date !== today);
-          const newCheckIns = [...filtered, entry];
+          const combined = [...filtered, entry];
+          // Cap at 90 days — trim oldest entries
+          const MAX_CHECKINS = 90;
+          const newCheckIns =
+            combined.length > MAX_CHECKINS
+              ? combined
+                  .sort((a, b) => a.date.localeCompare(b.date))
+                  .slice(-MAX_CHECKINS)
+              : combined;
 
           // Auto-update lastPeriodDate if period started today
           const updates: Partial<PwaState> = { checkIns: newCheckIns };
@@ -94,7 +107,6 @@ export const usePwaStore = create<PwaStore>()(
       setLastPeriodDate: (date) => set({ lastPeriodDate: date }),
       setCycleLength: (length) => set({ cycleLength: length }),
       setPeriodDuration: (days) => set({ periodDuration: days }),
-      completeOnboarding: () => set({ onboardingCompleted: true }),
       openBreathing: () => set({ isBreathingOpen: true }),
       closeBreathing: () => set({ isBreathingOpen: false }),
 
@@ -130,9 +142,19 @@ export const usePwaStore = create<PwaStore>()(
         cycleLength: state.cycleLength,
         periodDuration: state.periodDuration,
         checkIns: state.checkIns,
-        onboardingCompleted: state.onboardingCompleted,
         // isBreathingOpen intentionally excluded
       }),
+      onRehydrateStorage: () => (state, error) => {
+        if (error) {
+          console.error("PWA store rehydration failed:", error);
+          // Clear corrupted data so store resets to defaults
+          try {
+            localStorage.removeItem("lura-pwa");
+          } catch {
+            // localStorage itself may be unavailable
+          }
+        }
+      },
     }
   )
 );

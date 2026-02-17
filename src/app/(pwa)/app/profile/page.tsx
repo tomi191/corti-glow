@@ -5,8 +5,23 @@ import Image from "next/image";
 import { LogOut, Mail, ChevronRight, Shield, User } from "lucide-react";
 
 export default function ProfilePage() {
-  const { user } = useUser();
+  const { user, isLoaded } = useUser();
   const { signOut, openUserProfile } = useClerk();
+
+  if (!isLoaded) {
+    return (
+      <div className="max-w-lg mx-auto space-y-6">
+        <div className="flex items-center gap-4 p-5 bg-white rounded-2xl border border-stone-100">
+          <div className="w-14 h-14 rounded-full bg-stone-200 animate-pulse" />
+          <div className="space-y-2 flex-1">
+            <div className="h-4 w-32 bg-stone-200 rounded animate-pulse" />
+            <div className="h-3 w-48 bg-stone-100 rounded animate-pulse" />
+          </div>
+        </div>
+        <div className="h-28 bg-stone-100 rounded-2xl animate-pulse" />
+      </div>
+    );
+  }
 
   if (!user) return null;
 

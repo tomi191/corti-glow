@@ -56,6 +56,20 @@ export default function BoxBreathingFAB() {
 function BreathingOverlay({ onClose }: { onClose: () => void }) {
   const [tick, setTick] = useState(0);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const closeRef = useRef<HTMLButtonElement>(null);
+
+  // Lock body scroll while overlay is open
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, []);
+
+  // Auto-focus close button on open
+  useEffect(() => {
+    closeRef.current?.focus();
+  }, []);
 
   useEffect(() => {
     intervalRef.current = setInterval(() => {
@@ -84,13 +98,22 @@ function BreathingOverlay({ onClose }: { onClose: () => void }) {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
+      role="dialog"
+      aria-label="Дихателно упражнение"
       className="fixed inset-0 z-50 bg-brand-forest/95 flex flex-col items-center justify-center"
     >
       {/* Close button */}
       <button
+        ref={closeRef}
         onClick={onClose}
-        className="absolute top-6 right-6 text-white/60 hover:text-white transition-colors"
-        aria-label="Затвори"
+        onKeyDown={(e) => {
+          // Trap focus — only one interactive element
+          if (e.key === "Tab") {
+            e.preventDefault();
+          }
+        }}
+        className="absolute top-6 right-6 text-white/80 hover:text-white transition-colors"
+        aria-label="Затвори дихателно упражнение"
       >
         <X className="w-8 h-8" />
       </button>

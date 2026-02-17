@@ -2,11 +2,14 @@
   "name": "LURA - Corti-Glow Ритуал",
   "short_name": "LURA",
   "description": "Твоят персонален кортизол ритуал",
+  "lang": "bg",
   "start_url": "/app",
   "scope": "/app",
   "display": "standalone",
+  "orientation": "portrait",
   "theme_color": "#2D4A3E",
   "background_color": "#ffffff",
+  "categories": ["health", "lifestyle"],
   "icons": [
     {
       "src": "/images/icon-192x192.png",
@@ -17,6 +20,13 @@
       "src": "/images/icon-512x512.png",
       "sizes": "512x512",
       "type": "image/png"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Дневен чек-ин",
+      "url": "/app/checkin",
+      "icons": [{ "src": "/images/icon-192x192.png", "sizes": "192x192" }]
     }
   ]
 }

@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { usePwaStore } from "@/stores/pwa-store";
-import { SYMPTOM_OPTIONS } from "@/lib/pwa-logic";
+import { SYMPTOM_OPTIONS, type SymptomOption } from "@/lib/pwa-logic";
 import {
   Check,
   CloudMoon, Moon, Meh, Smile, Sparkles,
@@ -57,14 +57,30 @@ export default function CheckInPage() {
   const [periodStarted, setPeriodStarted] = useState(false);
   const [sleep, setSleep] = useState(7);
   const [stress, setStress] = useState(3);
-  const [symptoms, setSymptoms] = useState<string[]>([]);
+  const [symptoms, setSymptoms] = useState<SymptomOption[]>([]);
   const [done, setDone] = useState(false);
 
   useEffect(() => setMounted(true), []);
 
+  // Warn before losing wizard state
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (!done && step > 0) {
+        e.preventDefault();
+      }
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [done, step]);
+
   const next = useCallback(() => {
     setDirection(1);
     setStep((s) => Math.min(s + 1, TOTAL_STEPS - 1));
+  }, []);
+
+  const back = useCallback(() => {
+    setDirection(-1);
+    setStep((s) => Math.max(s - 1, 0));
   }, []);
 
   const finish = useCallback(() => {
@@ -73,7 +89,7 @@ export default function CheckInPage() {
     setTimeout(() => router.push("/app"), 1200);
   }, [saveCheckIn, periodStarted, sleep, stress, symptoms, router]);
 
-  function toggleSymptom(s: string) {
+  function toggleSymptom(s: SymptomOption) {
     setSymptoms((prev) =>
       prev.includes(s) ? prev.filter((x) => x !== s) : [...prev, s]
     );
@@ -106,7 +122,14 @@ export default function CheckInPage() {
   return (
     <div className="max-w-lg mx-auto">
       {/* Progress dots */}
-      <div className="flex items-center justify-center gap-2 mb-8">
+      <div
+        className="flex items-center justify-center gap-2 mb-8"
+        role="progressbar"
+        aria-valuenow={step + 1}
+        aria-valuemin={1}
+        aria-valuemax={TOTAL_STEPS}
+        aria-label={`Стъпка ${step + 1} от ${TOTAL_STEPS}`}
+      >
         {Array.from({ length: TOTAL_STEPS }).map((_, i) => (
           <div
             key={i}
@@ -150,18 +173,26 @@ export default function CheckInPage() {
       </div>
 
       {/* Navigation */}
-      <div className="mt-8">
+      <div className="mt-8 flex gap-3">
+        {step > 0 && (
+          <button
+            onClick={back}
+            className="py-3 px-6 rounded-full border border-stone-200 text-stone-600 font-semibold transition-all active:scale-[0.98]"
+          >
+            Назад
+          </button>
+        )}
         {step < TOTAL_STEPS - 1 ? (
           <button
             onClick={next}
-            className="w-full py-3 px-6 rounded-full bg-brand-forest text-white font-semibold shadow-lg transition-all active:scale-[0.98]"
+            className="flex-1 py-3 px-6 rounded-full bg-brand-forest text-white font-semibold shadow-lg transition-all active:scale-[0.98]"
           >
             Напред
           </button>
         ) : (
           <button
             onClick={finish}
-            className="w-full py-3 px-6 rounded-full bg-brand-forest text-white font-semibold shadow-lg transition-all active:scale-[0.98]"
+            className="flex-1 py-3 px-6 rounded-full bg-brand-forest text-white font-semibold shadow-lg transition-all active:scale-[0.98]"
           >
             Готово
           </button>
@@ -230,6 +261,10 @@ function StepSleep({
           value={value}
           onChange={(e) => onChange(Number(e.target.value))}
           className="w-full accent-brand-forest"
+          aria-label="Качество на съня"
+          aria-valuemin={0}
+          aria-valuemax={10}
+          aria-valuenow={value}
         />
         <div className="flex justify-between text-xs text-stone-400 mt-1">
           <span>Ужасно</span>
@@ -258,27 +293,19 @@ function StepStress({
       </h2>
       <p className="text-stone-500">{getStressLabel(value)}</p>
       <div className="px-4">
-        <div
-          className="h-3 rounded-full mb-4 transition-colors"
-          style={{
-            background: `linear-gradient(to right, #22c55e, #eab308, #ef4444)`,
-          }}
-        >
-          <div
-            className="h-3 w-3 rounded-full bg-white border-2 shadow-md transition-all"
-            style={{
-              borderColor: `hsl(${hue}, 70%, 50%)`,
-              marginLeft: `calc(${(value / 10) * 100}% - 6px)`,
-            }}
-          />
-        </div>
         <input
           type="range"
           min={0}
           max={10}
           value={value}
           onChange={(e) => onChange(Number(e.target.value))}
-          className="w-full accent-brand-forest"
+          className="w-full"
+          style={{ accentColor: `hsl(${hue}, 70%, 50%)` }}
+          aria-label="Ниво на стрес"
+          aria-valuemin={0}
+          aria-valuemax={10}
+          aria-valuenow={value}
+          aria-valuetext={getStressLabel(value)}
         />
         <div className="flex justify-between text-xs text-stone-400 mt-1">
           <span>Спокойна</span>
@@ -296,8 +323,8 @@ function StepSymptoms({
   selected,
   onToggle,
 }: {
-  selected: string[];
-  onToggle: (s: string) => void;
+  selected: SymptomOption[];
+  onToggle: (s: SymptomOption) => void;
 }) {
   return (
     <div className="space-y-4">

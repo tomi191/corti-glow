@@ -85,6 +85,11 @@ export default function SettingsPage() {
               value={duration}
               onChange={(e) => setDuration(Number(e.target.value))}
               className="flex-1 accent-brand-forest"
+              aria-label="Продължителност на менструация"
+              aria-valuemin={2}
+              aria-valuemax={10}
+              aria-valuenow={duration}
+              aria-valuetext={`${duration} дни`}
             />
             <span className="text-lg font-semibold text-brand-forest w-10 text-center">
               {duration}
@@ -108,6 +113,11 @@ export default function SettingsPage() {
               value={length}
               onChange={(e) => setLength(Number(e.target.value))}
               className="flex-1 accent-brand-forest"
+              aria-label="Дължина на цикъла"
+              aria-valuemin={21}
+              aria-valuemax={40}
+              aria-valuenow={length}
+              aria-valuetext={`${length} дни`}
             />
             <span className="text-lg font-semibold text-brand-forest w-10 text-center">
               {length}

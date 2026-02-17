@@ -7,7 +7,7 @@ import { motion } from "framer-motion";
 import { usePwaStore } from "@/stores/pwa-store";
 import { getGreeting, getDailyTip, type PhaseInfo } from "@/lib/pwa-logic";
 import {
-  Sparkles, Wind, Lightbulb,
+  Sparkles, Wind, Lightbulb, CalendarDays,
   Snowflake, Sprout, Sun, Leaf,
 } from "lucide-react";
 
@@ -19,7 +19,7 @@ function PhaseIcon({ info, className }: { info: PhaseInfo; className?: string })
 }
 
 export default function AppDashboard() {
-  const { user } = useUser();
+  const { user, isLoaded: clerkLoaded } = useUser();
   const [mounted, setMounted] = useState(false);
 
   const getTodayCheckIn = usePwaStore((s) => s.getTodayCheckIn);
@@ -46,13 +46,16 @@ export default function AppDashboard() {
     );
   }
 
-  const firstName = user?.firstName || "там";
+  const firstName = clerkLoaded ? (user?.firstName || "там") : null;
   const checkIn = getTodayCheckIn();
   const glowScore = getTodayGlowScore();
   const cycleDay = getCurrentCycleDay();
   const phaseInfo = getCurrentPhaseInfo();
   const phase = getCurrentPhase();
   const hasSetup = !!lastPeriodDate;
+
+  // Next period prediction
+  const daysUntilNextPeriod = hasSetup ? cycleLength - cycleDay + 1 : null;
 
   return (
     <div className="max-w-lg mx-auto space-y-6">
@@ -63,7 +66,12 @@ export default function AppDashboard() {
         transition={{ duration: 0.4 }}
       >
         <h1 className="text-2xl font-bold text-brand-forest">
-          {getGreeting()}, {firstName}!
+          {getGreeting()},{" "}
+          {firstName !== null ? (
+            <>{firstName}!</>
+          ) : (
+            <span className="inline-block h-6 w-20 bg-stone-200 rounded animate-pulse align-middle" />
+          )}
         </h1>
         {hasSetup && (
           <p className="text-stone-500 mt-1 flex items-center gap-1">
@@ -156,6 +164,21 @@ export default function AppDashboard() {
               </p>
             )}
           </div>
+
+          {/* Next Period Prediction */}
+          {daysUntilNextPeriod !== null && phase !== "menstrual" && (
+            <div className="col-span-2 bg-white rounded-2xl border border-stone-100 p-4 flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-brand-blush/30">
+                <CalendarDays className="w-5 h-5 text-pink-500" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-stone-800">
+                  Следващ период след ~{daysUntilNextPeriod} дни
+                </p>
+                <p className="text-xs text-stone-500">Приблизителна прогноза</p>
+              </div>
+            </div>
+          )}
         </motion.div>
       )}
 
@@ -207,7 +230,7 @@ function GlowRing({
     return (
       <Link href="/app/checkin" className="block">
         <div className="relative" style={{ width: size, height: size }}>
-          <svg width={size} height={size} className="rotate-[-90deg]">
+          <svg width={size} height={size} className="rotate-[-90deg]" role="img" aria-label="Направи дневен чек-ин">
             <circle
               cx={size / 2}
               cy={size / 2}
@@ -249,7 +272,7 @@ function GlowRing({
 
   return (
     <div className="relative" style={{ width: size, height: size }}>
-      <svg width={size} height={size} className="rotate-[-90deg]">
+      <svg width={size} height={size} className="rotate-[-90deg]" role="img" aria-label={`Glow Score: ${displayScore} от 100`}>
         <circle
           cx={size / 2}
           cy={size / 2}

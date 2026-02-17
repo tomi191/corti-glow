@@ -10,12 +10,31 @@ export interface PhaseInfo {
   colorClass: string; // Tailwind class
 }
 
+// ─── Symptom Options ───
+
+export const SYMPTOM_OPTIONS = [
+  "Главоболие",
+  "Умора",
+  "Подуване",
+  "Раздразнителност",
+  "Болки в кръста",
+  "Безсъние",
+  "Тревожност",
+  "Акне",
+  "Желание за сладко",
+  "Болки в гърдите",
+  "Гадене",
+  "Ниска енергия",
+] as const;
+
+export type SymptomOption = (typeof SYMPTOM_OPTIONS)[number];
+
 export interface DailyCheckIn {
   date: string; // YYYY-MM-DD
   periodStarted: boolean;
   sleep: number; // 0-10
   stress: number; // 0-10
-  symptoms: string[];
+  symptoms: SymptomOption[];
   glowScore: number; // 0-100
 }
 
@@ -26,8 +45,11 @@ export function getCycleDay(
   cycleLength = 28
 ): number {
   if (!lastPeriodDate) return 0;
-  const start = new Date(lastPeriodDate);
-  const today = new Date();
+  // Parse as local midnight to avoid UTC timezone offset
+  const [y, m, d] = lastPeriodDate.split("-").map(Number);
+  const start = new Date(y, m - 1, d);
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   const diffMs = today.getTime() - start.getTime();
   const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
   // Mod to keep within cycle, add 1 for 1-based day
@@ -125,22 +147,3 @@ export function getGreeting(): string {
   if (hour < 18) return "Добър ден";
   return "Добър вечер";
 }
-
-// ─── Symptom Options ───
-
-export const SYMPTOM_OPTIONS = [
-  "Главоболие",
-  "Умора",
-  "Подуване",
-  "Раздразнителност",
-  "Болки в кръста",
-  "Безсъние",
-  "Тревожност",
-  "Акне",
-  "Желание за сладко",
-  "Болки в гърдите",
-  "Гадене",
-  "Ниска енергия",
-] as const;
-
-export type SymptomOption = (typeof SYMPTOM_OPTIONS)[number];
