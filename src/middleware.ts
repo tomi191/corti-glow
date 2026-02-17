@@ -1,6 +1,9 @@
+import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+
+const isAppRoute = createRouteMatcher(["/app(.*)"]);
 
 async function isValidSession(token: string): Promise<boolean> {
     try {
@@ -28,12 +31,17 @@ async function isValidSession(token: string): Promise<boolean> {
     }
 }
 
-export default async function middleware(request: NextRequest) {
+export default clerkMiddleware(async (auth, request: NextRequest) => {
     const path = request.nextUrl.pathname;
 
     // Pre-launch: block checkout
     if (process.env.NEXT_PUBLIC_PRELAUNCH === "true" && path.startsWith("/checkout")) {
         return NextResponse.redirect(new URL("/", request.url));
+    }
+
+    // Protect /app routes — Clerk redirects to /sign-in
+    if (isAppRoute(request)) {
+        await auth.protect();
     }
 
     // Protect Admin Routes
@@ -63,12 +71,11 @@ export default async function middleware(request: NextRequest) {
     }
 
     return NextResponse.next();
-}
+});
 
 export const config = {
     matcher: [
-        "/admin/:path*",
-        "/api/admin/:path*",
-        "/checkout/:path*",
-    ]
+        "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
+        "/(api|trpc)(.*)",
+    ],
 };

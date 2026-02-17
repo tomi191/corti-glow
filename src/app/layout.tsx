@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
+import { ClerkProvider } from "@clerk/nextjs";
 import { SmoothScrollProvider } from "@/components/providers/SmoothScroll";
 import { WaitlistProvider } from "@/components/providers/WaitlistProvider";
 import { CookieConsent } from "@/components/ui/CookieConsent";
@@ -113,24 +114,42 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="bg">
-      <head>
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
-        />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
-        />
-      </head>
-      <body className={`${plusJakarta.variable} antialiased font-sans bg-white overflow-x-hidden`}>
-        <GoogleAnalytics />
-        <WaitlistProvider>
-          <SmoothScrollProvider>{children}</SmoothScrollProvider>
-        </WaitlistProvider>
-        <CookieConsent />
-      </body>
-    </html>
+    <ClerkProvider
+      appearance={{
+        cssLayerName: "clerk",
+        variables: {
+          colorPrimary: "#2D4A3E",
+          colorTextOnPrimaryBackground: "#fff",
+          colorBackground: "#fff",
+          colorInputBackground: "#fafaf9",
+          borderRadius: "0.75rem",
+          fontFamily: "var(--font-plus-jakarta), sans-serif",
+        },
+      }}
+    >
+      <html lang="bg">
+        <head>
+          <link rel="manifest" href="/manifest.json" />
+          <meta name="theme-color" content="#2D4A3E" />
+          <meta name="apple-mobile-web-app-capable" content="yes" />
+          <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+          />
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
+          />
+        </head>
+        <body className={`${plusJakarta.variable} antialiased font-sans bg-white overflow-x-hidden`}>
+          <GoogleAnalytics />
+          <WaitlistProvider>
+            <SmoothScrollProvider>{children}</SmoothScrollProvider>
+          </WaitlistProvider>
+          <CookieConsent />
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }
