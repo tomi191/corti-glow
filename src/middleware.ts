@@ -39,7 +39,7 @@ export default clerkMiddleware(async (auth, request: NextRequest) => {
         return NextResponse.redirect(new URL("/", request.url));
     }
 
-    // Protect /app routes — Clerk redirects to /sign-in
+    // Protect /app routes — Clerk handles redirect + stale session cleanup
     if (isAppRoute(request)) {
         await auth.protect();
     }
