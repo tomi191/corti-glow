@@ -4,11 +4,13 @@ import { useRef } from "react";
 import Image from "next/image";
 import { motion, useInView } from "framer-motion";
 import { ArrowRight, Sparkles, Shield, Truck, Timer } from "lucide-react";
-import { SHIPPING_THRESHOLD } from "@/lib/constants";
+import { SHIPPING_THRESHOLD, IS_PRELAUNCH } from "@/lib/constants";
 import { MagneticButton } from "@/components/ui/MagneticButton";
+import { useWaitlist } from "@/components/providers/WaitlistProvider";
 import { AnimatedHeading } from "@/components/ui/AnimatedText";
 
 export function PremiumCTA() {
+  const { openWaitlist } = useWaitlist();
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
@@ -81,10 +83,10 @@ export function PremiumCTA() {
             <MagneticButton
               variant="secondary"
               size="lg"
-              href="/produkt/corti-glow"
+              {...(IS_PRELAUNCH ? { onClick: openWaitlist } : { href: "/produkt/corti-glow" })}
               className="bg-white text-[#2D4A3E] hover:bg-white/90"
             >
-              Поръчай Сега
+              {IS_PRELAUNCH ? "Запиши се Първа" : "Поръчай Сега"}
               <ArrowRight className="w-5 h-5" />
             </MagneticButton>
             <MagneticButton

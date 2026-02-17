@@ -3,14 +3,17 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { ShoppingBag, ArrowRight, Package, Sparkles } from "lucide-react";
+import { ShoppingBag, ArrowRight, Package, Sparkles, Mail } from "lucide-react";
 import { useCartStore } from "@/stores/cart-store";
+import { IS_PRELAUNCH } from "@/lib/constants";
+import { useWaitlist } from "@/components/providers/WaitlistProvider";
 
 export function MobileStickyBar() {
   const [mounted, setMounted] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
 
+  const { openWaitlist } = useWaitlist();
   const items = useCartStore((state) => state.items);
   const getSubtotal = useCartStore((state) => state.getSubtotal);
   const getItemCount = useCartStore((state) => state.getItemCount);
@@ -61,7 +64,35 @@ export function MobileStickyBar() {
 
           <div className="relative px-4 py-3 border-t border-stone-100">
             <AnimatePresence mode="wait">
-              {hasItems ? (
+              {IS_PRELAUNCH ? (
+                // Prelaunch mode - show waitlist CTA
+                <motion.div
+                  key="waitlist-mode"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 20 }}
+                  transition={{ duration: 0.2 }}
+                  className="flex items-center justify-between gap-4"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#FFC1CC]/30 to-[#B2D8C6]/30 flex items-center justify-center">
+                      <Mail className="w-5 h-5 text-[#2D4A3E]" />
+                    </div>
+                    <div>
+                      <p className="text-xs text-stone-500">VIP Списък</p>
+                      <p className="text-sm font-semibold text-[#2D4A3E]">Ранен достъп + PDF</p>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={openWaitlist}
+                    className="group flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-[#2D4A3E] to-[#3D5A4E] text-white rounded-xl text-sm font-semibold shadow-lg shadow-[#2D4A3E]/25 hover:shadow-xl hover:shadow-[#2D4A3E]/30 transition-all duration-300"
+                  >
+                    Запиши се Първа
+                    <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                  </button>
+                </motion.div>
+              ) : hasItems ? (
                 // Cart has items - show checkout prompt
                 <motion.div
                   key="cart-mode"
@@ -158,7 +189,7 @@ export function MobileStickyBar() {
             </AnimatePresence>
 
             {/* Free shipping progress indicator */}
-            {hasItems && !isFreeShipping() && (
+            {!IS_PRELAUNCH && hasItems && !isFreeShipping() && (
               <motion.div
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: "auto" }}

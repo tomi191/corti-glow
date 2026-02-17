@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import { SmoothScrollProvider } from "@/components/providers/SmoothScroll";
+import { WaitlistProvider } from "@/components/providers/WaitlistProvider";
 import { CookieConsent } from "@/components/ui/CookieConsent";
 import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
 import "./globals.css";
@@ -125,7 +126,9 @@ export default function RootLayout({
       </head>
       <body className={`${plusJakarta.variable} antialiased font-sans bg-white overflow-x-hidden`}>
         <GoogleAnalytics />
-        <SmoothScrollProvider>{children}</SmoothScrollProvider>
+        <WaitlistProvider>
+          <SmoothScrollProvider>{children}</SmoothScrollProvider>
+        </WaitlistProvider>
         <CookieConsent />
       </body>
     </html>

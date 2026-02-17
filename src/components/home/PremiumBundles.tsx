@@ -1,24 +1,39 @@
 "use client";
 
 import { useState, useRef } from "react";
+import Image from "next/image";
 import { motion, useInView } from "framer-motion";
 import { Check, Sparkles, Truck, Shield, RefreshCw } from "lucide-react";
-import { productVariants } from "@/data/products";
+import { productVariants as hardcodedVariants } from "@/data/products";
+import type { ProductVariant } from "@/types";
 import { SUBSCRIPTION_VARIANTS, SUBSCRIPTION_DISCOUNT } from "@/lib/stripe/subscription-prices";
 import { formatPrice } from "@/lib/utils";
 import { useCartStore } from "@/stores/cart-store";
+import { IS_PRELAUNCH } from "@/lib/constants";
+import { useWaitlist } from "@/components/providers/WaitlistProvider";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { MagneticButton } from "@/components/ui/MagneticButton";
 import { AnimatedHeading } from "@/components/ui/AnimatedText";
 
-export function PremiumBundles() {
+interface PremiumBundlesProps {
+  variants?: ProductVariant[];
+}
+
+export function PremiumBundles({ variants: propVariants }: PremiumBundlesProps) {
+  const productVariants = propVariants ?? hardcodedVariants;
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
   const addItem = useCartStore((state) => state.addItem);
+  const { openWaitlist } = useWaitlist();
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [isSubscription, setIsSubscription] = useState(false);
 
   const handleAddToCart = (variant: (typeof productVariants)[0]) => {
+    if (IS_PRELAUNCH) {
+      openWaitlist();
+      return;
+    }
+
     const subVariant = SUBSCRIPTION_VARIANTS[variant.id];
     addItem({
       id: isSubscription ? `${variant.id}-sub` : variant.id,
@@ -83,37 +98,39 @@ export function PremiumBundles() {
           </motion.p>
         </div>
 
-        {/* Subscription Toggle */}
-        <motion.div
-          initial={{ opacity: 0, y: 15 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.5, delay: 0.5 }}
-          className="flex justify-center mb-10"
-        >
-          <div className="inline-flex items-center bg-stone-100 rounded-full p-1">
-            <button
-              onClick={() => setIsSubscription(false)}
-              className={`px-5 py-2.5 rounded-full text-sm font-medium transition-all ${
-                !isSubscription
-                  ? "bg-white text-[#2D4A3E] shadow-sm"
-                  : "text-stone-500 hover:text-stone-700"
-              }`}
-            >
-              Еднократна покупка
-            </button>
-            <button
-              onClick={() => setIsSubscription(true)}
-              className={`px-5 py-2.5 rounded-full text-sm font-medium transition-all flex items-center gap-1.5 ${
-                isSubscription
-                  ? "bg-[#2D4A3E] text-white shadow-sm"
-                  : "text-stone-500 hover:text-stone-700"
-              }`}
-            >
-              <RefreshCw className="w-3.5 h-3.5" />
-              Абонамент — Спести {SUBSCRIPTION_DISCOUNT * 100}%
-            </button>
-          </div>
-        </motion.div>
+        {/* Subscription Toggle — hidden in prelaunch */}
+        {!IS_PRELAUNCH && (
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.5, delay: 0.5 }}
+            className="flex justify-center mb-10"
+          >
+            <div className="inline-flex items-center bg-stone-100 rounded-full p-1">
+              <button
+                onClick={() => setIsSubscription(false)}
+                className={`px-5 py-2.5 rounded-full text-sm font-medium transition-all ${
+                  !isSubscription
+                    ? "bg-white text-[#2D4A3E] shadow-sm"
+                    : "text-stone-500 hover:text-stone-700"
+                }`}
+              >
+                Еднократна покупка
+              </button>
+              <button
+                onClick={() => setIsSubscription(true)}
+                className={`px-5 py-2.5 rounded-full text-sm font-medium transition-all flex items-center gap-1.5 ${
+                  isSubscription
+                    ? "bg-[#2D4A3E] text-white shadow-sm"
+                    : "text-stone-500 hover:text-stone-700"
+                }`}
+              >
+                <RefreshCw className="w-3.5 h-3.5" />
+                Абонамент — Спести {SUBSCRIPTION_DISCOUNT * 100}%
+              </button>
+            </div>
+          </motion.div>
+        )}
 
         {/* Pricing Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
@@ -155,25 +172,23 @@ export function PremiumBundles() {
                 </div>
 
                 {/* Visual */}
-                <div className="relative h-32 mb-6 flex items-center justify-center">
+                <div className="relative h-40 mb-6 flex items-center justify-center">
                   <motion.div
                     animate={
                       hoveredId === variant.id
-                        ? { scale: 1.1, rotate: 3 }
-                        : { scale: 1, rotate: 0 }
+                        ? { scale: 1.08, y: -4 }
+                        : { scale: 1, y: 0 }
                     }
                     transition={{ type: "spring", stiffness: 300 }}
-                    className="flex gap-2"
+                    className="relative w-36 h-36"
                   >
-                    {[...Array(variant.quantity)].map((_, i) => (
-                      <div
-                        key={i}
-                        className="w-12 h-20 rounded-lg bg-gradient-to-b from-[#FFC1CC] to-[#FFC1CC]/80 shadow-lg"
-                        style={{
-                          transform: `rotate(${(i - 1) * 5}deg)`,
-                        }}
-                      />
-                    ))}
+                    <Image
+                      src={variant.image || "/images/product-hero-box.webp"}
+                      alt={`Corti-Glow ${variant.name}`}
+                      fill
+                      sizes="144px"
+                      className="object-contain drop-shadow-lg"
+                    />
                   </motion.div>
                 </div>
 
@@ -248,7 +263,7 @@ export function PremiumBundles() {
                   className="w-full"
                   onClick={() => handleAddToCart(variant)}
                 >
-                  Добави в Количката
+                  {IS_PRELAUNCH ? "Запиши се Първа" : "Добави в Количката"}
                 </MagneticButton>
               </GlassCard>
             </motion.div>

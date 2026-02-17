@@ -10,6 +10,7 @@ import {
   Tag,
   FileText,
   Users,
+  UserPlus,
   Settings,
   LogOut,
   Menu,
@@ -47,6 +48,11 @@ const navItems = [
     href: "/admin/klienti",
     label: "Клиенти",
     icon: Users,
+  },
+  {
+    href: "/admin/abonati",
+    label: "Waitlist",
+    icon: UserPlus,
   },
   {
     href: "/admin/nastroyki",

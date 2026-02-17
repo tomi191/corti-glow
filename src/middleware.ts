@@ -31,6 +31,11 @@ async function isValidSession(token: string): Promise<boolean> {
 export default async function middleware(request: NextRequest) {
     const path = request.nextUrl.pathname;
 
+    // Pre-launch: block checkout
+    if (process.env.NEXT_PUBLIC_PRELAUNCH === "true" && path.startsWith("/checkout")) {
+        return NextResponse.redirect(new URL("/", request.url));
+    }
+
     // Protect Admin Routes
     if (path.startsWith("/admin") || path.startsWith("/api/admin")) {
         const authCookie = request.cookies.get("admin_session")?.value;
@@ -62,8 +67,8 @@ export default async function middleware(request: NextRequest) {
 
 export const config = {
     matcher: [
-        // Only match admin routes
         "/admin/:path*",
         "/api/admin/:path*",
+        "/checkout/:path*",
     ]
 };

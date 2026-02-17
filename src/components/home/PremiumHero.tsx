@@ -6,8 +6,11 @@ import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion
 import { Sparkles, CheckCircle, ArrowRight } from "lucide-react";
 import { AnimatedBackground } from "@/components/ui/AnimatedBackground";
 import { MagneticButton } from "@/components/ui/MagneticButton";
+import { IS_PRELAUNCH } from "@/lib/constants";
+import { useWaitlist } from "@/components/providers/WaitlistProvider";
 
 export function PremiumHero() {
+  const { openWaitlist } = useWaitlist();
   const prefersReducedMotion = useReducedMotion();
   const containerRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
@@ -99,8 +102,12 @@ export function PremiumHero() {
               transition={{ duration: 0.6, delay: 0.7 }}
               className="flex flex-col sm:flex-row gap-4 pt-2 md:pt-4"
             >
-              <MagneticButton variant="primary" size="lg" href="/produkt/corti-glow">
-                Открий Продукта
+              <MagneticButton
+                variant="primary"
+                size="lg"
+                {...(IS_PRELAUNCH ? { onClick: openWaitlist } : { href: "/produkt/corti-glow" })}
+              >
+                {IS_PRELAUNCH ? "Запиши се Първа" : "Открий Продукта"}
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </MagneticButton>
               <MagneticButton variant="secondary" size="lg" href="/glow-guide">

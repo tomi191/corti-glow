@@ -1,3 +1,6 @@
+// Pre-launch Mode
+export const IS_PRELAUNCH = process.env.NEXT_PUBLIC_PRELAUNCH === "true";
+
 // Brand Colors
 export const COLORS = {
   forest: "#2D4A3E",

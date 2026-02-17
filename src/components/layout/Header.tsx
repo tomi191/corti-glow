@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { Sparkles } from "lucide-react";
-import { NAV_LINKS, SHIPPING_THRESHOLD } from "@/lib/constants";
+import { NAV_LINKS, SHIPPING_THRESHOLD, IS_PRELAUNCH } from "@/lib/constants";
 import { CartBadge } from "@/components/cart/CartBadge";
 import { MobileMenu } from "./MobileMenu";
 
@@ -113,13 +113,15 @@ export function Header() {
                   </Link>
                 </motion.div>
               ))}
-              <motion.div
-                initial={{ opacity: 0, scale: 0 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.4, type: "spring" as const }}
-              >
-                <CartBadge />
-              </motion.div>
+              {!IS_PRELAUNCH && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.4, type: "spring" as const }}
+                >
+                  <CartBadge />
+                </motion.div>
+              )}
             </div>
           </div>
         </div>

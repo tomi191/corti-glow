@@ -5,14 +5,18 @@ import Image from "next/image";
 import type { ProductVariant } from "@/types";
 import { formatPrice } from "@/lib/utils";
 import { AddToCartButton } from "@/components/cart";
+import { IS_PRELAUNCH } from "@/lib/constants";
+import { useWaitlist } from "@/components/providers/WaitlistProvider";
 
 interface ProductBundlesProps {
   variants: ProductVariant[];
   productSlug: string;
   productName: string;
+  outOfStock?: boolean;
 }
 
-export function ProductBundles({ variants, productSlug, productName }: ProductBundlesProps) {
+export function ProductBundles({ variants, productSlug, productName, outOfStock }: ProductBundlesProps) {
+  const { openWaitlist } = useWaitlist();
   const [selectedId, setSelectedId] = useState(
     variants.find((v) => v.isBestSeller)?.id || variants[0].id
   );
@@ -124,27 +128,48 @@ export function ProductBundles({ variants, productSlug, productName }: ProductBu
         </div>
 
         <div ref={buttonRef}>
-          <AddToCartButton
-            id={selectedVariant.id}
-            productId={productSlug}
-            variantId={selectedVariant.id}
-            title={`${productName} (${selectedVariant.name})`}
-            price={selectedVariant.price}
-            image={selectedVariant.image || "/images/product-hero-box.webp"}
-            variant="primary"
-            className="py-4 text-base"
-          />
+          {IS_PRELAUNCH ? (
+            <button
+              onClick={openWaitlist}
+              className="w-full py-4 text-base rounded-xl font-medium bg-[#2D4A3E] text-white shadow-lg shadow-[#2D4A3E]/20 hover:bg-[#1f352c] transition"
+            >
+              Запиши се Първа
+            </button>
+          ) : outOfStock ? (
+            <div className="space-y-2">
+              <button
+                disabled
+                className="w-full py-4 text-base rounded-xl font-medium bg-stone-300 text-stone-500 cursor-not-allowed"
+              >
+                Изчерпан
+              </button>
+              <p className="text-center text-sm text-stone-500">
+                Очаквайте скоро — този продукт временно не е наличен.
+              </p>
+            </div>
+          ) : (
+            <AddToCartButton
+              id={selectedVariant.id}
+              productId={productSlug}
+              variantId={selectedVariant.id}
+              title={`${productName} (${selectedVariant.name})`}
+              price={selectedVariant.price}
+              image={selectedVariant.image || "/images/product-hero-box.webp"}
+              variant="primary"
+              className="py-4 text-base"
+            />
+          )}
         </div>
 
-        {selectedVariant.savings && (
+        {!IS_PRELAUNCH && !outOfStock && selectedVariant.savings && (
           <p className="text-center text-xs text-[#2D4A3E]">
             Спестяваш {selectedVariant.savings} € + Безплатна Доставка
           </p>
         )}
       </div>
 
-      {/* Sticky mobile add-to-cart bar */}
-      {showSticky && (
+      {/* Sticky mobile add-to-cart bar — hidden in prelaunch */}
+      {showSticky && !outOfStock && !IS_PRELAUNCH && (
         <div className="fixed bottom-0 left-0 right-0 z-40 bg-white shadow-[0_-4px_20px_rgba(0,0,0,0.1)] border-t border-stone-100 p-3 md:hidden">
           <div className="flex items-center gap-3 max-w-lg mx-auto">
             <div className="flex-1 min-w-0">

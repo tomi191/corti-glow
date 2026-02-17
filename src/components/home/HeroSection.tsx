@@ -1,8 +1,13 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import { Sparkles, CheckCircle } from "lucide-react";
+import { IS_PRELAUNCH } from "@/lib/constants";
+import { useWaitlist } from "@/components/providers/WaitlistProvider";
 
 export function HeroSection() {
+  const { openWaitlist } = useWaitlist();
   return (
     <section className="relative pt-12 pb-20 md:pt-24 md:pb-32 overflow-hidden">
       {/* Background Gradient */}
@@ -31,12 +36,21 @@ export function HeroSection() {
           </p>
 
           <div className="pt-4 flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
-            <Link
-              href="/produkt/corti-glow"
-              className="inline-flex justify-center items-center px-8 py-4 bg-[#2D4A3E] text-white rounded-full font-medium hover:bg-[#1f352c] transition-all shadow-lg shadow-[#2D4A3E]/20 text-sm tracking-wide"
-            >
-              Поръчай Corti-Glow
-            </Link>
+            {IS_PRELAUNCH ? (
+              <button
+                onClick={openWaitlist}
+                className="inline-flex justify-center items-center px-8 py-4 bg-[#2D4A3E] text-white rounded-full font-medium hover:bg-[#1f352c] transition-all shadow-lg shadow-[#2D4A3E]/20 text-sm tracking-wide"
+              >
+                Запиши се Първа
+              </button>
+            ) : (
+              <Link
+                href="/produkt/corti-glow"
+                className="inline-flex justify-center items-center px-8 py-4 bg-[#2D4A3E] text-white rounded-full font-medium hover:bg-[#1f352c] transition-all shadow-lg shadow-[#2D4A3E]/20 text-sm tracking-wide"
+              >
+                Поръчай Corti-Glow
+              </Link>
+            )}
             <div className="flex items-center justify-center gap-2 text-xs font-medium text-stone-500">
               <CheckCircle className="w-4 h-4 text-[#B2D8C6]" />
               Без Захар
