@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 import { motion, useInView, AnimatePresence } from "framer-motion";
 import { Leaf, FlaskConical, Award, ChevronRight, Gem, Cherry, type LucideIcon } from "lucide-react";
+import Image from "next/image";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { AnimatedHeading } from "@/components/ui/AnimatedText";
 
@@ -15,6 +16,7 @@ const ingredients: {
   description: string;
   benefits: string[];
   studies: string;
+  image: string;
 }[] = [
   {
     id: "ashwagandha",
@@ -25,6 +27,7 @@ const ingredients: {
     description: "Златният стандарт в адаптогените. Клинично доказано понижава кортизола с до 27%.",
     benefits: ["Намалява стреса", "Подобрява съня", "Повишава енергията"],
     studies: "24 клинични проучвания",
+    image: "/images/ingredients-ashwagandha.webp",
   },
   {
     id: "magnesium",
@@ -35,6 +38,18 @@ const ingredients: {
     description: "Най-усвоимата форма магнезий. Успокоява нервната система и мускулите.",
     benefits: ["Отпуска мускулите", "Подкрепя нервите", "Подобрява съня"],
     studies: "Биодостъпност 80%+",
+    image: "/images/ingredients-magnesium.webp",
+  },
+  {
+    id: "l-theanine",
+    name: "L-Теанин",
+    dose: "200mg",
+    icon: Leaf,
+    color: "#F4E3B2",
+    description: "Аминокиселина от зелен чай. Насърчава алфа мозъчните вълни за спокойна концентрация без сънливост.",
+    benefits: ["Спокойна концентрация", "Намалява тревожността", "Подобрява фокуса"],
+    studies: "Ефект за 40 минути",
+    image: "/images/ingredients-l-theanine.webp",
   },
   {
     id: "inositol",
@@ -45,6 +60,7 @@ const ingredients: {
     description: "Клинична доза за хормонален баланс. Особено ефективен при PCOS.",
     benefits: ["Балансира хормоните", "Регулира цикъла", "Намалява тревожността"],
     studies: "Препоръчван от ендокринолози",
+    image: "/images/ingredients-inositol.webp",
   },
   {
     id: "bromelain",
@@ -55,6 +71,7 @@ const ingredients: {
     description: "Естествен ензим от ананас. Премахва подуването и подпомага храносмилането.",
     benefits: ["Де-блоут ефект", "Подобрява храносмилането", "Противовъзпалителен"],
     studies: "Действа за 24 часа",
+    image: "/images/ingredients-bromelain.webp",
   },
 ];
 
@@ -189,13 +206,25 @@ export function PremiumIngredients() {
                 transition={{ duration: 0.3 }}
               >
                 <GlassCard className="p-8 bg-white/80" hover={false}>
+                  {/* Ingredient Photo */}
+                  <div className="relative w-full h-48 rounded-2xl overflow-hidden mb-6">
+                    <Image
+                      src={activeIngredient.image}
+                      alt={activeIngredient.name}
+                      fill
+                      sizes="(max-width: 1024px) 100vw, 50vw"
+                      className="object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+                  </div>
+
                   {/* Icon & Name */}
                   <div className="flex items-center gap-4 mb-6">
                     <div
-                      className="w-20 h-20 rounded-2xl flex items-center justify-center"
+                      className="w-14 h-14 rounded-xl flex items-center justify-center"
                       style={{ backgroundColor: `${activeIngredient.color}30` }}
                     >
-                      <activeIngredient.icon className="w-10 h-10" style={{ color: activeIngredient.color }} />
+                      <activeIngredient.icon className="w-7 h-7" style={{ color: activeIngredient.color }} />
                     </div>
                     <div>
                       <h3 className="text-2xl font-bold text-[#2D4A3E]">

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidateTag } from "next/cache";
 import { createServerClient } from "@/lib/supabase/server";
 import type { ProductUpdate } from "@/lib/supabase/types";
 import { demoProducts } from "@/data/products";
@@ -127,6 +128,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
       return NextResponse.json({ error: "Failed to update product" }, { status: 500 });
     }
 
+    revalidateTag("products", { expire: 0 });
     return NextResponse.json({ product });
   } catch (error) {
     console.error("Update product error:", error);
@@ -158,6 +160,7 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
       return NextResponse.json({ error: "Failed to delete product" }, { status: 500 });
     }
 
+    revalidateTag("products", { expire: 0 });
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Delete product error:", error);

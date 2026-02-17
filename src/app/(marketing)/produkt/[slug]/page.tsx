@@ -94,6 +94,7 @@ export default async function ProductPage({ params }: Props) {
   const ingredients = product.ingredients as unknown as ProductIngredientDB[];
   const features = product.features as unknown as ProductFeatureDB[];
   const howToUse = product.how_to_use as unknown as ProductHowToUseDB[];
+  const outOfStock = product.track_inventory && product.stock <= 0;
 
   // Use curated gallery for corti-glow, DB images for other products
   const images =
@@ -116,7 +117,7 @@ export default async function ProductPage({ params }: Props) {
       "@type": "Offer",
       price: v.price,
       priceCurrency: "EUR",
-      availability: "https://schema.org/InStock",
+      availability: outOfStock ? "https://schema.org/OutOfStock" : "https://schema.org/InStock",
       url: `https://luralab.eu/produkt/${slug}`,
       hasMerchantReturnPolicy: {
         "@type": "MerchantReturnPolicy",
@@ -248,6 +249,7 @@ export default async function ProductPage({ params }: Props) {
                 variants={variants}
                 productSlug={slug}
                 productName={product.name}
+                outOfStock={outOfStock}
               />
 
               {/* Quick Benefits */}

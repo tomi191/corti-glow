@@ -176,24 +176,34 @@ export async function generateImageBase64(
   }
 
   const data = await response.json();
-  const content = data.choices?.[0]?.message?.content;
+  const message = data.choices?.[0]?.message;
 
-  if (!content || !Array.isArray(content)) {
-    throw new Error('Unexpected image response format');
+  // Find image data — OpenRouter may return it in different locations:
+  // 1. message.images[] (newer format, e.g. Gemini 2.5 Flash Image)
+  // 2. message.content[] as array with image_url parts (older format)
+  let dataUri: string | undefined;
+
+  // Strategy 1: Check message.images array
+  if (Array.isArray(message?.images) && message.images.length > 0) {
+    const imgPart = message.images.find(
+      (part: Record<string, unknown>) =>
+        part.type === 'image_url' && typeof part.image_url === 'object'
+    );
+    dataUri = imgPart?.image_url?.url;
   }
 
-  // Find the image part in the response
-  const imagePart = content.find(
-    (part: Record<string, unknown>) =>
-      part.type === 'image_url' && typeof part.image_url === 'object'
-  );
+  // Strategy 2: Check message.content as array (legacy)
+  if (!dataUri && Array.isArray(message?.content)) {
+    const imgPart = message.content.find(
+      (part: Record<string, unknown>) =>
+        part.type === 'image_url' && typeof part.image_url === 'object'
+    );
+    dataUri = imgPart?.image_url?.url;
+  }
 
-  if (!imagePart?.image_url?.url) {
+  if (!dataUri) {
     throw new Error('No image data in response');
   }
-
-  // Parse data URI: data:image/png;base64,xxxxx
-  const dataUri: string = imagePart.image_url.url;
   const match = dataUri.match(/^data:([^;]+);base64,(.+)$/);
 
   if (!match) {

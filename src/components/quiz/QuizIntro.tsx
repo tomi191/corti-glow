@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Image from "next/image";
 import { Sparkles, Clock, Shield } from "lucide-react";
 
 interface QuizIntroProps {
@@ -15,6 +16,22 @@ export function QuizIntro({ onStart }: QuizIntroProps) {
       transition={{ duration: 0.6 }}
       className="max-w-lg mx-auto text-center space-y-8"
     >
+      {/* Hero image */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ delay: 0.1, duration: 0.5 }}
+        className="hidden md:block relative w-full aspect-[16/9] rounded-2xl overflow-hidden shadow-lg"
+      >
+        <Image
+          src="/images/glow-guide-hero.webp"
+          alt="Glow Guide — открий своя Stress-Beauty Score"
+          fill
+          className="object-cover"
+          priority
+        />
+      </motion.div>
+
       {/* Badge */}
       <motion.span
         initial={{ opacity: 0, scale: 0.9 }}

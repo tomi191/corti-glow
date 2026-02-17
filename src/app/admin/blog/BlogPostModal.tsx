@@ -46,7 +46,7 @@ function slugify(text: string): string {
 }
 
 export function BlogPostModal({ post, onClose, onSave }: BlogPostModalProps) {
-  const isEdit = post?.id && !post.id.startsWith?.("demo-") && post.id.includes("-");
+  const isEdit = !!post?.id;
 
   const [activeTab, setActiveTab] = useState<TabKey>("basic");
   const [isSaving, setIsSaving] = useState(false);

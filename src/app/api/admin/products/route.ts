@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidateTag } from "next/cache";
 import { createServerClient } from "@/lib/supabase/server";
 import type { ProductInsert } from "@/lib/supabase/types";
 import { demoProducts } from "@/data/products";
@@ -167,6 +168,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Failed to create product" }, { status: 500 });
     }
 
+    revalidateTag("products", { expire: 0 });
     return NextResponse.json({ product: data }, { status: 201 });
   } catch (error) {
     console.error("Create product error:", error);

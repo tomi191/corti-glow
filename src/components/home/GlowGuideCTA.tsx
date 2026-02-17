@@ -2,6 +2,7 @@
 
 import { useRef } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { motion, useInView } from "framer-motion";
 import { Sparkles, ArrowRight } from "lucide-react";
 
@@ -17,38 +18,23 @@ export function GlowGuideCTA() {
           <div className="absolute top-0 right-0 w-80 h-80 bg-[#B2D8C6]/20 rounded-full blur-[100px]" />
           <div className="absolute bottom-0 left-0 w-60 h-60 bg-[#FFC1CC]/15 rounded-full blur-[80px]" />
 
-          {/* Decorative gauge SVG */}
+          {/* Floating image card */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={isInView ? { opacity: 0.15, scale: 1 } : {}}
+            initial={{ opacity: 0, scale: 0.8, y: 20 }}
+            animate={isInView ? { opacity: 1, scale: 1, y: 0 } : {}}
             transition={{ duration: 0.8, delay: 0.3 }}
             className="absolute right-8 top-1/2 -translate-y-1/2 hidden lg:block"
           >
-            <svg width="200" height="200" viewBox="0 0 200 200">
-              <circle
-                cx="100"
-                cy="100"
-                r="85"
-                fill="none"
-                stroke="white"
-                strokeWidth="8"
-                strokeDasharray="534"
-                strokeDashoffset="160"
-                strokeLinecap="round"
-                className="-rotate-90 origin-center"
+            <div className="relative w-52 h-52 rounded-2xl overflow-hidden shadow-2xl ring-2 ring-white/20">
+              <Image
+                src="/images/glow-guide-cta.webp"
+                alt="Glow Guide Test"
+                fill
+                sizes="208px"
+                className="object-cover"
               />
-              <text
-                x="100"
-                y="100"
-                textAnchor="middle"
-                dominantBaseline="central"
-                fill="white"
-                fontSize="36"
-                fontWeight="bold"
-              >
-                ?
-              </text>
-            </svg>
+              <div className="absolute inset-0 bg-gradient-to-t from-[#2D4A3E]/40 to-transparent" />
+            </div>
           </motion.div>
 
           <div className="relative z-10 max-w-xl">

@@ -7,6 +7,7 @@ export const productVariants: ProductVariant[] = [
     description: "Идеален за проба. 30 саше.",
     price: 49.99,
     quantity: 1,
+    image: "/images/product-bundle-1.webp",
   },
   {
     id: "glow-bundle",
@@ -17,6 +18,7 @@ export const productVariants: ProductVariant[] = [
     quantity: 2,
     isBestSeller: true,
     savings: 14,
+    image: "/images/product-bundle-2.webp",
   },
   {
     id: "restart-bundle",
@@ -26,6 +28,7 @@ export const productVariants: ProductVariant[] = [
     compareAtPrice: 149.97,
     quantity: 3,
     savings: 30,
+    image: "/images/product-bundle-3.webp",
   },
 ];
 
@@ -45,6 +48,7 @@ export const ingredients = [
     description:
       "Най-усвоимата форма на магнезий. Успокоява мускулите и подобрява съня.",
     color: "#B2D8C6",
+    image: "/images/ingredients-magnesium.webp",
   },
   {
     symbol: "KSM",
@@ -53,6 +57,7 @@ export const ingredients = [
     description:
       "Клинично доказано намаляване на кортизола с до 27%. Златният стандарт.",
     color: "#FFC1CC",
+    image: "/images/ingredients-ashwagandha.webp",
   },
   {
     symbol: "L-T",
@@ -61,6 +66,7 @@ export const ingredients = [
     description:
       "Аминокиселина от зелен чай. Насърчава алфа мозъчните вълни за спокойна концентрация.",
     color: "#F4E3B2",
+    image: "/images/ingredients-l-theanine.webp",
   },
   {
     symbol: "MI",
@@ -69,6 +75,7 @@ export const ingredients = [
     description:
       "Подкрепя инсулиновата чувствителност и хормоналния баланс при PCOS.",
     color: "#E5E5E5",
+    image: "/images/ingredients-inositol.webp",
   },
   {
     symbol: "Br",
@@ -77,6 +84,7 @@ export const ingredients = [
     description:
       "Ензим от ананас. Премахва задържаната вода и подпомага храносмилането.",
     color: "#FFD4A3",
+    image: "/images/ingredients-bromelain.webp",
   },
 ];
 
@@ -145,12 +153,15 @@ export const demoProducts = [
     images: [
       "/images/product-hero-box.webp",
       "/images/product-sachet-marble.webp",
+      "/images/product-sachet-open.webp",
       "/images/product-pouring.webp",
+      "/images/product-glass-ready.webp",
+      "/images/product-hand-sachet.webp",
       "/images/product-splash-pour.webp",
-      "/images/lifestyle-morning-stretch.webp",
-      "/images/lifestyle-nightstand-ritual.webp",
       "/images/lifestyle-evening-mocktail.webp",
-      "/images/ingredients-flatlay.webp",
+      "/images/lifestyle-sofa-mocktail.webp",
+      "/images/lifestyle-nightstand-ritual.webp",
+      "/images/mocktail-ashwagandha-flatlay.webp",
     ],
     stock: 247,
     low_stock_threshold: 20,

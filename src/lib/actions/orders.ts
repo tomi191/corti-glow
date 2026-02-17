@@ -2,6 +2,7 @@
 
 import { createServerClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
+import { revalidateTag } from "next/cache";
 import type {
   OrderInsert,
   OrderUpdate,
@@ -400,6 +401,7 @@ export async function deductStock(
   }
 
   revalidatePath("/admin/produkti");
+  revalidateTag("products", { expire: 0 });
   return { success: true, error: null };
 }
 
@@ -447,5 +449,6 @@ export async function restoreStock(
   }
 
   revalidatePath("/admin/produkti");
+  revalidateTag("products", { expire: 0 });
   return { success: true, error: null };
 }

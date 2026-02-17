@@ -20,6 +20,7 @@ const reviews = [
     verified: true,
     highlight: true,
     stat: { value: "-4 см", label: "талия" },
+    image: "/images/review-morning-glow.webp",
   },
   {
     id: 2,
@@ -41,6 +42,7 @@ const reviews = [
     author: "Ина Р.",
     location: "Пловдив",
     verified: true,
+    image: "/images/review-sleep-better.webp",
   },
   {
     id: 4,
@@ -53,6 +55,7 @@ const reviews = [
     location: "Бургас",
     verified: true,
     stat: { value: "2000mg", label: "инозитол" },
+    image: "/images/review-balance-pcos.webp",
   },
   {
     id: 5,
@@ -76,6 +79,7 @@ const reviews = [
     location: "Стара Загора",
     verified: true,
     highlight: true,
+    image: "/images/review-transformation.webp",
   },
 ];
 
@@ -96,10 +100,10 @@ function ReviewCard({ review, index }: { review: typeof reviews[0]; index: numbe
         ${isLarge ? "md:col-span-2 md:row-span-1" : ""}
         ${isSmall ? "aspect-square md:aspect-auto" : ""}
         ${hasImage ? "min-h-[280px]" : ""}
-        ${review.highlight
+        ${hasImage
+          ? "bg-[#2D4A3E] text-white"
+          : review.highlight
           ? "bg-gradient-to-br from-[#2D4A3E] to-[#1a2d25] text-white"
-          : hasImage
-          ? "bg-[#2D4A3E]"
           : "bg-white border border-stone-100"
         }
         shadow-[0_4px_20px_rgba(0,0,0,0.06)] hover:shadow-[0_20px_60px_rgba(45,74,62,0.15)]

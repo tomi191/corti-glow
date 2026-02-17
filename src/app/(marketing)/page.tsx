@@ -14,6 +14,9 @@ import {
   PremiumCTA,
 } from "@/components/home";
 import { homepageFaqs } from "@/data/homepage-faqs";
+import { getProduct } from "@/lib/actions/products";
+import type { ProductVariant } from "@/types";
+import type { ProductVariantDB } from "@/lib/supabase/types";
 
 export const revalidate = 3600;
 
@@ -31,7 +34,32 @@ export const metadata: Metadata = {
   },
 };
 
-export default function HomePage() {
+function mapVariants(dbVariants: ProductVariantDB[]): ProductVariant[] {
+  return dbVariants.map((v) => ({
+    id: v.id,
+    name: v.name,
+    description: v.description,
+    price: v.price,
+    compareAtPrice: v.compare_at_price,
+    quantity: v.quantity,
+    isBestSeller: v.is_best_seller,
+    savings: v.savings,
+    image: v.image,
+  }));
+}
+
+export default async function HomePage() {
+  // Fetch product variants from DB (with fallback to hardcoded in PremiumBundles)
+  let variants: ProductVariant[] | undefined;
+  try {
+    const { product } = await getProduct("corti-glow");
+    if (product?.variants) {
+      variants = mapVariants(product.variants as unknown as ProductVariantDB[]);
+    }
+  } catch {
+    // Silently fall back to hardcoded data in PremiumBundles
+  }
+
   const faqSchema = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
@@ -59,7 +87,7 @@ export default function HomePage() {
       <PremiumIngredients />
       <PremiumHowTo />
       <GlowGuideCTAMini />
-      <PremiumBundles />
+      <PremiumBundles variants={variants} />
       <BentoReviews />
       <PremiumFAQ />
       <PremiumCTA />

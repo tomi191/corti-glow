@@ -43,8 +43,8 @@ export function HowToUseSection() {
           {/* Video/Image Placeholder */}
           <div className="relative h-[500px] w-full bg-white rounded-[2rem] overflow-hidden shadow-2xl shadow-stone-200 border border-stone-100">
             <Image
-              src="https://images.unsplash.com/photo-1544367563-12123d8965cd?q=80&w=2070&auto=format&fit=crop"
-              alt="Woman relaxing with drink"
+              src="/images/lifestyle-relaxing-bath.webp"
+              alt="Жена се отпуска с розов коктейл"
               fill
               className="object-cover"
             />

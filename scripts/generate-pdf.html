@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Morning Glow Routine</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+      color: #2D4A3E;
+      background: #fff;
+      line-height: 1.7;
+    }
+
+    .page {
+      width: 210mm;
+      min-height: 297mm;
+      padding: 40px 50px;
+      position: relative;
+      page-break-after: always;
+    }
+
+    /* Cover Page */
+    .cover {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      background: linear-gradient(135deg, #fff 0%, #F5F2EF 50%, #fff 100%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cover::before {
+      content: '';
+      position: absolute;
+      top: -100px;
+      right: -100px;
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(178,216,198,0.3) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+
+    .cover::after {
+      content: '';
+      position: absolute;
+      bottom: -100px;
+      left: -100px;
+      width: 350px;
+      height: 350px;
+      background: radial-gradient(circle, rgba(255,193,204,0.25) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+
+    .cover-content {
+      position: relative;
+      z-index: 1;
+    }
+
+    .logo {
+      font-size: 20px;
+      font-weight: 600;
+      letter-spacing: 0.3em;
+      color: #2D4A3E;
+      margin-bottom: 60px;
+      opacity: 0.7;
+    }
+
+    .cover-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 20px;
+      background: rgba(178,216,198,0.2);
+      border: 1px solid rgba(178,216,198,0.4);
+      border-radius: 50px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: #2D4A3E;
+      margin-bottom: 30px;
+    }
+
+    .cover h1 {
+      font-size: 42px;
+      font-weight: 700;
+      line-height: 1.15;
+      margin-bottom: 16px;
+      letter-spacing: -0.02em;
+    }
+
+    .cover h1 span {
+      display: block;
+      background: linear-gradient(135deg, #2D4A3E, #B2D8C6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .cover h2 {
+      font-size: 20px;
+      font-weight: 300;
+      color: #6b7280;
+      margin-bottom: 50px;
+      max-width: 400px;
+    }
+
+    .cover-divider {
+      width: 60px;
+      height: 3px;
+      background: linear-gradient(90deg, #B2D8C6, #FFC1CC);
+      border-radius: 2px;
+      margin-bottom: 50px;
+    }
+
+    .cover-intro {
+      font-size: 14px;
+      color: #6b7280;
+      max-width: 380px;
+      line-height: 1.8;
+      font-weight: 300;
+    }
+
+    /* Content Pages */
+    .content-page {
+      background: #fff;
+    }
+
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 40px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #e7e5e4;
+    }
+
+    .page-header .logo-sm {
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.25em;
+      color: #2D4A3E;
+      opacity: 0.5;
+    }
+
+    .page-header .page-num {
+      font-size: 12px;
+      color: #a8a29e;
+      font-weight: 500;
+    }
+
+    /* Intro section */
+    .intro-box {
+      background: linear-gradient(135deg, #F5F2EF, #fff);
+      border-radius: 16px;
+      padding: 30px;
+      margin-bottom: 40px;
+      border-left: 4px solid #B2D8C6;
+    }
+
+    .intro-box p {
+      font-size: 15px;
+      color: #44403c;
+      line-height: 1.8;
+      font-weight: 300;
+    }
+
+    .intro-box strong {
+      color: #2D4A3E;
+      font-weight: 600;
+    }
+
+    /* Tip Cards */
+    .tip {
+      margin-bottom: 36px;
+      page-break-inside: avoid;
+    }
+
+    .tip-number {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      background: #2D4A3E;
+      color: white;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 14px;
+    }
+
+    .tip-title {
+      font-size: 22px;
+      font-weight: 700;
+      color: #2D4A3E;
+      margin-bottom: 4px;
+      letter-spacing: -0.01em;
+    }
+
+    .tip-subtitle {
+      font-size: 13px;
+      font-weight: 500;
+      color: #B2D8C6;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 14px;
+    }
+
+    .tip-body {
+      font-size: 14.5px;
+      color: #44403c;
+      line-height: 1.8;
+      font-weight: 300;
+      margin-bottom: 16px;
+    }
+
+    .tip-goal {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      background: rgba(178,216,198,0.12);
+      border-radius: 12px;
+      padding: 16px 20px;
+    }
+
+    .tip-goal-icon {
+      width: 28px;
+      height: 28px;
+      background: #B2D8C6;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .tip-goal-icon svg {
+      width: 16px;
+      height: 16px;
+      color: #2D4A3E;
+    }
+
+    .tip-goal-text {
+      font-size: 13.5px;
+      color: #2D4A3E;
+      font-weight: 500;
+      line-height: 1.6;
+    }
+
+    .tip-goal-label {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #2D4A3E;
+      opacity: 0.5;
+      margin-bottom: 2px;
+    }
+
+    /* Divider between tips */
+    .tip-divider {
+      width: 40px;
+      height: 2px;
+      background: linear-gradient(90deg, #B2D8C6, #FFC1CC);
+      border-radius: 1px;
+      margin: 30px 0;
+    }
+
+    /* Footer CTA */
+    .footer-cta {
+      background: #2D4A3E;
+      border-radius: 20px;
+      padding: 36px;
+      text-align: center;
+      margin-top: 40px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .footer-cta::before {
+      content: '';
+      position: absolute;
+      top: -50px;
+      right: -50px;
+      width: 200px;
+      height: 200px;
+      background: radial-gradient(circle, rgba(178,216,198,0.2) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+
+    .footer-cta p {
+      position: relative;
+      z-index: 1;
+      color: rgba(255,255,255,0.85);
+      font-size: 14.5px;
+      line-height: 1.8;
+      max-width: 420px;
+      margin: 0 auto;
+      font-weight: 300;
+    }
+
+    .footer-cta .brand-name {
+      color: #B2D8C6;
+      font-weight: 600;
+    }
+
+    .footer-cta .url {
+      display: inline-block;
+      margin-top: 20px;
+      color: #B2D8C6;
+      font-weight: 600;
+      font-size: 16px;
+      letter-spacing: 0.05em;
+    }
+
+    /* Bottom bar */
+    .page-footer {
+      position: absolute;
+      bottom: 30px;
+      left: 50px;
+      right: 50px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 10px;
+      color: #a8a29e;
+    }
+
+    @media print {
+      body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .page { page-break-after: always; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- PAGE 1: COVER -->
+  <div class="page cover">
+    <div class="cover-content">
+      <div class="logo">LURA</div>
+
+      <div class="cover-badge">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2D4A3E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.5 4.5H18l-3.6 2.7 1.4 4.3L12 12l-3.8 2.5 1.4-4.3L6 7.5h4.5z"/></svg>
+        Безплатен PDF Гайд
+      </div>
+
+      <h1>
+        The Morning<br>
+        <span>Glow Routine</span>
+      </h1>
+
+      <h2>Как да рестартираш хормоните си преди 09:00 ч.</h2>
+
+      <div class="cover-divider"></div>
+
+      <p class="cover-intro">
+        Събуждаш се уморена? Чувстваш тревожност още преди да си станала от леглото?
+        Това е "кортизолов пик". Тялото ти е в режим на оцеляване.
+        Ето 3 научно доказани метода да кажеш на нервната си система, че е в безопасност.
+      </p>
+    </div>
+
+    <div class="page-footer">
+      <span>luralab.eu</span>
+      <span>&copy; 2026 LURA</span>
+    </div>
+  </div>
+
+  <!-- PAGE 2: TIPS -->
+  <div class="page content-page">
+    <div class="page-header">
+      <span class="logo-sm">LURA</span>
+      <span class="page-num">The Morning Glow Routine</span>
+    </div>
+
+    <!-- TIP 1 -->
+    <div class="tip">
+      <div class="tip-number">1</div>
+      <div class="tip-title">Светлина преди Екран</div>
+      <div class="tip-subtitle">Light Before Pixels</div>
+      <p class="tip-body">
+        Първите 10 минути след събуждане са критични. Слънчевата светлина активира
+        серотониновите рецептори в ретината и изпраща сигнал на надбъбречните жлези
+        да намалят производството на кортизол. Изследвания от Станфордския университет
+        показват, че сутрешната светлина е най-мощният регулатор на циркадния ритъм.
+      </p>
+      <div class="tip-goal">
+        <div class="tip-goal-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#2D4A3E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        </div>
+        <div>
+          <div class="tip-goal-label">Твоята цел</div>
+          <div class="tip-goal-text">Чаша вода на дневна светлина преди Instagram. 10 мин. на балкона или до прозореца.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tip-divider"></div>
+
+    <!-- TIP 2 -->
+    <div class="tip">
+      <div class="tip-number">2</div>
+      <div class="tip-title">Правилото "90 минути" за Кафето</div>
+      <div class="tip-subtitle">The 90-Minute Coffee Rule</div>
+      <p class="tip-body">
+        Не пий кафе веднага след събуждане. Кортизолът е естествено най-висок в
+        първите 60-90 минути от деня (т.нар. Cortisol Awakening Response).
+        Добавянето на кофеин предизвиква допълнителен стресов шок и увеличава
+        тревожността. Изчакай 60-90 минути — тялото ти ще благодари с повече
+        естествена енергия и по-малко "crash" следобед.
+      </p>
+      <div class="tip-goal">
+        <div class="tip-goal-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#2D4A3E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
+        </div>
+        <div>
+          <div class="tip-goal-label">Твоята цел</div>
+          <div class="tip-goal-text">Първо хидратация (вода + лимон), после кофеин. Задай таймер за 90 мин. след събуждане.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tip-divider"></div>
+
+    <!-- TIP 3 -->
+    <div class="tip">
+      <div class="tip-number">3</div>
+      <div class="tip-title">Студена Сигнализация</div>
+      <div class="tip-subtitle">The Glow Shock</div>
+      <p class="tip-body">
+        30 секунди студена вода в края на душа стимулира блуждаещия нерв
+        (vagus nerve) — главният "спирачен педал" на стреса. Това активира
+        парасимпатиковата нервна система, намалява възпаленията и подобрява
+        кръвообращението към кожата. Резултатът: мигновено сияние и спокойствие.
+      </p>
+      <div class="tip-goal">
+        <div class="tip-goal-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#2D4A3E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 11-11.31 0z"/></svg>
+        </div>
+        <div>
+          <div class="tip-goal-label">Твоята цел</div>
+          <div class="tip-goal-text">30 секунди студена вода в края на душа. Започни с 10 сек. и увеличавай постепенно.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer CTA -->
+    <div class="footer-cta">
+      <p>
+        Тези навици са основата. Но понякога тялото има нужда от повече помощ.
+        <br><br>
+        Очаквай <span class="brand-name">Corty-GLOW&trade;</span> &mdash; формулата,
+        която спира стреса на клетъчно ниво.
+        <br>
+        <span class="url">luralab.eu</span>
+      </p>
+    </div>
+
+    <div class="page-footer">
+      <span>luralab.eu</span>
+      <span>&copy; 2026 LURA</span>
+    </div>
+  </div>
+
+</body>
+</html>

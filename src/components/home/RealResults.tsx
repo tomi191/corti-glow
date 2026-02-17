@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef } from "react";
+import Image from "next/image";
 import { motion, useInView } from "framer-motion";
 import { CheckCircle, ExternalLink } from "lucide-react";
 import Link from "next/link";
@@ -68,6 +69,23 @@ export function RealResults() {
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold text-[#2D4A3E]">
             Науката + Клиентски Истории
           </h2>
+        </motion.div>
+
+        {/* Before/After visual accent */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.5, delay: 0.15 }}
+          className="relative w-full h-48 md:h-64 rounded-2xl overflow-hidden mb-10"
+        >
+          <Image
+            src="/images/results-timeline.webp"
+            alt="Before and after results"
+            fill
+            sizes="(max-width: 768px) 100vw, 1152px"
+            className="object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-stone-100/80 via-transparent to-stone-100/80" />
         </motion.div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">

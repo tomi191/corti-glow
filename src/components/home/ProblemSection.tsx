@@ -28,8 +28,8 @@ export function ProblemSection() {
           <div className="relative order-2 md:order-1">
             <div className="aspect-[4/5] rounded-2xl overflow-hidden bg-stone-200 relative">
               <Image
-                src="https://images.unsplash.com/photo-1620916566398-39f1143ab7be?q=80&w=1887&auto=format&fit=crop"
-                alt="Woman feeling tired"
+                src="/images/lifestyle-stressed-woman.webp"
+                alt="Уморена жена на бюро"
                 fill
                 className="object-cover opacity-90 hover:scale-105 transition-transform duration-700"
               />

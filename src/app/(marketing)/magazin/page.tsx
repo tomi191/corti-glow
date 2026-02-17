@@ -71,6 +71,7 @@ export default async function ShopPage() {
                 const variants = Array.isArray(product.variants)
                   ? (product.variants as unknown as ProductVariantDB[])
                   : [];
+                const isOutOfStock = product.track_inventory && product.stock <= 0;
 
                 return (
                   <Link
@@ -85,7 +86,7 @@ export default async function ShopPage() {
                           src={product.image}
                           alt={product.name}
                           fill
-                          className="object-cover group-hover:scale-105 transition-transform duration-500"
+                          className={`object-cover group-hover:scale-105 transition-transform duration-500 ${isOutOfStock ? "opacity-50" : ""}`}
                           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                         />
                       ) : (
@@ -94,8 +95,15 @@ export default async function ShopPage() {
                         </div>
                       )}
 
+                      {/* Out of stock badge */}
+                      {isOutOfStock && (
+                        <span className="absolute top-4 right-4 px-3 py-1 rounded-full bg-stone-800/80 text-white text-xs font-semibold uppercase tracking-wide backdrop-blur-sm">
+                          Изчерпан
+                        </span>
+                      )}
+
                       {/* Badge overlay */}
-                      {product.badge && (
+                      {product.badge && !isOutOfStock && (
                         <span className="absolute top-4 left-4 px-3 py-1 rounded-full bg-[#FFC1CC]/90 text-[#2D4A3E] text-xs font-semibold uppercase tracking-wide backdrop-blur-sm">
                           {product.badge}
                         </span>
@@ -115,7 +123,7 @@ export default async function ShopPage() {
 
                       <div className="flex items-center justify-between mt-4">
                         <div>
-                          <p className="text-lg font-bold text-[#2D4A3E]">
+                          <p className={`text-lg font-bold ${isOutOfStock ? "text-stone-400" : "text-[#2D4A3E]"}`}>
                             {minPrice
                               ? `от ${formatPrice(minPrice)}`
                               : formatPrice(product.price)}

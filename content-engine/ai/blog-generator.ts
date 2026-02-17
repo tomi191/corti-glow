@@ -88,6 +88,7 @@ export async function generateBlogPost(
     keyTakeaways?: string[];
     faq?: Array<{ question: string; answer: string }>;
     sources?: Array<{ title: string; publication?: string; year?: number }>;
+    imagePrompts?: Array<{ id: string; prompt: string; section: string }>;
   }>(completion.content, ['title', 'content']);
 
   // Calculate metrics
@@ -118,5 +119,6 @@ export async function generateBlogPost(
     keyTakeaways: Array.isArray(parsed.keyTakeaways) ? parsed.keyTakeaways : undefined,
     faq: Array.isArray(parsed.faq) ? parsed.faq : undefined,
     sources: Array.isArray(parsed.sources) ? parsed.sources : undefined,
+    imagePrompts: Array.isArray(parsed.imagePrompts) ? parsed.imagePrompts : undefined,
   };
 }

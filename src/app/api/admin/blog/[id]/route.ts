@@ -61,6 +61,10 @@ export async function PUT(request: NextRequest, context: RouteContext) {
       if (error.code === "23505") {
         return NextResponse.json({ error: "Post with this slug already exists" }, { status: 400 });
       }
+      // Fallback for demo-like IDs when table doesn't exist
+      if (id.startsWith("demo-")) {
+        return NextResponse.json({ post: { id, ...body }, demo: true });
+      }
       return NextResponse.json({ error: "Failed to update post" }, { status: 500 });
     }
 
@@ -90,6 +94,10 @@ export async function DELETE(_request: NextRequest, context: RouteContext) {
 
     if (error) {
       console.error("Error deleting blog post:", error);
+      // Fallback for demo-like IDs when table doesn't exist
+      if (id.startsWith("demo-")) {
+        return NextResponse.json({ success: true, demo: true });
+      }
       return NextResponse.json({ error: "Failed to delete post" }, { status: 500 });
     }
 

@@ -5,6 +5,61 @@ import { blogPosts as demoPosts, categoryLabels } from "@/data/blog";
 
 const isDemoMode = !process.env.NEXT_PUBLIC_SUPABASE_URL;
 
+/** Map static posts to DB row shape */
+function getStaticPosts() {
+  return demoPosts.map((p, i) => ({
+    id: `demo-${i}`,
+    slug: p.slug,
+    title: p.title,
+    excerpt: p.excerpt,
+    content: p.content,
+    image: p.image,
+    category: p.category,
+    author: p.author,
+    published_at: p.publishedAt,
+    updated_at: p.updatedAt || p.publishedAt,
+    read_time: p.readTime,
+    featured: p.featured || false,
+    published: true,
+    tldr: p.tldr || null,
+    key_takeaways: p.keyTakeaways || [],
+    faq: p.faq || [],
+    sources: p.sources || [],
+    meta_title: null,
+    meta_description: null,
+    keywords: [],
+    content_type: null,
+    ai_generated: false,
+    ai_model: null,
+    word_count: null,
+    created_at: p.publishedAt,
+  }));
+}
+
+/** Filter static posts by query params */
+function filterStaticPosts(
+  posts: ReturnType<typeof getStaticPosts>,
+  opts: { category?: string | null; published?: string | null; search?: string | null; limit: number; offset: number }
+) {
+  let filtered = posts;
+  if (opts.category) filtered = filtered.filter((p) => p.category === opts.category);
+  if (opts.published === "true") filtered = filtered.filter((p) => p.published);
+  if (opts.published === "false") filtered = filtered.filter((p) => !p.published);
+  if (opts.search) {
+    const s = opts.search.toLowerCase();
+    filtered = filtered.filter(
+      (p) => p.title.toLowerCase().includes(s) || p.slug.toLowerCase().includes(s)
+    );
+  }
+  return {
+    posts: filtered.slice(opts.offset, opts.offset + opts.limit),
+    total: filtered.length,
+    limit: opts.limit,
+    offset: opts.offset,
+    demo: true,
+  };
+}
+
 // GET /api/admin/blog - List blog posts
 export async function GET(request: NextRequest) {
   try {
@@ -14,54 +69,11 @@ export async function GET(request: NextRequest) {
     const search = searchParams.get("search");
     const limit = Math.min(parseInt(searchParams.get("limit") || "20"), 100);
     const offset = parseInt(searchParams.get("offset") || "0");
+    const filterOpts = { category, published, search, limit, offset };
 
-    // Demo mode
+    // Demo mode — no Supabase configured
     if (isDemoMode) {
-      let filtered = demoPosts.map((p, i) => ({
-        id: `demo-${i}`,
-        slug: p.slug,
-        title: p.title,
-        excerpt: p.excerpt,
-        content: p.content,
-        image: p.image,
-        category: p.category,
-        author: p.author,
-        published_at: p.publishedAt,
-        updated_at: p.updatedAt || p.publishedAt,
-        read_time: p.readTime,
-        featured: p.featured || false,
-        published: true,
-        tldr: p.tldr || null,
-        key_takeaways: p.keyTakeaways || [],
-        faq: p.faq || [],
-        sources: p.sources || [],
-        meta_title: null,
-        meta_description: null,
-        keywords: [],
-        content_type: null,
-        ai_generated: false,
-        ai_model: null,
-        word_count: null,
-        created_at: p.publishedAt,
-      }));
-
-      if (category) filtered = filtered.filter((p) => p.category === category);
-      if (published === "true") filtered = filtered.filter((p) => p.published);
-      if (published === "false") filtered = filtered.filter((p) => !p.published);
-      if (search) {
-        const s = search.toLowerCase();
-        filtered = filtered.filter(
-          (p) => p.title.toLowerCase().includes(s) || p.slug.toLowerCase().includes(s)
-        );
-      }
-
-      return NextResponse.json({
-        posts: filtered.slice(offset, offset + limit),
-        total: filtered.length,
-        limit,
-        offset,
-        demo: true,
-      });
+      return NextResponse.json(filterStaticPosts(getStaticPosts(), filterOpts));
     }
 
     // Production mode
@@ -89,11 +101,17 @@ export async function GET(request: NextRequest) {
 
     if (error) {
       console.error("Error fetching blog posts:", error);
-      return NextResponse.json({ error: "Failed to fetch posts" }, { status: 500 });
+      // Fallback to static data when table doesn't exist yet
+      return NextResponse.json(filterStaticPosts(getStaticPosts(), filterOpts));
+    }
+
+    // Fallback to static if DB is empty
+    if (!posts || posts.length === 0) {
+      return NextResponse.json(filterStaticPosts(getStaticPosts(), filterOpts));
     }
 
     return NextResponse.json({
-      posts: posts || [],
+      posts,
       total: count || 0,
       limit,
       offset,

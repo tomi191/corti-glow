@@ -100,9 +100,17 @@ export default function AboutPage() {
       {/* Values */}
       <section className="py-16 bg-white">
         <div className="max-w-6xl mx-auto px-6">
-          <h2 className="text-3xl font-semibold text-[#2D4A3E] text-center mb-12">
+          <h2 className="text-3xl font-semibold text-[#2D4A3E] text-center mb-8">
             Нашите Ценности
           </h2>
+          <div className="relative w-full max-w-3xl mx-auto aspect-[16/9] rounded-2xl overflow-hidden shadow-lg mb-12">
+            <Image
+              src="/images/za-nas-values.webp"
+              alt="Натурални съставки — от природата с грижа"
+              fill
+              className="object-cover"
+            />
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {values.map((value) => (
               <div
