@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Plus_Jakarta_Sans } from "next/font/google";
+import { Plus_Jakarta_Sans, Outfit } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
 import { SmoothScrollProvider } from "@/components/providers/SmoothScroll";
 import { WaitlistProvider } from "@/components/providers/WaitlistProvider";
@@ -11,6 +11,13 @@ const plusJakarta = Plus_Jakarta_Sans({
   variable: "--font-plus-jakarta",
   subsets: ["latin"],
   weight: ["300", "400", "600", "700"],
+  display: "swap",
+});
+
+const outfit = Outfit({
+  variable: "--font-outfit",
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600"],
   display: "swap",
 });
 
@@ -142,7 +149,7 @@ export default function RootLayout({
             dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
           />
         </head>
-        <body className={`${plusJakarta.variable} antialiased font-sans bg-white overflow-x-hidden`}>
+        <body className={`${plusJakarta.variable} ${outfit.variable} antialiased font-sans bg-white overflow-x-hidden`}>
           <GoogleAnalytics />
           <WaitlistProvider>
             <SmoothScrollProvider>{children}</SmoothScrollProvider>

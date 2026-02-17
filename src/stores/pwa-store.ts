@@ -26,6 +26,7 @@ interface PwaState {
   cycleLength: number;
   periodDuration: number;
   checkIns: DailyCheckIn[];
+  hasSeenTour: boolean;
   // Transient (not persisted)
   isBreathingOpen: boolean;
 }
@@ -40,6 +41,7 @@ interface PwaActions {
   setLastPeriodDate: (date: string) => void;
   setCycleLength: (length: number) => void;
   setPeriodDuration: (days: number) => void;
+  markTourSeen: () => void;
   openBreathing: () => void;
   closeBreathing: () => void;
 }
@@ -50,6 +52,7 @@ interface PwaGetters {
   getCurrentPhase: () => CyclePhase;
   getCurrentPhaseInfo: () => PhaseInfo;
   getTodayGlowScore: () => number | null;
+  getCheckInForDate: (date: string) => DailyCheckIn | undefined;
 }
 
 type PwaStore = PwaState & PwaActions & PwaGetters;
@@ -62,6 +65,7 @@ export const usePwaStore = create<PwaStore>()(
       cycleLength: 28,
       periodDuration: 5,
       checkIns: [],
+      hasSeenTour: false,
       isBreathingOpen: false,
 
       // Actions
@@ -104,6 +108,7 @@ export const usePwaStore = create<PwaStore>()(
         });
       },
 
+      markTourSeen: () => set({ hasSeenTour: true }),
       setLastPeriodDate: (date) => set({ lastPeriodDate: date }),
       setCycleLength: (length) => set({ cycleLength: length }),
       setPeriodDuration: (days) => set({ periodDuration: days }),
@@ -133,6 +138,10 @@ export const usePwaStore = create<PwaStore>()(
         const checkIn = get().getTodayCheckIn();
         return checkIn ? checkIn.glowScore : null;
       },
+
+      getCheckInForDate: (date: string) => {
+        return get().checkIns.find((c) => c.date === date);
+      },
     }),
     {
       name: "lura-pwa",
@@ -142,6 +151,7 @@ export const usePwaStore = create<PwaStore>()(
         cycleLength: state.cycleLength,
         periodDuration: state.periodDuration,
         checkIns: state.checkIns,
+        hasSeenTour: state.hasSeenTour,
         // isBreathingOpen intentionally excluded
       }),
       onRehydrateStorage: () => (state, error) => {

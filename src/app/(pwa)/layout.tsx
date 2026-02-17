@@ -5,15 +5,19 @@ import { usePathname } from "next/navigation";
 import { UserButton } from "@clerk/nextjs";
 import {
   Home,
-  ClipboardCheck,
-  Settings,
+  CalendarDays,
+  BarChart3,
+  ShoppingBag,
+  User,
 } from "lucide-react";
 import BoxBreathingFAB from "@/components/pwa/BoxBreathingFAB";
 
 const navItems = [
   { href: "/app", label: "Начало", icon: Home },
-  { href: "/app/checkin", label: "Чек-Ин", icon: ClipboardCheck },
-  { href: "/app/settings", label: "Настройки", icon: Settings },
+  { href: "/app/calendar", label: "Календар", icon: CalendarDays },
+  { href: "/app/insights", label: "Анализ", icon: BarChart3 },
+  { href: "/app/shop", label: "Магазин", icon: ShoppingBag },
+  { href: "/app/profile", label: "Профил", icon: User },
 ];
 
 export default function PWALayout({
@@ -24,52 +28,59 @@ export default function PWALayout({
   const pathname = usePathname();
 
   return (
-    <div className="min-h-screen bg-brand-sand flex flex-col">
-      {/* Top bar */}
-      <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-stone-200 px-4 py-3 flex items-center justify-between">
-        <Link href="/app" className="text-lg font-bold text-brand-forest tracking-wide">
-          LURA
+    <div className="min-h-screen flex flex-col">
+      {/* Glass header */}
+      <header className="fixed top-0 w-full z-50 px-5 py-3 flex items-center justify-between glass">
+        <Link
+          href="/app"
+          className="font-display text-xl font-bold tracking-tight text-brand-forest uppercase"
+        >
+          Lura
         </Link>
         <UserButton
           afterSignOutUrl="/"
           appearance={{
             elements: {
-              avatarBox: "w-8 h-8",
+              avatarBox: "w-9 h-9 rounded-full border-2 border-white",
             },
           }}
         />
       </header>
 
-      {/* Main content */}
-      <main className="flex-1 px-4 py-6 pb-24">
+      {/* Main content with gradient */}
+      <main className="flex-1 pt-16 pb-28 px-5 gradient-bg">
         {children}
       </main>
 
-      {/* Breathing FAB - between content and nav */}
+      {/* Breathing FAB */}
       <BoxBreathingFAB />
 
-      {/* Bottom navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-stone-200 pb-safe">
-        <div className="flex items-center justify-around h-16 max-w-lg mx-auto">
+      {/* 5-tab glass navigation */}
+      <nav className="fixed bottom-0 w-full z-40 glass px-4 py-3 pb-safe border-t border-stone-200/50 rounded-t-[2rem]">
+        <div className="flex items-center justify-around max-w-lg mx-auto">
           {navItems.map((item) => {
             const isActive =
               item.href === "/app"
                 ? pathname === "/app"
-                : pathname.startsWith(item.href);
+                : item.href === "/app/calendar"
+                  ? pathname.startsWith("/app/calendar") || pathname.startsWith("/app/checkin")
+                  : pathname.startsWith(item.href);
             const Icon = item.icon;
 
             return (
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex flex-col items-center gap-0.5 px-3 py-1 rounded-lg transition-colors ${
+                className={`flex flex-col items-center gap-0.5 px-2 py-1 rounded-xl transition-colors ${
                   isActive
                     ? "text-brand-forest"
                     : "text-stone-400 hover:text-stone-600"
                 }`}
               >
                 <Icon className={`w-5 h-5 ${isActive ? "stroke-[2.5]" : ""}`} />
-                <span className="text-[10px] font-medium">{item.label}</span>
+                <span className="text-[10px] font-bold uppercase tracking-tighter">
+                  {item.label}
+                </span>
               </Link>
             );
           })}

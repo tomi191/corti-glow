@@ -6,8 +6,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import { usePwaStore } from "@/stores/pwa-store";
 import { SYMPTOM_OPTIONS, type SymptomOption } from "@/lib/pwa-logic";
 import {
-  Check,
+  Check, X,
   CloudMoon, Moon, Meh, Smile, Sparkles,
+  AlertCircle,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
@@ -50,6 +51,7 @@ function getStressLabel(value: number) {
 export default function CheckInPage() {
   const router = useRouter();
   const saveCheckIn = usePwaStore((s) => s.saveCheckIn);
+  const getTodayCheckIn = usePwaStore((s) => s.getTodayCheckIn);
   const [mounted, setMounted] = useState(false);
 
   const [step, setStep] = useState(0);
@@ -60,7 +62,26 @@ export default function CheckInPage() {
   const [symptoms, setSymptoms] = useState<SymptomOption[]>([]);
   const [done, setDone] = useState(false);
 
+  // Re-checkin warning state
+  const [showReCheckinWarning, setShowReCheckinWarning] = useState(false);
+  const [existingCheckIn, setExistingCheckIn] = useState<ReturnType<typeof getTodayCheckIn>>(undefined);
+
   useEffect(() => setMounted(true), []);
+
+  // Check if already checked in today
+  useEffect(() => {
+    if (!mounted) return;
+    const existing = getTodayCheckIn();
+    if (existing) {
+      setExistingCheckIn(existing);
+      setShowReCheckinWarning(true);
+      // Pre-fill with existing data
+      setPeriodStarted(existing.periodStarted);
+      setSleep(existing.sleep);
+      setStress(existing.stress);
+      setSymptoms([...existing.symptoms]);
+    }
+  }, [mounted, getTodayCheckIn]);
 
   // Warn before losing wizard state
   useEffect(() => {
@@ -95,10 +116,75 @@ export default function CheckInPage() {
     );
   }
 
+  const handleClose = useCallback(() => {
+    router.push("/app");
+  }, [router]);
+
   if (!mounted) {
     return (
       <div className="max-w-lg mx-auto flex items-center justify-center min-h-[60vh]">
         <div className="w-12 h-12 rounded-full border-4 border-brand-sage border-t-transparent animate-spin" />
+      </div>
+    );
+  }
+
+  // Re-checkin warning screen
+  if (showReCheckinWarning && existingCheckIn) {
+    return (
+      <div className="max-w-lg mx-auto">
+        {/* Close button */}
+        <div className="flex justify-end mb-4">
+          <button
+            onClick={handleClose}
+            className="p-2 rounded-full hover:bg-stone-100 transition-colors"
+            aria-label="Затвори"
+          >
+            <X className="w-5 h-5 text-stone-500" />
+          </button>
+        </div>
+
+        <div className="glass p-6 rounded-[2rem] text-center space-y-4">
+          <div className="w-14 h-14 rounded-full bg-amber-100 flex items-center justify-center mx-auto">
+            <AlertCircle className="w-7 h-7 text-amber-500" />
+          </div>
+          <h2 className="text-lg font-bold text-brand-forest">
+            Вече имаш чек-ин днес
+          </h2>
+          <div className="glass p-4 rounded-2xl text-left space-y-1.5 text-sm">
+            <p className="text-stone-600">
+              <span className="font-semibold">Glow Score:</span> {existingCheckIn.glowScore}
+            </p>
+            <p className="text-stone-600">
+              <span className="font-semibold">Сън:</span> {existingCheckIn.sleep}/10
+            </p>
+            <p className="text-stone-600">
+              <span className="font-semibold">Стрес:</span> {existingCheckIn.stress}/10
+            </p>
+            {existingCheckIn.symptoms.length > 0 && (
+              <p className="text-stone-600">
+                <span className="font-semibold">Симптоми:</span>{" "}
+                {existingCheckIn.symptoms.join(", ")}
+              </p>
+            )}
+          </div>
+          <p className="text-sm text-stone-500">
+            Искаш ли да го промениш?
+          </p>
+          <div className="flex gap-3">
+            <button
+              onClick={handleClose}
+              className="flex-1 py-3 rounded-full border border-stone-200 text-stone-600 font-semibold transition-all active:scale-[0.98]"
+            >
+              Не, върни ме
+            </button>
+            <button
+              onClick={() => setShowReCheckinWarning(false)}
+              className="flex-1 py-3 rounded-full bg-brand-forest text-white font-semibold shadow-lg transition-all active:scale-[0.98]"
+            >
+              Да, промени
+            </button>
+          </div>
+        </div>
       </div>
     );
   }
@@ -121,6 +207,17 @@ export default function CheckInPage() {
 
   return (
     <div className="max-w-lg mx-auto">
+      {/* Close button */}
+      <div className="flex justify-end mb-2">
+        <button
+          onClick={handleClose}
+          className="p-2 rounded-full hover:bg-stone-100 transition-colors"
+          aria-label="Затвори"
+        >
+          <X className="w-5 h-5 text-stone-500" />
+        </button>
+      </div>
+
       {/* Progress dots */}
       <div
         className="flex items-center justify-center gap-2 mb-8"
