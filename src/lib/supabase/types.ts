@@ -467,6 +467,78 @@ export interface Database {
           }
         ];
       };
+      pwa_events: {
+        Row: {
+          id: string;
+          user_id: string | null;
+          session_id: string;
+          event_name: string;
+          event_data: Json;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id?: string | null;
+          session_id: string;
+          event_name: string;
+          event_data?: Json;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string | null;
+          session_id?: string;
+          event_name?: string;
+          event_data?: Json;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      pwa_daily_stats: {
+        Row: {
+          id: string;
+          date: string;
+          total_checkins: number;
+          quick_checkins: number;
+          full_checkins: number;
+          breathing_sessions: number;
+          total_breathing_cycles: number;
+          shop_clicks: number;
+          unique_users: number;
+          avg_stress: number | null;
+          avg_sleep: number | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          date: string;
+          total_checkins?: number;
+          quick_checkins?: number;
+          full_checkins?: number;
+          breathing_sessions?: number;
+          total_breathing_cycles?: number;
+          shop_clicks?: number;
+          unique_users?: number;
+          avg_stress?: number | null;
+          avg_sleep?: number | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          date?: string;
+          total_checkins?: number;
+          quick_checkins?: number;
+          full_checkins?: number;
+          breathing_sessions?: number;
+          total_breathing_cycles?: number;
+          shop_clicks?: number;
+          unique_users?: number;
+          avg_stress?: number | null;
+          avg_sleep?: number | null;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: {
       customers: {
@@ -557,6 +629,12 @@ export interface ProductHowToUseDB {
   description: string;
   image?: string;
 }
+
+// PWA event types
+export type PwaEvent = Database["public"]["Tables"]["pwa_events"]["Row"];
+export type PwaEventInsert = Database["public"]["Tables"]["pwa_events"]["Insert"];
+export type PwaDailyStat = Database["public"]["Tables"]["pwa_daily_stats"]["Row"];
+export type PwaDailyStatInsert = Database["public"]["Tables"]["pwa_daily_stats"]["Insert"];
 
 // Push subscriptions (not in Database interface to avoid Supabase type inference issues)
 export interface PushSubscriptionRow {

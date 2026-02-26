@@ -11,6 +11,7 @@ import {
   FileText,
   Users,
   UserPlus,
+  BarChart3,
   Settings,
   LogOut,
   Menu,
@@ -53,6 +54,11 @@ const navItems = [
     href: "/admin/abonati",
     label: "Waitlist",
     icon: UserPlus,
+  },
+  {
+    href: "/admin/analytics",
+    label: "Аналитика",
+    icon: BarChart3,
   },
   {
     href: "/admin/nastroyki",
