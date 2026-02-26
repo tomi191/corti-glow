@@ -32,44 +32,47 @@ const cormorant = Cormorant_Garamond({
 export const metadata: Metadata = {
   metadataBase: new URL("https://luralab.eu"),
   title: {
-    default: "LURA | Corti-Glow Ритуал - Анти-Стрес & Де-Блоут",
+    default: "LURA | Науката зад Красотата Без Стрес",
     template: "%s | LURA",
   },
   description:
-    "Открий Corti-Glow – вкусният моктейл с Горска Ягода и Лайм, който понижава кортизола, премахва подуването и подобрява съня. Без захар. Натурални съставки.",
+    "Corti-Glow е вечерният моктейл с KSM-66® Ashwagandha, магнезий и инозитол, който понижава кортизола и връща сиянието на кожата. 7 активни съставки, без захар.",
   keywords: [
     "кортизол",
     "стрес",
-    "подуване",
+    "кожа",
+    "сияние",
     "хормонален баланс",
     "ашваганда",
     "магнезий",
+    "инозитол",
     "добавки",
     "corti-glow",
+    "моктейл",
   ],
   authors: [{ name: "LURA" }],
   openGraph: {
     type: "website",
     locale: "bg_BG",
     url: "https://luralab.eu",
-    siteName: "LuraLab",
-    title: "LURA | Corti-Glow Ритуал",
+    siteName: "LURA",
+    title: "LURA | Науката зад Красотата Без Стрес",
     description:
-      "Изпий стреса. Прибери коремчето. 14-дневен ритуал за хормонален баланс.",
+      "Corti-Glow — вечерният моктейл, който понижава кортизола и връща сиянието на кожата. 7 активни съставки, без захар.",
     images: [
       {
-        url: "/images/og-image.jpg",
+        url: "/images/og-image.png",
         width: 1200,
         height: 630,
-        alt: "LURA Corti-Glow",
+        alt: "LURA Corti-Glow — Науката зад Красотата Без Стрес",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "LURA | Corti-Glow Ритуал",
+    title: "LURA | Науката зад Красотата Без Стрес",
     description:
-      "Изпий стреса. Прибери коремчето. 14-дневен ритуал за хормонален баланс.",
+      "Corti-Glow — вечерният моктейл, който понижава кортизола и връща сиянието на кожата. 7 активни съставки, без захар.",
     images: ["/images/og-image.png"],
   },
   robots: {
@@ -94,7 +97,7 @@ const organizationJsonLd = {
   name: "LURA",
   legalName: '"Лура Лаб" ЕООД',
   url: "https://luralab.eu",
-  logo: "https://luralab.eu/images/og-image.png",
+  logo: "https://luralab.eu/icon-512.png",
   email: "contact@luralab.eu",
   contactPoint: {
     "@type": "ContactPoint",

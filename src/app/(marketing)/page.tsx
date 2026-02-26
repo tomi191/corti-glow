@@ -22,12 +22,13 @@ import { IS_PRELAUNCH } from "@/lib/constants";
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "Corti-Glow Ритуал — Анти-Стрес & Де-Блоут",
+  title: "Corti-Glow — Науката зад Красотата Без Стрес",
   description:
-    "Открий Corti-Glow – вкусният моктейл с горска ягода, който намалява кортизола с до 27%. 500+ доволни клиентки.",
+    "Corti-Glow е вечерният моктейл с KSM-66® Ashwagandha, магнезий и инозитол, който понижава кортизола и връща сиянието на кожата. Без захар. Горска ягода & лайм.",
   openGraph: {
-    title: "LURA | Corti-Glow Ритуал",
-    description: "Изпий стреса. Сияй отвътре.",
+    title: "LURA | Науката зад Красотата Без Стрес",
+    description:
+      "Corti-Glow — вечерният моктейл, който понижава кортизола и връща сиянието на кожата. 7 активни съставки, без захар.",
     images: [{ url: "/images/og-image.png", width: 1200, height: 630 }],
   },
   alternates: {

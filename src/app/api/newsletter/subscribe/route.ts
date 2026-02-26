@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@/lib/supabase/server";
 import { z } from "zod";
 import { createRateLimiter, getClientIp } from "@/lib/rate-limit";
+import { sendWaitlistWelcomeEmail } from "@/lib/email";
 
 // 5 attempts per 5 minutes
 const limiter = createRateLimiter(5, 5 * 60 * 1000);
@@ -34,14 +35,24 @@ export async function POST(request: NextRequest) {
     }
 
     const { email, source } = validated.data;
+    const normalizedEmail = email.toLowerCase();
     const supabase = createServerClient();
+
+    // Check if subscriber already exists (to detect new vs re-subscription)
+    const { data: existing } = await (supabase as any)
+      .from("newsletter_subscribers")
+      .select("id")
+      .eq("email", normalizedEmail)
+      .single();
+
+    const isNewSubscriber = !existing;
 
     // Upsert — re-subscribe if previously unsubscribed
     const { error } = await (supabase as any)
       .from("newsletter_subscribers")
       .upsert(
         {
-          email: email.toLowerCase(),
+          email: normalizedEmail,
           active: true,
           subscribed_at: new Date().toISOString(),
           unsubscribed_at: null,
@@ -55,6 +66,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: "Грешка при записване. Опитайте отново." },
         { status: 500 }
+      );
+    }
+
+    // Send welcome email for new PWA subscribers (fire-and-forget)
+    if (isNewSubscriber && source?.includes("pwa")) {
+      sendWaitlistWelcomeEmail(normalizedEmail).catch((err) =>
+        console.error("Welcome email error:", err)
       );
     }
 

@@ -187,6 +187,123 @@ export const emailTemplates = {
     `,
   },
 
+  // Waitlist welcome email (sent when someone signs up from PWA)
+  waitlistWelcome: {
+    subject: "✨ Добре дошла в LURA! Твоят PDF гайд е тук",
+    previewText: "3 сутрешни навика, които свалят кортизола — безплатен PDF вътре",
+    html: `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; background-color: #F5F2EF;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #F5F2EF; padding: 40px 20px;">
+    <tr>
+      <td align="center">
+        <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.1);">
+
+          <!-- Header -->
+          <tr>
+            <td style="background: linear-gradient(135deg, #2D4A3E 0%, #1a2d25 100%); padding: 40px; text-align: center;">
+              <h1 style="color: #ffffff; font-size: 28px; margin: 0; letter-spacing: 4px;">LURA</h1>
+              <p style="color: #B2D8C6; margin: 10px 0 0; font-size: 14px;">Wellness за модерната жена</p>
+            </td>
+          </tr>
+
+          <!-- Welcome -->
+          <tr>
+            <td style="padding: 40px 40px 0;">
+              <h2 style="color: #2D4A3E; font-size: 24px; margin: 0 0 16px;">Ти си в списъка! 🌿</h2>
+              <p style="color: #666; margin: 0 0 24px;">
+                Радваме се, че си една от първите, които ще опитат Corty GLOW.
+                Докато подготвяме първата партида, имаме нещо специално за теб:
+              </p>
+            </td>
+          </tr>
+
+          <!-- PDF Download CTA -->
+          <tr>
+            <td style="padding: 0 40px 30px;">
+              <table width="100%" cellpadding="0" cellspacing="0" style="background: linear-gradient(135deg, #B2D8C6 0%, #d4e8dc 100%); border-radius: 12px;">
+                <tr>
+                  <td style="padding: 24px; text-align: center;">
+                    <p style="color: #2D4A3E; margin: 0 0 8px; font-size: 13px; text-transform: uppercase; letter-spacing: 2px;">Безплатен PDF гайд</p>
+                    <p style="color: #2D4A3E; margin: 0 0 16px; font-size: 18px; font-weight: 600;">3 сутрешни навика, които свалят кортизола</p>
+                    <a href="{{PDF_URL}}" style="display: inline-block; background-color: #2D4A3E; color: #ffffff; padding: 14px 32px; border-radius: 50px; text-decoration: none; font-weight: 600; font-size: 15px;">
+                      Изтегли PDF →
+                    </a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Cortisol explanation -->
+          <tr>
+            <td style="padding: 0 40px 30px;">
+              <table width="100%" cellpadding="0" cellspacing="0" style="border-left: 3px solid #B2D8C6;">
+                <tr>
+                  <td style="padding: 0 0 0 20px;">
+                    <p style="color: #2D4A3E; font-weight: 600; margin: 0 0 8px; font-size: 16px;">Защо кортизолът те &ldquo;подува&rdquo;?</p>
+                    <p style="color: #666; margin: 0; font-size: 14px;">
+                      Когато стресът е постоянен, кортизолът казва на тялото ти да трупа мазнини в корема и да задържа вода. Corty GLOW е създаден точно за това &mdash; с Ashwagandha, Myo-Inositol и Магнезий, които връщат баланса.
+                    </p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- VIP Discount -->
+          <tr>
+            <td style="padding: 0 40px 30px;">
+              <table width="100%" cellpadding="0" cellspacing="0" style="background: linear-gradient(135deg, #FFC1CC 0%, #ffd6dc 100%); border-radius: 12px;">
+                <tr>
+                  <td style="padding: 24px; text-align: center;">
+                    <p style="color: #2D4A3E; margin: 0 0 4px; font-size: 13px; text-transform: uppercase; letter-spacing: 2px;">VIP отстъпка</p>
+                    <p style="color: #2D4A3E; margin: 0 0 8px; font-size: 28px; font-weight: bold;">20% OFF</p>
+                    <p style="color: #2D4A3E; margin: 0; font-size: 14px;">при старта на продукта &mdash; само за теб</p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- PWA CTA -->
+          <tr>
+            <td style="padding: 0 40px 40px; text-align: center;">
+              <p style="color: #666; margin: 0 0 16px; font-size: 14px;">
+                Докато чакаш, опитай нашето приложение &mdash; дневен чек-ин за стрес и сън, дихателно упражнение и персонализирани препоръки.
+              </p>
+              <a href="{{PWA_URL}}" style="display: inline-block; background-color: #ffffff; color: #2D4A3E; padding: 12px 28px; border-radius: 50px; text-decoration: none; font-weight: 600; font-size: 14px; border: 2px solid #2D4A3E;">
+                Опитай LURA App →
+              </a>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="background-color: #2D4A3E; padding: 30px; text-align: center;">
+              <p style="color: #B2D8C6; margin: 0 0 10px; font-size: 14px;">
+                С грижа,<br>Екипът на LURA
+              </p>
+              <p style="color: #ffffff40; margin: 0; font-size: 12px;">
+                &copy; 2026 LURA Wellness. Всички права запазени.
+              </p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+    `,
+  },
+
   // Review request
   reviewRequest: {
     subject: "Как ти се струва Corti-Glow? ⭐",

@@ -1,4 +1,5 @@
 import type { Order } from "@/lib/supabase/types";
+import { getEmailTemplate } from "./templates";
 
 // Email configuration
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
@@ -61,6 +62,24 @@ async function sendEmail({
       error: error instanceof Error ? error.message : "Unknown error",
     };
   }
+}
+
+// Waitlist welcome email (auto-sent on PWA signup)
+export async function sendWaitlistWelcomeEmail(
+  email: string
+): Promise<{ success: boolean; error?: string }> {
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://luralab.eu";
+  const template = getEmailTemplate("waitlistWelcome", {
+    PDF_URL: `${appUrl}/pdf/3-sutreshni-navika.pdf`,
+    PWA_URL: `${appUrl}/app`,
+  });
+
+  return sendEmail({
+    to: email,
+    subject: template.subject,
+    html: template.html,
+    text: `Ти си в списъка! Радваме се, че си една от първите, които ще опитат Corty GLOW.\n\nИзтегли PDF гайда: ${appUrl}/pdf/3-sutreshni-navika.pdf\n\nКато VIP ще получиш 20% отстъпка при старта.\n\nОпитай LURA App: ${appUrl}/app\n\nС грижа, Екипът на LURA`,
+  });
 }
 
 // Contact form email
