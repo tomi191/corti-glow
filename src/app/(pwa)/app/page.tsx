@@ -106,7 +106,7 @@ export default function AppDashboard() {
   const phase = getCurrentPhase();
   const hasSetup = !!lastPeriodDate;
   const cycleProgress = hasSetup ? (cycleDay / cycleLength) * 100 : 0;
-  const actions = getDailyActions(phase);
+  const actions = getDailyActions(phase, checkIn?.stress ?? 0);
 
   return (
     <div className="max-w-lg mx-auto space-y-6 py-6">

@@ -96,6 +96,9 @@ export default function InsightsPage() {
   const [mounted, setMounted] = useState(false);
   const checkIns = usePwaStore((s) => s.checkIns);
   const getCurrentPhase = usePwaStore((s) => s.getCurrentPhase);
+  const lastPeriodDate = usePwaStore((s) => s.lastPeriodDate);
+  const cycleLength = usePwaStore((s) => s.cycleLength);
+  const periodDuration = usePwaStore((s) => s.periodDuration);
 
   useEffect(() => setMounted(true), []);
 
@@ -111,7 +114,10 @@ export default function InsightsPage() {
   );
 
   const trend = useMemo(() => getGlowScoreTrend(checkIns), [checkIns]);
-  const insights = useMemo(() => generateWeeklyInsights(checkIns, phase), [checkIns, phase]);
+  const insights = useMemo(
+    () => generateWeeklyInsights(checkIns, phase, { lastPeriodDate, cycleLength, periodDuration }),
+    [checkIns, phase, lastPeriodDate, cycleLength, periodDuration]
+  );
   const streak = useMemo(() => getCheckInStreak(checkIns), [checkIns]);
   const topSymptoms = useMemo(() => getTopSymptoms(checkIns), [checkIns]);
 

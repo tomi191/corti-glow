@@ -58,12 +58,15 @@ export function getCycleDay(
 
 export function getCyclePhase(
   cycleDay: number,
-  periodDuration = 5
+  periodDuration = 5,
+  cycleLength = 28
 ): CyclePhase {
   if (cycleDay <= 0) return "follicular";
+  // Luteal phase is ~14 days; ovulation adapts to cycle length
+  const ovulationDay = cycleLength - 14;
   if (cycleDay <= periodDuration) return "menstrual";
-  if (cycleDay < 12) return "follicular";
-  if (cycleDay <= 16) return "ovulation";
+  if (cycleDay <= ovulationDay - 2) return "follicular";
+  if (cycleDay <= ovulationDay + 1) return "ovulation";
   return "luteal";
 }
 
@@ -119,7 +122,7 @@ export function getPhaseForDate(
   const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
   // Normalize to positive cycle day (works for dates before lastPeriodDate too)
   const cycleDay = ((diffDays % cycleLength) + cycleLength) % cycleLength + 1;
-  return getCyclePhase(cycleDay, periodDuration);
+  return getCyclePhase(cycleDay, periodDuration, cycleLength);
 }
 
 export function isPeriodDay(
@@ -145,8 +148,12 @@ function clamp(value: number, min: number, max: number) {
   return Math.max(min, Math.min(max, value));
 }
 
-export function calculateGlowScore(sleep: number, stress: number): number {
-  return clamp(sleep * 10 - stress * 5, 0, 100);
+export function calculateGlowScore(
+  sleep: number,
+  stress: number,
+  symptomsCount = 0
+): number {
+  return clamp(30 + sleep * 7 - stress * 5 - symptomsCount * 3, 10, 100);
 }
 
 // ─── Daily Tips ───
@@ -183,31 +190,60 @@ export interface DailyAction {
   description: string;
 }
 
-const DAILY_ACTIONS: Record<CyclePhase, DailyAction[]> = {
-  menstrual: [
-    { type: "food", title: "Богати на желязо храни", description: "Спанак, леща и червено месо за възстановяване на желязото." },
-    { type: "exercise", title: "Лека йога", description: "15 мин. нежни пози за облекчаване на дискомфорта." },
-    { type: "supplement", title: "Магнезий за крампи", description: "Магнезиевият бисглицинат облекчава менструалните болки." },
-  ],
-  follicular: [
-    { type: "food", title: "Ферментирали храни", description: "Кисело зеле, кефир — подкрепят чревната флора и имунитета." },
-    { type: "exercise", title: "Кардио или сила", description: "Енергията расте — идеално за интензивна тренировка." },
-    { type: "supplement", title: "B-витамини", description: "Засилват енергийния метаболизъм и ясния ум." },
-  ],
-  ovulation: [
-    { type: "food", title: "Антиоксидантни храни", description: "Боровинки, домати, зелен чай — за пикова форма." },
-    { type: "exercise", title: "HIIT или групово", description: "Използвай пиковата си енергия за максимална ефективност." },
-    { type: "supplement", title: "Цинк + Витамин D", description: "Поддържат хормоналния баланс по време на овулация." },
-  ],
-  luteal: [
-    { type: "food", title: "Комплексни въглехидрати", description: "Овесени ядки, сладки картофи — за стабилна енергия." },
-    { type: "exercise", title: "Пилатес или разходка", description: "Забави темпото — тялото иска по-спокойно движение." },
-    { type: "supplement", title: "Corti-Glow Ритуал", description: "Ашваганда + Магнезий за по-лек ПМС и по-добър сън." },
-  ],
+const DAILY_ACTIONS: Record<CyclePhase, { low: DailyAction[]; high: DailyAction[] }> = {
+  menstrual: {
+    low: [
+      { type: "food", title: "Богати на желязо храни", description: "Спанак, леща и червено месо за възстановяване на желязото." },
+      { type: "exercise", title: "Лека йога", description: "15 мин. нежни пози за облекчаване на дискомфорта." },
+      { type: "supplement", title: "Магнезий за крампи", description: "Магнезиевият бисглицинат облекчава менструалните болки." },
+    ],
+    high: [
+      { type: "food", title: "Топла супа с куркума", description: "Противовъзпалителна храна, която успокоява тялото и ума." },
+      { type: "exercise", title: "Дихателни упражнения", description: "4-7-8 техника за намаляване на кортизола и облекчаване на болки." },
+      { type: "supplement", title: "Магнезий + L-Теанин", description: "Комбинацията намалява стрес и крампи едновременно." },
+    ],
+  },
+  follicular: {
+    low: [
+      { type: "food", title: "Ферментирали храни", description: "Кисело зеле, кефир — подкрепят чревната флора и имунитета." },
+      { type: "exercise", title: "Кардио или сила", description: "Енергията расте — идеално за интензивна тренировка." },
+      { type: "supplement", title: "B-витамини", description: "Засилват енергийния метаболизъм и ясния ум." },
+    ],
+    high: [
+      { type: "food", title: "Зелен смути с авокадо", description: "Здрави мазнини и магнезий за баланс на нервната система." },
+      { type: "exercise", title: "Умерено кардио", description: "30 мин. бързо ходене на открито — понижава кортизола ефективно." },
+      { type: "supplement", title: "Ашваганда + B-витамини", description: "Адаптоген за стрес плюс енергия за активната фаза." },
+    ],
+  },
+  ovulation: {
+    low: [
+      { type: "food", title: "Антиоксидантни храни", description: "Боровинки, домати, зелен чай — за пикова форма." },
+      { type: "exercise", title: "HIIT или групово", description: "Използвай пиковата си енергия за максимална ефективност." },
+      { type: "supplement", title: "Цинк + Витамин D", description: "Поддържат хормоналния баланс по време на овулация." },
+    ],
+    high: [
+      { type: "food", title: "Сьомга и орехи", description: "Омега-3 мастни киселини за мозъка и против възпаление." },
+      { type: "exercise", title: "Йога или плуване", description: "Ползвай енергията на овулацията, но без допълнителен кортизол." },
+      { type: "supplement", title: "L-Теанин + Цинк", description: "Спокоен фокус без да губиш пиковата си форма." },
+    ],
+  },
+  luteal: {
+    low: [
+      { type: "food", title: "Комплексни въглехидрати", description: "Овесени ядки, сладки картофи — за стабилна енергия." },
+      { type: "exercise", title: "Пилатес или разходка", description: "Забави темпото — тялото иска по-спокойно движение." },
+      { type: "supplement", title: "Corti-Glow Ритуал", description: "Ашваганда + Магнезий за по-лек ПМС и по-добър сън." },
+    ],
+    high: [
+      { type: "food", title: "Тъмен шоколад и банани", description: "Магнезий и триптофан — естествени антистрес помощници." },
+      { type: "exercise", title: "Разходка в природата", description: "20 мин. сред зеленина понижава кортизола с до 20%." },
+      { type: "supplement", title: "Corti-Glow двойна доза", description: "Ашваганда + Магнезий + L-Теанин за максимално успокояване." },
+    ],
+  },
 };
 
-export function getDailyActions(phase: CyclePhase): DailyAction[] {
-  return DAILY_ACTIONS[phase];
+export function getDailyActions(phase: CyclePhase, stressLevel = 0): DailyAction[] {
+  const actions = DAILY_ACTIONS[phase];
+  return stressLevel >= 6 ? actions.high : actions.low;
 }
 
 // ─── Phase Recommendations (for Shop) ───
@@ -250,7 +286,8 @@ export interface WeeklyInsight {
 
 export function generateWeeklyInsights(
   checkIns: DailyCheckIn[],
-  phase: CyclePhase
+  phase: CyclePhase,
+  cycleConfig?: { lastPeriodDate: string | null; cycleLength: number; periodDuration: number }
 ): WeeklyInsight[] {
   const insights: WeeklyInsight[] = [];
   if (checkIns.length < 3) return insights;
@@ -304,6 +341,43 @@ export function generateWeeklyInsights(
         title: "Ниско ниво на стрес — браво!",
         description: "Тялото ти се възстановява по-бързо, когато си спокойна.",
       });
+    }
+  }
+
+  // 30-day phase-stress correlation (luteal vs follicular)
+  if (cycleConfig?.lastPeriodDate && checkIns.length >= 7) {
+    const last30 = checkIns.filter((c) => {
+      const [y, m, d] = c.date.split("-").map(Number);
+      const date = new Date(y, m - 1, d);
+      const daysAgo = (now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24);
+      return daysAgo <= 30;
+    });
+
+    const phaseStress: Record<string, number[]> = { luteal: [], follicular: [] };
+    for (const ci of last30) {
+      const ciPhase = getPhaseForDate(
+        ci.date,
+        cycleConfig.lastPeriodDate,
+        cycleConfig.cycleLength,
+        cycleConfig.periodDuration
+      );
+      if (ciPhase === "luteal" || ciPhase === "follicular") {
+        phaseStress[ciPhase].push(ci.stress);
+      }
+    }
+
+    const lutealData = phaseStress.luteal;
+    const follicularData = phaseStress.follicular;
+    if (lutealData.length >= 2 && follicularData.length >= 2) {
+      const avgLuteal = lutealData.reduce((a, b) => a + b, 0) / lutealData.length;
+      const avgFollicular = follicularData.reduce((a, b) => a + b, 0) / follicularData.length;
+      if (avgLuteal > avgFollicular + 2.0) {
+        insights.push({
+          type: "warning",
+          title: "Стресът ти расте в лутеалната фаза",
+          description: `Средно ${avgLuteal.toFixed(1)} vs ${avgFollicular.toFixed(1)} във фоликуларната. Адаптогени като ашваганда могат да помогнат.`,
+        });
+      }
     }
   }
 

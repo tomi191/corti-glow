@@ -80,7 +80,7 @@ export const usePwaStore = create<PwaStore>()(
         // Clamp numeric values to valid ranges
         const clampedSleep = Math.max(0, Math.min(10, Math.round(sleep)));
         const clampedStress = Math.max(0, Math.min(10, Math.round(stress)));
-        const glowScore = calculateGlowScore(clampedSleep, clampedStress);
+        const glowScore = calculateGlowScore(clampedSleep, clampedStress, symptoms.length);
 
         const entry: DailyCheckIn = {
           date: today,
@@ -134,12 +134,12 @@ export const usePwaStore = create<PwaStore>()(
 
       getCurrentPhase: () => {
         const day = getCycleDay(get().lastPeriodDate, get().cycleLength);
-        return getCyclePhase(day, get().periodDuration);
+        return getCyclePhase(day, get().periodDuration, get().cycleLength);
       },
 
       getCurrentPhaseInfo: () => {
         const day = getCycleDay(get().lastPeriodDate, get().cycleLength);
-        return getPhaseInfo(getCyclePhase(day, get().periodDuration));
+        return getPhaseInfo(getCyclePhase(day, get().periodDuration, get().cycleLength));
       },
 
       getTodayGlowScore: () => {
