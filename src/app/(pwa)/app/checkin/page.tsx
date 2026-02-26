@@ -11,6 +11,7 @@ import {
   AlertCircle,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
+import PremiumSlider from "@/components/pwa/PremiumSlider";
 
 // ─── Sleep level visual config ───
 
@@ -213,19 +214,19 @@ export default function CheckInPage() {
       {/* Sliders Card */}
       <div className="glass p-6 rounded-[2rem] space-y-8">
         {/* Sleep */}
-        <div className="space-y-3">
+        <div className="space-y-1">
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-bold text-brand-forest">Как спа снощи?</h3>
             <SleepIcon value={sleep} />
           </div>
-          <input
-            type="range"
+          <PremiumSlider
+            value={sleep}
+            onChange={setSleep}
             min={0}
             max={10}
-            value={sleep}
-            onChange={(e) => setSleep(Number(e.target.value))}
-            className="w-full accent-brand-forest"
-            aria-label="Качество на съня"
+            colorFrom="#B2D8C6"
+            colorTo="#2D4A3E"
+            label="Качество на съня"
           />
           <div className="flex justify-between text-xs text-stone-400">
             <span>Ужасно</span>
@@ -238,20 +239,19 @@ export default function CheckInPage() {
         <div className="border-t border-stone-200/60" />
 
         {/* Stress */}
-        <div className="space-y-3">
+        <div className="space-y-1">
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-bold text-brand-forest">Ниво на стрес</h3>
             <span className="text-xs font-medium text-stone-500">{getStressLabel(stress)}</span>
           </div>
-          <input
-            type="range"
+          <PremiumSlider
+            value={stress}
+            onChange={setStress}
             min={0}
             max={10}
-            value={stress}
-            onChange={(e) => setStress(Number(e.target.value))}
-            className="w-full"
-            style={{ accentColor: `hsl(${stressHue}, 70%, 50%)` }}
-            aria-label="Ниво на стрес"
+            colorFrom="#B2D8C6"
+            colorTo="#E05A6D"
+            label="Ниво на стрес"
           />
           <div className="flex justify-between text-xs text-stone-400">
             <span>Спокойна</span>
