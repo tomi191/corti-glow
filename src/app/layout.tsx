@@ -56,13 +56,13 @@ export const metadata: Metadata = {
     locale: "bg_BG",
     url: "https://luralab.eu",
     siteName: "LURA",
-    title: "LURA | Науката зад Красотата Без Стрес",
+    title: "LURA Corti-Glow — Вечерният Моктейл за Красота Без Стрес",
     description:
       "Corti-Glow — вечерният моктейл, който понижава кортизола и връща сиянието на кожата. 7 активни съставки, без захар.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "LURA | Науката зад Красотата Без Стрес",
+    title: "LURA Corti-Glow — Вечерният Моктейл за Красота Без Стрес",
     description:
       "Corti-Glow — вечерният моктейл, който понижава кортизола и връща сиянието на кожата. 7 активни съставки, без захар.",
   },
