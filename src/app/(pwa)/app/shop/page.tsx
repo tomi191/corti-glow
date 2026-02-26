@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import { usePwaStore } from "@/stores/pwa-store";
 import { useCartStore } from "@/stores/cart-store";
+import { trackPwaEvent } from "@/lib/pwa-analytics";
 import { getPhaseRecommendation, type CyclePhase } from "@/lib/pwa-logic";
 import { haptic } from "@/lib/haptics";
 import {
@@ -86,7 +87,10 @@ export default function ShopPage() {
 
   const productTilt = useTilt(5);
 
-  useEffect(() => setMounted(true), []);
+  useEffect(() => {
+    setMounted(true);
+    trackPwaEvent("shop_viewed");
+  }, []);
 
   if (!mounted) {
     return (
@@ -114,6 +118,10 @@ export default function ShopPage() {
       title: `Corti-Glow — ${name}`,
       price,
       image,
+    });
+    trackPwaEvent("shop_add_to_cart", {
+      variant_id: variantId,
+      price,
     });
   }
 

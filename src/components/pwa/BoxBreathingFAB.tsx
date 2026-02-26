@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { usePwaStore } from "@/stores/pwa-store";
+import { trackPwaEvent } from "@/lib/pwa-analytics";
 import { Wind, X } from "lucide-react";
 
 // 4 phases x 4 seconds = 16 second cycle
@@ -74,7 +75,10 @@ export default function BoxBreathingFAB() {
       {/* FAB */}
       {!isOpen && (
         <motion.button
-          onClick={openBreathing}
+          onClick={() => {
+            openBreathing();
+            trackPwaEvent("breathing_started");
+          }}
           className="fixed bottom-20 right-4 z-30 w-14 h-14 rounded-full bg-brand-forest text-white shadow-lg flex items-center justify-center"
           whileTap={{ scale: 0.9 }}
           animate={{
@@ -93,7 +97,13 @@ export default function BoxBreathingFAB() {
 
       {/* Breathing Overlay */}
       <AnimatePresence>
-        {isOpen && <BreathingOverlay onClose={closeBreathing} />}
+        {isOpen && <BreathingOverlay onClose={(cycles: number, seconds: number) => {
+          trackPwaEvent("breathing_finished", {
+            cycles,
+            duration_seconds: seconds,
+          });
+          closeBreathing();
+        }} />}
       </AnimatePresence>
     </>
   );
@@ -101,7 +111,7 @@ export default function BoxBreathingFAB() {
 
 // ─── Premium Breathing Overlay ───
 
-function BreathingOverlay({ onClose }: { onClose: () => void }) {
+function BreathingOverlay({ onClose }: { onClose: (cycles: number, seconds: number) => void }) {
   const [tick, setTick] = useState(0);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
@@ -187,7 +197,7 @@ function BreathingOverlay({ onClose }: { onClose: () => void }) {
       {/* Close button (glass) */}
       <button
         ref={closeRef}
-        onClick={onClose}
+        onClick={() => onClose(getBreathPhase(tick).cycles, tick)}
         onKeyDown={(e) => {
           if (e.key === "Tab") e.preventDefault();
         }}

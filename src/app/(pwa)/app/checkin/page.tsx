@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { usePwaStore } from "@/stores/pwa-store";
 import { SYMPTOM_OPTIONS, type SymptomOption } from "@/lib/pwa-logic";
+import { trackPwaEvent } from "@/lib/pwa-analytics";
 import {
   Check, X, Plus,
   CloudMoon, Moon, Meh, Smile, Sparkles,
@@ -90,9 +91,16 @@ export default function CheckInPage() {
 
   const finish = useCallback(() => {
     saveCheckIn({ periodStarted, sleep, stress, symptoms });
+    trackPwaEvent("checkin_completed", {
+      type: expanded ? "full" : "quick",
+      sleep,
+      stress,
+      symptoms_count: symptoms.length,
+      period_started: periodStarted,
+    });
     setDone(true);
     setTimeout(() => router.push("/app"), 1200);
-  }, [saveCheckIn, periodStarted, sleep, stress, symptoms, router]);
+  }, [saveCheckIn, periodStarted, sleep, stress, symptoms, expanded, router]);
 
   function toggleSymptom(s: SymptomOption) {
     setSymptoms((prev) =>
@@ -300,7 +308,10 @@ export default function CheckInPage() {
       {/* Ghost expand link */}
       {!expanded && (
         <button
-          onClick={() => setExpanded(true)}
+          onClick={() => {
+            setExpanded(true);
+            trackPwaEvent("checkin_expanded");
+          }}
           className="w-full py-2 text-sm text-stone-400 font-medium flex items-center justify-center gap-1.5 hover:text-brand-forest transition-colors"
         >
           <Plus className="w-4 h-4" />

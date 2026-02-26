@@ -64,15 +64,19 @@ export async function GET(request: NextRequest) {
       .eq("event_name", "breathing_finished")
       .gte("created_at", `${todayStr}T00:00:00Z`);
 
-    const totalBreathingCycles = ((breathingToday ?? []) as PwaEventRow[]).reduce(
+    const totalBreathingSeconds = ((breathingToday ?? []) as PwaEventRow[]).reduce(
       (sum: number, row: PwaEventRow) => {
-        const cycles = typeof row.event_data?.cycles === "number" ? row.event_data.cycles : 0;
-        return sum + (cycles as number);
+        // Prefer actual duration_seconds; fallback to cycles * 16
+        const duration = typeof row.event_data?.duration_seconds === "number"
+          ? row.event_data.duration_seconds
+          : typeof row.event_data?.cycles === "number"
+            ? (row.event_data.cycles as number) * 16
+            : 0;
+        return sum + (duration as number);
       },
       0
     );
-    // Each breathing cycle is ~16 seconds
-    const sosMinutes = Math.round((totalBreathingCycles * 16) / 60 * 10) / 10;
+    const sosMinutes = Math.round((totalBreathingSeconds / 60) * 10) / 10;
 
     // --- Feature Usage: over the period ---
 
@@ -114,7 +118,7 @@ export async function GET(request: NextRequest) {
       const { count: shopClicks } = await db
         .from("pwa_events")
         .select("*", { count: "exact", head: true })
-        .eq("event_name", "shop_clicked_from_pwa")
+        .eq("event_name", "shop_viewed")
         .in("session_id", sessionArray)
         .gte("created_at", periodStartStr);
 
