@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import BoxBreathingFAB from "@/components/pwa/BoxBreathingFAB";
 import IOSInstallBanner from "@/components/pwa/IOSInstallBanner";
+import PremiumBackground from "@/components/pwa/PremiumBackground";
 import { registerServiceWorker } from "@/lib/push-notifications";
 
 const navItems = [
@@ -36,6 +37,9 @@ export default function PWALayout({
 
   return (
     <div className="min-h-screen flex flex-col">
+      {/* Animated premium background (mesh gradient + grain) */}
+      <PremiumBackground />
+
       {/* Glass header */}
       <header className="fixed top-0 w-full z-50 px-5 py-3 flex items-center justify-between glass">
         <Link
@@ -54,8 +58,8 @@ export default function PWALayout({
         />
       </header>
 
-      {/* Main content with gradient */}
-      <main className="flex-1 pt-16 pb-28 px-5 gradient-bg">
+      {/* Main content */}
+      <main className="flex-1 pt-16 pb-28 px-5">
         {children}
       </main>
 
