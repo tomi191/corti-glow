@@ -1,14 +1,24 @@
 "use client";
 
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { ChevronLeft, ChevronRight, Sparkles } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Sparkles,
+  Moon,
+  Sun,
+  Droplets,
+  CloudSun,
+} from "lucide-react";
 import { usePwaStore } from "@/stores/pwa-store";
 import {
   type CyclePhase,
   getPhaseForDate,
   getDailyTip,
 } from "@/lib/pwa-logic";
+import { haptic } from "@/lib/haptics";
 
 // ─── Constants ───
 
@@ -40,6 +50,30 @@ const PHASE_LABELS: Record<CyclePhase, string> = {
   luteal: "Лутеална",
 };
 
+const PHASE_ICONS: Record<CyclePhase, typeof Droplets> = {
+  menstrual: Droplets,
+  follicular: CloudSun,
+  ovulation: Sun,
+  luteal: Moon,
+};
+
+// Pill background colors (more saturated for the horizontal timeline)
+const PHASE_PILL_BG: Record<CyclePhase, string> = {
+  menstrual: "bg-brand-blush/60",
+  follicular: "bg-brand-sage/50",
+  ovulation: "bg-brand-cream/70",
+  luteal: "bg-orange-200/60",
+};
+
+const PHASE_PILL_ACTIVE: Record<CyclePhase, string> = {
+  menstrual: "bg-brand-blush",
+  follicular: "bg-brand-sage",
+  ovulation: "bg-brand-cream",
+  luteal: "bg-orange-300",
+};
+
+const DAY_NAMES_SHORT = ["Нд", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб"];
+
 // ─── Helpers ───
 
 function getToday(): string {
@@ -65,9 +99,7 @@ function buildMonthGrid(
   cycleLength: number,
   periodDuration: number
 ): DayInfo[][] {
-  // First day of month (0=Sun)
   const firstDow = new Date(year, month, 1).getDay();
-  // Shift to Mon=0 … Sun=6
   const startOffset = (firstDow + 6) % 7;
   const daysInMonth = new Date(year, month + 1, 0).getDate();
   const daysInPrevMonth = new Date(year, month, 0).getDate();
@@ -116,7 +148,6 @@ function buildMonthGrid(
     }
   }
 
-  // Split into rows of 7
   const rows: DayInfo[][] = [];
   for (let i = 0; i < cells.length; i += 7) {
     rows.push(cells.slice(i, i + 7));
@@ -124,11 +155,50 @@ function buildMonthGrid(
   return rows;
 }
 
+// Build the 14-day horizontal timeline data
+interface TimelineDay {
+  date: string;
+  dayNum: number;
+  dayName: string;
+  monthName: string;
+  phase: CyclePhase | null;
+  isToday: boolean;
+  isFuture: boolean;
+}
+
+function buildTimeline(
+  lastPeriodDate: string | null,
+  cycleLength: number,
+  periodDuration: number
+): TimelineDay[] {
+  const today = new Date();
+  const days: TimelineDay[] = [];
+  const todayStr = getToday();
+
+  for (let offset = -7; offset <= 6; offset++) {
+    const d = new Date(today);
+    d.setDate(d.getDate() + offset);
+    const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+
+    days.push({
+      date: dateStr,
+      dayNum: d.getDate(),
+      dayName: DAY_NAMES_SHORT[d.getDay()],
+      monthName: MONTH_NAMES[d.getMonth()],
+      phase: getPhaseForDate(dateStr, lastPeriodDate, cycleLength, periodDuration),
+      isToday: dateStr === todayStr,
+      isFuture: dateStr > todayStr,
+    });
+  }
+  return days;
+}
+
 // ─── Component ───
 
 export default function CycleCalendar() {
   const router = useRouter();
   const today = getToday();
+  const scrollRef = useRef<HTMLDivElement>(null);
 
   const lastPeriodDate = usePwaStore((s) => s.lastPeriodDate);
   const cycleLength = usePwaStore((s) => s.cycleLength);
@@ -142,13 +212,29 @@ export default function CycleCalendar() {
   const [viewMonth, setViewMonth] = useState(now.getMonth());
   const [selectedDay, setSelectedDay] = useState<string | null>(null);
 
+  // Timeline data
+  const timeline = useMemo(
+    () => buildTimeline(lastPeriodDate, cycleLength, periodDuration),
+    [lastPeriodDate, cycleLength, periodDuration]
+  );
+
+  // Monthly grid data
   const rows = useMemo(
     () => buildMonthGrid(viewYear, viewMonth, lastPeriodDate, cycleLength, periodDuration),
     [viewYear, viewMonth, lastPeriodDate, cycleLength, periodDuration]
   );
 
+  // Scroll to "today" pill on mount
+  useEffect(() => {
+    if (scrollRef.current) {
+      const todayEl = scrollRef.current.querySelector("[data-today='true']");
+      if (todayEl) {
+        todayEl.scrollIntoView({ inline: "center", behavior: "instant" });
+      }
+    }
+  }, []);
+
   const prevMonth = useCallback(() => {
-    setSelectedDay(null);
     if (viewMonth === 0) {
       setViewMonth(11);
       setViewYear((y) => y - 1);
@@ -158,7 +244,6 @@ export default function CycleCalendar() {
   }, [viewMonth]);
 
   const nextMonth = useCallback(() => {
-    setSelectedDay(null);
     if (viewMonth === 11) {
       setViewMonth(0);
       setViewYear((y) => y + 1);
@@ -167,18 +252,36 @@ export default function CycleCalendar() {
     }
   }, [viewMonth]);
 
-  const handleDayTap = useCallback(
-    (day: DayInfo) => {
-      if (!day.isCurrentMonth) return;
-      if (day.date > today) return; // future
+  const handleTimelineTap = useCallback(
+    (day: TimelineDay) => {
+      haptic.light();
 
-      if (day.date === today) {
+      if (day.isToday) {
+        // If tapping today while it's already selected, go to check-in
+        if (selectedDay === day.date) {
+          router.push("/app/checkin");
+          return;
+        }
+      }
+
+      setSelectedDay((prev) => (prev === day.date ? null : day.date));
+    },
+    [selectedDay, router]
+  );
+
+  const handleGridDayTap = useCallback(
+    (cell: DayInfo) => {
+      if (!cell.isCurrentMonth) return;
+      if (cell.date > today) return;
+
+      haptic.light();
+
+      if (cell.date === today) {
         router.push("/app/checkin");
         return;
       }
 
-      // Toggle tooltip for past days
-      setSelectedDay((prev) => (prev === day.date ? null : day.date));
+      setSelectedDay((prev) => (prev === cell.date ? null : cell.date));
     },
     [today, router]
   );
@@ -213,18 +316,186 @@ export default function CycleCalendar() {
   const currentPhase = getCurrentPhase();
   const todayScore = getTodayGlowScore();
 
-  // Selected day check-in details
+  // Selected day details
   const selectedCheckIn = selectedDay ? getCheckInForDate(selectedDay) : undefined;
+  const selectedPhase = selectedDay
+    ? getPhaseForDate(selectedDay, lastPeriodDate, cycleLength, periodDuration)
+    : null;
 
   return (
     <div className="max-w-lg mx-auto space-y-4">
-      {/* Calendar Card */}
-      <div className="bg-white/40 rounded-3xl p-4 border border-stone-100">
+      {/* ── Horizontal Timeline ── */}
+      <motion.div
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+      >
+        <div
+          ref={scrollRef}
+          className="flex gap-2 overflow-x-auto snap-x snap-mandatory no-scrollbar py-2 px-1 -mx-1"
+        >
+          {timeline.map((day) => {
+            const isSelected = selectedDay === day.date;
+            const checkIn = !day.isFuture ? getCheckInForDate(day.date) : undefined;
+            const pillBg = day.phase
+              ? isSelected
+                ? PHASE_PILL_ACTIVE[day.phase]
+                : PHASE_PILL_BG[day.phase]
+              : "bg-stone-100";
+
+            return (
+              <button
+                key={day.date}
+                data-today={day.isToday ? "true" : undefined}
+                onClick={() => handleTimelineTap(day)}
+                className={`
+                  snap-center flex-shrink-0 flex flex-col items-center gap-1
+                  w-14 py-2.5 rounded-2xl transition-all duration-200
+                  ${pillBg}
+                  ${day.isToday ? "ring-2 ring-brand-forest ring-offset-2 ring-offset-brand-sand" : ""}
+                  ${isSelected && !day.isToday ? "ring-2 ring-stone-400/50 ring-offset-1 ring-offset-brand-sand" : ""}
+                  ${day.isFuture ? "opacity-40" : ""}
+                  active:scale-95
+                `}
+                aria-label={`${day.dayNum} ${day.monthName}${day.isToday ? " — Днес" : ""}`}
+              >
+                <span className="text-[10px] font-medium text-stone-500 uppercase">
+                  {day.dayName}
+                </span>
+                <span
+                  className={`
+                    text-lg font-bold leading-none
+                    ${day.isToday ? "text-brand-forest" : "text-stone-700"}
+                  `}
+                >
+                  {day.dayNum}
+                </span>
+                {/* Check-in dot */}
+                {checkIn ? (
+                  <span className="w-1.5 h-1.5 rounded-full bg-brand-forest" />
+                ) : (
+                  <span className="w-1.5 h-1.5" /> // spacer to keep alignment
+                )}
+              </button>
+            );
+          })}
+        </div>
+      </motion.div>
+
+      {/* ── Selected Day Detail Card ── */}
+      <AnimatePresence mode="wait">
+        {selectedDay && (
+          <motion.div
+            key={selectedDay}
+            initial={{ opacity: 0, height: 0, scale: 0.97 }}
+            animate={{ opacity: 1, height: "auto", scale: 1 }}
+            exit={{ opacity: 0, height: 0, scale: 0.97 }}
+            transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+            className="overflow-hidden"
+          >
+            <div className="glass rounded-2xl p-4 space-y-3">
+              {/* Date header */}
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-bold text-brand-forest">
+                    {selectedDay === today ? "Днес" : (() => {
+                      const [y, m, d] = selectedDay.split("-").map(Number);
+                      return `${d} ${MONTH_NAMES[m - 1]}`;
+                    })()}
+                  </p>
+                  {selectedPhase && (
+                    <p className="text-xs text-stone-500">
+                      {PHASE_LABELS[selectedPhase]} фаза
+                    </p>
+                  )}
+                </div>
+                {selectedPhase && (
+                  <div
+                    className={`w-9 h-9 rounded-full flex items-center justify-center ${PHASE_PILL_BG[selectedPhase]}`}
+                  >
+                    {(() => {
+                      const Icon = PHASE_ICONS[selectedPhase];
+                      return <Icon className="w-4 h-4 text-stone-600" />;
+                    })()}
+                  </div>
+                )}
+              </div>
+
+              {/* Check-in data or empty state */}
+              {selectedCheckIn ? (
+                <div className="grid grid-cols-3 gap-2">
+                  <div className="bg-white/50 rounded-xl p-2.5 text-center">
+                    <p className="text-[10px] text-stone-400 uppercase font-medium">Glow</p>
+                    <p className="text-xl font-bold text-brand-forest">{selectedCheckIn.glowScore}</p>
+                  </div>
+                  <div className="bg-white/50 rounded-xl p-2.5 text-center">
+                    <p className="text-[10px] text-stone-400 uppercase font-medium">Сън</p>
+                    <p className="text-xl font-bold text-stone-700">{selectedCheckIn.sleep}<span className="text-xs font-normal text-stone-400">/10</span></p>
+                  </div>
+                  <div className="bg-white/50 rounded-xl p-2.5 text-center">
+                    <p className="text-[10px] text-stone-400 uppercase font-medium">Стрес</p>
+                    <p className="text-xl font-bold text-stone-700">{selectedCheckIn.stress}<span className="text-xs font-normal text-stone-400">/10</span></p>
+                  </div>
+                  {selectedCheckIn.symptoms.length > 0 && (
+                    <div className="col-span-3 flex flex-wrap gap-1.5 pt-1">
+                      {selectedCheckIn.symptoms.map((s) => (
+                        <span
+                          key={s}
+                          className="text-[11px] bg-stone-100 text-stone-600 px-2 py-0.5 rounded-full"
+                        >
+                          {s}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ) : selectedDay === today ? (
+                <button
+                  onClick={() => router.push("/app/checkin")}
+                  className="w-full py-3 bg-brand-forest text-white text-sm font-semibold rounded-xl active:scale-[0.98] transition-transform"
+                >
+                  Направи чек-ин
+                </button>
+              ) : (
+                <p className="text-sm text-stone-400 text-center py-2">
+                  Няма данни за този ден
+                </p>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ── Phase Legend ── */}
+      <div className="flex items-center justify-center gap-3 flex-wrap">
+        {(Object.keys(PHASE_LABELS) as CyclePhase[]).map((phase) => {
+          const Icon = PHASE_ICONS[phase];
+          return (
+            <div
+              key={phase}
+              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full ${PHASE_PILL_BG[phase]}`}
+            >
+              <Icon className="w-3 h-3 text-stone-600" />
+              <span className="text-[10px] text-stone-600 font-semibold uppercase tracking-wide">
+                {PHASE_LABELS[phase]}
+              </span>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* ── Monthly Calendar Grid ── */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.3, delay: 0.1 }}
+        className="glass rounded-3xl p-4"
+      >
         {/* Month header */}
         <div className="flex items-center justify-between mb-4">
           <button
             onClick={prevMonth}
-            className="p-2 rounded-full hover:bg-stone-100 transition-colors"
+            className="p-2 rounded-full hover:bg-stone-100/60 transition-colors active:scale-95"
             aria-label="Предишен месец"
           >
             <ChevronLeft className="w-5 h-5 text-stone-600" />
@@ -234,7 +505,7 @@ export default function CycleCalendar() {
           </h2>
           <button
             onClick={nextMonth}
-            className="p-2 rounded-full hover:bg-stone-100 transition-colors"
+            className="p-2 rounded-full hover:bg-stone-100/60 transition-colors active:scale-95"
             aria-label="Следващ месец"
           >
             <ChevronRight className="w-5 h-5 text-stone-600" />
@@ -244,7 +515,7 @@ export default function CycleCalendar() {
         {/* Weekday headers */}
         <div className="grid grid-cols-7 mb-1">
           {WEEKDAYS.map((wd) => (
-            <div key={wd} className="text-center text-xs font-medium text-stone-400 py-1">
+            <div key={wd} className="text-center text-[10px] font-semibold text-stone-400 uppercase tracking-wide py-1">
               {wd}
             </div>
           ))}
@@ -262,14 +533,14 @@ export default function CycleCalendar() {
               return (
                 <div key={cell.date} className="relative">
                   <button
-                    onClick={() => handleDayTap(cell)}
+                    onClick={() => handleGridDayTap(cell)}
                     disabled={!cell.isCurrentMonth || isFuture}
                     className={`
-                      w-full h-12 flex items-center justify-center text-sm relative
+                      w-full h-11 flex items-center justify-center text-sm relative
                       ${getBandClasses(row, ci)}
-                      ${!cell.isCurrentMonth ? "opacity-30" : ""}
-                      ${isFuture && cell.isCurrentMonth ? "opacity-40" : ""}
-                      ${cell.isCurrentMonth && !isFuture ? "cursor-pointer active:scale-95 transition-transform" : ""}
+                      ${!cell.isCurrentMonth ? "opacity-20" : ""}
+                      ${isFuture && cell.isCurrentMonth ? "opacity-35" : ""}
+                      ${cell.isCurrentMonth && !isFuture ? "cursor-pointer active:scale-90 transition-transform" : ""}
                     `}
                     aria-label={
                       isToday
@@ -282,79 +553,57 @@ export default function CycleCalendar() {
                     <span
                       className={`
                         w-8 h-8 flex items-center justify-center rounded-full text-sm
-                        ${isToday ? "ring-2 ring-brand-forest ring-offset-2 font-bold text-brand-forest" : ""}
-                        ${checkIn && !isToday ? "font-semibold" : ""}
+                        ${isToday ? "bg-brand-forest text-white font-bold shadow-md" : ""}
+                        ${isSelected && !isToday ? "ring-2 ring-brand-forest/40" : ""}
+                        ${checkIn && !isToday ? "font-semibold text-stone-800" : ""}
                       `}
                     >
                       {cell.dayNum}
                     </span>
-                    {/* Check-in dot — bigger for visibility */}
+                    {/* Check-in dot */}
                     {checkIn && !isToday && (
-                      <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-[5px] h-[5px] rounded-full bg-brand-forest" />
+                      <span className="absolute bottom-0.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-brand-forest" />
                     )}
                   </button>
-
-                  {/* Detailed Tooltip for past days */}
-                  {isSelected && checkIn && (
-                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-20">
-                      <div className="bg-brand-forest text-white text-xs px-4 py-3 rounded-xl shadow-lg whitespace-nowrap space-y-1">
-                        <p className="font-bold text-sm">Glow Score: {checkIn.glowScore}</p>
-                        <p>Сън: {checkIn.sleep}/10</p>
-                        <p>Стрес: {checkIn.stress}/10</p>
-                        {checkIn.symptoms.length > 0 && (
-                          <p className="max-w-[180px] whitespace-normal">
-                            {checkIn.symptoms.join(", ")}
-                          </p>
-                        )}
-                      </div>
-                      {/* Triangle pointer */}
-                      <div className="w-0 h-0 mx-auto border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[6px] border-t-brand-forest" />
-                    </div>
-                  )}
-                  {isSelected && !checkIn && (
-                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-20 pointer-events-none">
-                      <div className="bg-stone-600 text-white text-xs px-3 py-1.5 rounded-lg shadow-lg whitespace-nowrap">
-                        Няма чек-ин
-                      </div>
-                      <div className="w-0 h-0 mx-auto border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[6px] border-t-stone-600" />
-                    </div>
-                  )}
                 </div>
               );
             })}
           </div>
         ))}
-      </div>
+      </motion.div>
 
-      {/* Phase Legend */}
-      <div className="flex items-center justify-center gap-4 flex-wrap">
-        {(Object.keys(PHASE_LABELS) as CyclePhase[]).map((phase) => (
-          <div key={phase} className="flex items-center gap-1.5">
-            <span className={`w-2.5 h-2.5 rounded-full ${PHASE_DOT[phase]}`} />
-            <span className="text-xs text-stone-500 uppercase tracking-wide">
-              {PHASE_LABELS[phase]}
-            </span>
-          </div>
-        ))}
-      </div>
-
-      {/* Stats Grid */}
+      {/* ── Stats Grid ── */}
       <div className="grid grid-cols-2 gap-3">
-        <div className="bg-white/60 rounded-2xl p-4 border border-stone-100 text-center">
-          <p className="text-xs text-stone-400 uppercase tracking-wide mb-1">Среден цикъл</p>
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.15 }}
+          className="glass rounded-2xl p-4 text-center"
+        >
+          <p className="text-[10px] text-stone-400 uppercase tracking-wide font-medium mb-1">Среден цикъл</p>
           <p className="text-2xl font-bold text-brand-forest">{cycleLength}</p>
-          <p className="text-xs text-stone-400">дни</p>
-        </div>
-        <div className="bg-white/60 rounded-2xl p-4 border border-stone-100 text-center">
-          <p className="text-xs text-stone-400 uppercase tracking-wide mb-1">Следващ период</p>
+          <p className="text-[10px] text-stone-400">дни</p>
+        </motion.div>
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.2 }}
+          className="glass rounded-2xl p-4 text-center"
+        >
+          <p className="text-[10px] text-stone-400 uppercase tracking-wide font-medium mb-1">Следващ период</p>
           <p className="text-lg font-bold text-brand-forest">
             {nextPeriodDate ?? "\u2014"}
           </p>
-        </div>
+        </motion.div>
       </div>
 
-      {/* Glow Insight Card */}
-      <div className="bg-brand-forest rounded-2xl p-5 text-white">
+      {/* ── Glow Insight Card ── */}
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3, delay: 0.25 }}
+        className="bg-brand-forest rounded-2xl p-5 text-white"
+      >
         <div className="flex items-center gap-2 mb-2">
           <Sparkles className="w-5 h-5" />
           <span className="text-sm font-semibold uppercase tracking-wide">Glow Insight</span>
@@ -374,7 +623,7 @@ export default function CycleCalendar() {
             </p>
           </>
         )}
-      </div>
+      </motion.div>
     </div>
   );
 }
