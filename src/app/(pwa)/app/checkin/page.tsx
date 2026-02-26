@@ -71,8 +71,8 @@ export default function CheckInPage() {
       setSleep(existing.sleep);
       setStress(existing.stress);
       setSymptoms([...existing.symptoms]);
-      // Auto-expand if user had entered symptoms before
-      if (existing.symptoms.length > 0) {
+      // Auto-expand if user had entered symptoms or period before
+      if (existing.symptoms.length > 0 || existing.periodStarted) {
         setExpanded(true);
       }
     }
@@ -271,32 +271,6 @@ export default function CheckInPage() {
         </div>
       </div>
 
-      {/* Period toggle — always visible (critical for cycle algorithm) */}
-      <button
-        onClick={() => setPeriodStarted((v) => !v)}
-        className={`w-full flex items-center gap-3 px-5 py-3.5 rounded-2xl transition-all ${
-          periodStarted
-            ? "bg-brand-blush/30 border border-brand-blush"
-            : "glass border border-stone-200/60"
-        }`}
-      >
-        <span className="text-lg">🩸</span>
-        <span className="text-sm font-semibold text-brand-forest flex-1 text-left">
-          Цикълът ми започна днес
-        </span>
-        <div
-          className={`w-10 h-6 rounded-full relative transition-colors ${
-            periodStarted ? "bg-brand-forest" : "bg-stone-200"
-          }`}
-        >
-          <div
-            className={`absolute top-0.5 w-5 h-5 rounded-full bg-white shadow-md transition-transform ${
-              periodStarted ? "left-[18px]" : "left-0.5"
-            }`}
-          />
-        </div>
-      </button>
-
       {/* Save Button */}
       <button
         onClick={finish}
@@ -315,7 +289,7 @@ export default function CheckInPage() {
           className="w-full py-2 text-sm text-stone-400 font-medium flex items-center justify-center gap-1.5 hover:text-brand-forest transition-colors"
         >
           <Plus className="w-4 h-4" />
-          Добави симптоми
+          Добави симптоми и цикъл
         </button>
       )}
 
@@ -338,6 +312,32 @@ export default function CheckInPage() {
                 </span>
                 <div className="flex-1 border-t border-stone-200/60" />
               </div>
+
+              {/* Period toggle */}
+              <button
+                onClick={() => setPeriodStarted((v) => !v)}
+                className={`w-full flex items-center gap-3 px-5 py-3.5 rounded-2xl transition-all ${
+                  periodStarted
+                    ? "bg-brand-blush/30 border border-brand-blush"
+                    : "glass border border-stone-200/60"
+                }`}
+              >
+                <span className="text-lg">🩸</span>
+                <span className="text-sm font-semibold text-brand-forest flex-1 text-left">
+                  Цикълът ми започна днес
+                </span>
+                <div
+                  className={`w-10 h-6 rounded-full relative transition-colors ${
+                    periodStarted ? "bg-brand-forest" : "bg-stone-200"
+                  }`}
+                >
+                  <div
+                    className={`absolute top-0.5 w-5 h-5 rounded-full bg-white shadow-md transition-transform ${
+                      periodStarted ? "left-[18px]" : "left-0.5"
+                    }`}
+                  />
+                </div>
+              </button>
 
               {/* Symptoms */}
               <div className="glass p-5 rounded-2xl space-y-3">
