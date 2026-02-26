@@ -4,14 +4,14 @@ import { useState, useEffect, useCallback, useRef, type PointerEvent } from "rea
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { usePwaStore } from "@/stores/pwa-store";
-import { useCartStore } from "@/stores/cart-store";
 import { trackPwaEvent } from "@/lib/pwa-analytics";
+import { WaitlistModal } from "@/components/ui/WaitlistModal";
 import { getPhaseRecommendation, type CyclePhase } from "@/lib/pwa-logic";
 import { haptic } from "@/lib/haptics";
 import {
   Sparkles,
   Check,
-  ShoppingBag,
+  Bell,
   Star,
   Tag,
   Package,
@@ -81,9 +81,9 @@ const itemVariants = {
 
 export default function ShopPage() {
   const [mounted, setMounted] = useState(false);
+  const [waitlistOpen, setWaitlistOpen] = useState(false);
   const getCurrentPhase = usePwaStore((s) => s.getCurrentPhase);
   const lastPeriodDate = usePwaStore((s) => s.lastPeriodDate);
-  const addItem = useCartStore((s) => s.addItem);
 
   const productTilt = useTilt(5);
 
@@ -109,20 +109,10 @@ export default function ShopPage() {
   const hasSetup = !!lastPeriodDate;
   const recommendation = getPhaseRecommendation(phase);
 
-  function handleAddToCart(variantId: string, name: string, price: number, image: string) {
+  function handleWaitlist() {
     haptic.medium();
-    addItem({
-      id: `corti-glow-${variantId}`,
-      productId: "corti-glow",
-      variantId,
-      title: `Corti-Glow — ${name}`,
-      price,
-      image,
-    });
-    trackPwaEvent("shop_add_to_cart", {
-      variant_id: variantId,
-      price,
-    });
+    setWaitlistOpen(true);
+    trackPwaEvent("shop_waitlist_clicked");
   }
 
   return (
@@ -245,18 +235,11 @@ export default function ShopPage() {
                 </span>
               </div>
               <button
-                onClick={() =>
-                  handleAddToCart(
-                    "starter-box",
-                    "Старт (1 бр.)",
-                    49.99,
-                    productInfo.image
-                  )
-                }
+                onClick={handleWaitlist}
                 className="flex items-center gap-2 px-5 py-3 bg-brand-forest text-white rounded-2xl text-sm font-semibold shadow-lg shadow-brand-forest/20 active:scale-[0.96] transition-transform"
               >
-                <ShoppingBag className="w-4 h-4" />
-                Добави в кошницата
+                <Bell className="w-4 h-4" />
+                Запиши ме първа
               </button>
             </div>
           </div>
@@ -325,23 +308,36 @@ export default function ShopPage() {
                   </span>
                 )}
                 <button
-                  onClick={() =>
-                    handleAddToCart(
-                      variant.id,
-                      `${variant.name} (${variant.quantity} бр.)`,
-                      variant.price,
-                      variant.image || productInfo.image
-                    )
-                  }
+                  onClick={handleWaitlist}
                   className="mt-1 flex items-center gap-1.5 px-3 py-1.5 bg-brand-forest text-white rounded-xl text-[11px] font-semibold active:scale-[0.96] transition-transform shadow-sm"
                 >
-                  <ShoppingBag className="w-3 h-3" />
-                  Добави
+                  <Bell className="w-3 h-3" />
+                  Запиши ме
                 </button>
               </div>
             </motion.div>
           ))}
       </motion.section>
+
+      {/* Pre-launch info */}
+      <motion.div
+        variants={itemVariants}
+        className="glass rounded-[2rem] p-5 text-center space-y-2"
+      >
+        <p className="text-sm font-semibold text-brand-forest">
+          Corty GLOW се произвежда в момента
+        </p>
+        <p className="text-xs text-stone-500 leading-relaxed">
+          Запиши се в списъка и бъди първата с <span className="font-bold text-brand-forest">20% отстъпка</span> при старта.
+        </p>
+      </motion.div>
+
+      {/* Waitlist Modal */}
+      <WaitlistModal
+        isOpen={waitlistOpen}
+        onClose={() => setWaitlistOpen(false)}
+        source="pwa-shop"
+      />
     </motion.div>
   );
 }

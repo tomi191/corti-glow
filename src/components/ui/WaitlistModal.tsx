@@ -8,9 +8,10 @@ import { SuccessCheckmark } from "./SuccessCheckmark";
 interface WaitlistModalProps {
   isOpen: boolean;
   onClose: () => void;
+  source?: string;
 }
 
-export function WaitlistModal({ isOpen, onClose }: WaitlistModalProps) {
+export function WaitlistModal({ isOpen, onClose, source }: WaitlistModalProps) {
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [errorMsg, setErrorMsg] = useState("");
@@ -26,7 +27,7 @@ export function WaitlistModal({ isOpen, onClose }: WaitlistModalProps) {
       const res = await fetch("/api/newsletter/subscribe", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email, ...(source && { source }) }),
       });
 
       const data = await res.json();

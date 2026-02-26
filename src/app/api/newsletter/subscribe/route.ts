@@ -8,6 +8,7 @@ const limiter = createRateLimiter(5, 5 * 60 * 1000);
 
 const subscribeSchema = z.object({
   email: z.string().email("Невалиден имейл адрес"),
+  source: z.string().max(50).optional(),
 });
 
 export async function POST(request: NextRequest) {
@@ -32,7 +33,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { email } = validated.data;
+    const { email, source } = validated.data;
     const supabase = createServerClient();
 
     // Upsert — re-subscribe if previously unsubscribed
@@ -44,6 +45,7 @@ export async function POST(request: NextRequest) {
           active: true,
           subscribed_at: new Date().toISOString(),
           unsubscribed_at: null,
+          ...(source && { source }),
         },
         { onConflict: "email" }
       );
