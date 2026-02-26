@@ -6,25 +6,13 @@ import { motion, AnimatePresence } from "framer-motion";
 import { usePwaStore } from "@/stores/pwa-store";
 import { SYMPTOM_OPTIONS, type SymptomOption } from "@/lib/pwa-logic";
 import {
-  Check, X,
+  Check, X, Plus,
   CloudMoon, Moon, Meh, Smile, Sparkles,
   AlertCircle,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
-const TOTAL_STEPS = 4;
-
-const slideVariants = {
-  enter: (direction: number) => ({
-    x: direction > 0 ? 200 : -200,
-    opacity: 0,
-  }),
-  center: { x: 0, opacity: 1 },
-  exit: (direction: number) => ({
-    x: direction > 0 ? -200 : 200,
-    opacity: 0,
-  }),
-};
+// ─── Sleep level visual config ───
 
 const SLEEP_LEVELS: { max: number; Icon: LucideIcon; color: string }[] = [
   { max: 2, Icon: CloudMoon, color: "text-stone-400" },
@@ -37,7 +25,7 @@ const SLEEP_LEVELS: { max: number; Icon: LucideIcon; color: string }[] = [
 function SleepIcon({ value }: { value: number }) {
   const level = SLEEP_LEVELS.find((l) => value <= l.max) ?? SLEEP_LEVELS[4];
   const Icon = level.Icon;
-  return <Icon className={`w-12 h-12 ${level.color}`} />;
+  return <Icon className={`w-10 h-10 ${level.color}`} />;
 }
 
 function getStressLabel(value: number) {
@@ -48,18 +36,19 @@ function getStressLabel(value: number) {
   return "Много стресирана";
 }
 
+// ─── Main Component ───
+
 export default function CheckInPage() {
   const router = useRouter();
   const saveCheckIn = usePwaStore((s) => s.saveCheckIn);
   const getTodayCheckIn = usePwaStore((s) => s.getTodayCheckIn);
   const [mounted, setMounted] = useState(false);
 
-  const [step, setStep] = useState(0);
-  const [direction, setDirection] = useState(1);
   const [periodStarted, setPeriodStarted] = useState(false);
   const [sleep, setSleep] = useState(7);
   const [stress, setStress] = useState(3);
   const [symptoms, setSymptoms] = useState<SymptomOption[]>([]);
+  const [expanded, setExpanded] = useState(false);
   const [done, setDone] = useState(false);
 
   // Re-checkin warning state
@@ -80,29 +69,23 @@ export default function CheckInPage() {
       setSleep(existing.sleep);
       setStress(existing.stress);
       setSymptoms([...existing.symptoms]);
+      // Auto-expand if user had entered symptoms before
+      if (existing.symptoms.length > 0) {
+        setExpanded(true);
+      }
     }
   }, [mounted, getTodayCheckIn]);
 
-  // Warn before losing wizard state
+  // Warn before losing expanded state
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-      if (!done && step > 0) {
+      if (!done && expanded) {
         e.preventDefault();
       }
     };
     window.addEventListener("beforeunload", handleBeforeUnload);
     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
-  }, [done, step]);
-
-  const next = useCallback(() => {
-    setDirection(1);
-    setStep((s) => Math.min(s + 1, TOTAL_STEPS - 1));
-  }, []);
-
-  const back = useCallback(() => {
-    setDirection(-1);
-    setStep((s) => Math.max(s - 1, 0));
-  }, []);
+  }, [done, expanded]);
 
   const finish = useCallback(() => {
     saveCheckIn({ periodStarted, sleep, stress, symptoms });
@@ -120,6 +103,7 @@ export default function CheckInPage() {
     router.push("/app");
   }, [router]);
 
+  // ─── Loading ───
   if (!mounted) {
     return (
       <div className="max-w-lg mx-auto flex items-center justify-center min-h-[60vh]">
@@ -128,11 +112,10 @@ export default function CheckInPage() {
     );
   }
 
-  // Re-checkin warning screen
+  // ─── Re-checkin Warning ───
   if (showReCheckinWarning && existingCheckIn) {
     return (
       <div className="max-w-lg mx-auto">
-        {/* Close button */}
         <div className="flex justify-end mb-4">
           <button
             onClick={handleClose}
@@ -152,7 +135,7 @@ export default function CheckInPage() {
           </h2>
           <div className="glass p-4 rounded-2xl text-left space-y-1.5 text-sm">
             <p className="text-stone-600">
-              <span className="font-semibold">Glow Score:</span> {existingCheckIn.glowScore}
+              <span className="font-semibold">Score:</span> {existingCheckIn.glowScore}
             </p>
             <p className="text-stone-600">
               <span className="font-semibold">Сън:</span> {existingCheckIn.sleep}/10
@@ -189,6 +172,7 @@ export default function CheckInPage() {
     );
   }
 
+  // ─── Done Screen ───
   if (done) {
     return (
       <div className="max-w-lg mx-auto flex flex-col items-center justify-center min-h-[60vh]">
@@ -199,16 +183,19 @@ export default function CheckInPage() {
         >
           <Check className="w-10 h-10 text-brand-forest" />
         </motion.div>
-        <p className="text-lg font-semibold text-brand-forest">Готово!</p>
+        <p className="text-lg font-semibold text-brand-forest">Готово</p>
         <p className="text-sm text-stone-500 mt-1">Чек-инът ти е записан</p>
       </div>
     );
   }
 
+  // ─── Main Check-in Screen ───
+  const stressHue = Math.round(120 - (stress / 10) * 120);
+
   return (
-    <div className="max-w-lg mx-auto">
+    <div className="max-w-lg mx-auto space-y-5">
       {/* Close button */}
-      <div className="flex justify-end mb-2">
+      <div className="flex justify-end">
         <button
           onClick={handleClose}
           className="p-2 rounded-full hover:bg-stone-100 transition-colors"
@@ -218,236 +205,159 @@ export default function CheckInPage() {
         </button>
       </div>
 
-      {/* Progress dots */}
-      <div
-        className="flex items-center justify-center gap-2 mb-8"
-        role="progressbar"
-        aria-valuenow={step + 1}
-        aria-valuemin={1}
-        aria-valuemax={TOTAL_STEPS}
-        aria-label={`Стъпка ${step + 1} от ${TOTAL_STEPS}`}
+      {/* Title */}
+      <h1 className="text-xl font-display font-bold text-brand-forest text-center">
+        Как е днес?
+      </h1>
+
+      {/* Sliders Card */}
+      <div className="glass p-6 rounded-[2rem] space-y-8">
+        {/* Sleep */}
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-bold text-brand-forest">Как спа снощи?</h3>
+            <SleepIcon value={sleep} />
+          </div>
+          <input
+            type="range"
+            min={0}
+            max={10}
+            value={sleep}
+            onChange={(e) => setSleep(Number(e.target.value))}
+            className="w-full accent-brand-forest"
+            aria-label="Качество на съня"
+          />
+          <div className="flex justify-between text-xs text-stone-400">
+            <span>Ужасно</span>
+            <span className="text-base font-bold text-brand-forest">{sleep}/10</span>
+            <span>Перфектно</span>
+          </div>
+        </div>
+
+        {/* Divider */}
+        <div className="border-t border-stone-200/60" />
+
+        {/* Stress */}
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-bold text-brand-forest">Ниво на стрес</h3>
+            <span className="text-xs font-medium text-stone-500">{getStressLabel(stress)}</span>
+          </div>
+          <input
+            type="range"
+            min={0}
+            max={10}
+            value={stress}
+            onChange={(e) => setStress(Number(e.target.value))}
+            className="w-full"
+            style={{ accentColor: `hsl(${stressHue}, 70%, 50%)` }}
+            aria-label="Ниво на стрес"
+          />
+          <div className="flex justify-between text-xs text-stone-400">
+            <span>Спокойна</span>
+            <span className="text-base font-bold" style={{ color: `hsl(${stressHue}, 70%, 45%)` }}>
+              {stress}/10
+            </span>
+            <span>Много стрес</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Period toggle — always visible (critical for cycle algorithm) */}
+      <button
+        onClick={() => setPeriodStarted((v) => !v)}
+        className={`w-full flex items-center gap-3 px-5 py-3.5 rounded-2xl transition-all ${
+          periodStarted
+            ? "bg-brand-blush/30 border border-brand-blush"
+            : "glass border border-stone-200/60"
+        }`}
       >
-        {Array.from({ length: TOTAL_STEPS }).map((_, i) => (
+        <span className="text-lg">🩸</span>
+        <span className="text-sm font-semibold text-brand-forest flex-1 text-left">
+          Цикълът ми започна днес
+        </span>
+        <div
+          className={`w-10 h-6 rounded-full relative transition-colors ${
+            periodStarted ? "bg-brand-forest" : "bg-stone-200"
+          }`}
+        >
           <div
-            key={i}
-            className={`h-2 rounded-full transition-all duration-300 ${
-              i === step
-                ? "w-8 bg-brand-forest"
-                : i < step
-                  ? "w-2 bg-brand-sage"
-                  : "w-2 bg-stone-200"
+            className={`absolute top-0.5 w-5 h-5 rounded-full bg-white shadow-md transition-transform ${
+              periodStarted ? "left-[18px]" : "left-0.5"
             }`}
           />
-        ))}
-      </div>
+        </div>
+      </button>
 
-      {/* Steps */}
-      <div className="relative overflow-hidden min-h-[320px]">
-        <AnimatePresence custom={direction} mode="wait">
+      {/* Save Button */}
+      <button
+        onClick={finish}
+        className="w-full py-4 rounded-full bg-brand-forest text-white font-semibold text-base shadow-lg shadow-brand-forest/20 active:scale-[0.98] transition-transform"
+      >
+        {expanded ? "Запази всичко" : "Запази деня"}
+      </button>
+
+      {/* Ghost expand link */}
+      {!expanded && (
+        <button
+          onClick={() => setExpanded(true)}
+          className="w-full py-2 text-sm text-stone-400 font-medium flex items-center justify-center gap-1.5 hover:text-brand-forest transition-colors"
+        >
+          <Plus className="w-4 h-4" />
+          Добави симптоми
+        </button>
+      )}
+
+      {/* Expanded Details */}
+      <AnimatePresence>
+        {expanded && (
           <motion.div
-            key={step}
-            custom={direction}
-            variants={slideVariants}
-            initial="enter"
-            animate="center"
-            exit="exit"
-            transition={{ duration: 0.25, ease: "easeInOut" }}
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+            className="overflow-hidden"
           >
-            {step === 0 && (
-              <StepPeriod value={periodStarted} onChange={setPeriodStarted} />
-            )}
-            {step === 1 && (
-              <StepSleep value={sleep} onChange={setSleep} />
-            )}
-            {step === 2 && (
-              <StepStress value={stress} onChange={setStress} />
-            )}
-            {step === 3 && (
-              <StepSymptoms selected={symptoms} onToggle={toggleSymptom} />
-            )}
+            <div className="space-y-5 pt-2">
+              {/* Section label */}
+              <div className="flex items-center gap-3 px-1">
+                <div className="flex-1 border-t border-stone-200/60" />
+                <span className="text-xs font-bold uppercase tracking-widest text-stone-400">
+                  Допълнително
+                </span>
+                <div className="flex-1 border-t border-stone-200/60" />
+              </div>
+
+              {/* Symptoms */}
+              <div className="glass p-5 rounded-2xl space-y-3">
+                <div>
+                  <h3 className="text-sm font-bold text-brand-forest">
+                    Симптоми днес
+                  </h3>
+                  <p className="text-xs text-stone-400 mt-0.5">
+                    Избери всички, които усещаш (незадължително)
+                  </p>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {SYMPTOM_OPTIONS.map((symptom) => (
+                    <button
+                      key={symptom}
+                      onClick={() => toggleSymptom(symptom)}
+                      className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all ${
+                        symptoms.includes(symptom)
+                          ? "bg-brand-forest text-white shadow-md"
+                          : "bg-white text-stone-600 border border-stone-200"
+                      }`}
+                    >
+                      {symptom}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
           </motion.div>
-        </AnimatePresence>
-      </div>
-
-      {/* Navigation */}
-      <div className="mt-8 flex gap-3">
-        {step > 0 && (
-          <button
-            onClick={back}
-            className="py-3 px-6 rounded-full border border-stone-200 text-stone-600 font-semibold transition-all active:scale-[0.98]"
-          >
-            Назад
-          </button>
         )}
-        {step < TOTAL_STEPS - 1 ? (
-          <button
-            onClick={next}
-            className="flex-1 py-3 px-6 rounded-full bg-brand-forest text-white font-semibold shadow-lg transition-all active:scale-[0.98]"
-          >
-            Напред
-          </button>
-        ) : (
-          <button
-            onClick={finish}
-            className="flex-1 py-3 px-6 rounded-full bg-brand-forest text-white font-semibold shadow-lg transition-all active:scale-[0.98]"
-          >
-            Готово
-          </button>
-        )}
-      </div>
-    </div>
-  );
-}
-
-// ─── Step Components ───
-
-function StepPeriod({
-  value,
-  onChange,
-}: {
-  value: boolean;
-  onChange: (v: boolean) => void;
-}) {
-  return (
-    <div className="text-center space-y-6">
-      <h2 className="text-xl font-bold text-brand-forest">
-        Имаш ли менструация днес?
-      </h2>
-      <div className="flex justify-center gap-4">
-        {[
-          { label: "Да", val: true },
-          { label: "Не", val: false },
-        ].map((opt) => (
-          <button
-            key={opt.label}
-            onClick={() => onChange(opt.val)}
-            className={`px-8 py-3 rounded-full font-semibold transition-all ${
-              value === opt.val
-                ? "bg-brand-forest text-white shadow-lg"
-                : "bg-white text-stone-600 border border-stone-200"
-            }`}
-          >
-            {opt.label}
-          </button>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function StepSleep({
-  value,
-  onChange,
-}: {
-  value: number;
-  onChange: (v: number) => void;
-}) {
-  return (
-    <div className="text-center space-y-6">
-      <h2 className="text-xl font-bold text-brand-forest">
-        Как спа снощи?
-      </h2>
-      <div className="flex justify-center">
-        <SleepIcon value={value} />
-      </div>
-      <div className="px-4">
-        <input
-          type="range"
-          min={0}
-          max={10}
-          value={value}
-          onChange={(e) => onChange(Number(e.target.value))}
-          className="w-full accent-brand-forest"
-          aria-label="Качество на съня"
-          aria-valuemin={0}
-          aria-valuemax={10}
-          aria-valuenow={value}
-        />
-        <div className="flex justify-between text-xs text-stone-400 mt-1">
-          <span>Ужасно</span>
-          <span className="text-lg font-bold text-brand-forest">{value}/10</span>
-          <span>Перфектно</span>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function StepStress({
-  value,
-  onChange,
-}: {
-  value: number;
-  onChange: (v: number) => void;
-}) {
-  // Gradient from green (low stress) to red (high stress)
-  const hue = Math.round(120 - (value / 10) * 120); // 120=green, 0=red
-
-  return (
-    <div className="text-center space-y-6">
-      <h2 className="text-xl font-bold text-brand-forest">
-        Ниво на стрес
-      </h2>
-      <p className="text-stone-500">{getStressLabel(value)}</p>
-      <div className="px-4">
-        <input
-          type="range"
-          min={0}
-          max={10}
-          value={value}
-          onChange={(e) => onChange(Number(e.target.value))}
-          className="w-full"
-          style={{ accentColor: `hsl(${hue}, 70%, 50%)` }}
-          aria-label="Ниво на стрес"
-          aria-valuemin={0}
-          aria-valuemax={10}
-          aria-valuenow={value}
-          aria-valuetext={getStressLabel(value)}
-        />
-        <div className="flex justify-between text-xs text-stone-400 mt-1">
-          <span>Спокойна</span>
-          <span className="text-lg font-bold" style={{ color: `hsl(${hue}, 70%, 45%)` }}>
-            {value}/10
-          </span>
-          <span>Много стрес</span>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function StepSymptoms({
-  selected,
-  onToggle,
-}: {
-  selected: SymptomOption[];
-  onToggle: (s: SymptomOption) => void;
-}) {
-  return (
-    <div className="space-y-4">
-      <div className="text-center">
-        <h2 className="text-xl font-bold text-brand-forest">
-          Симптоми днес
-        </h2>
-        <p className="text-sm text-stone-500 mt-1">
-          Избери всички, които усещаш (незадължително)
-        </p>
-      </div>
-      <div className="flex flex-wrap justify-center gap-2">
-        {SYMPTOM_OPTIONS.map((symptom) => (
-          <button
-            key={symptom}
-            onClick={() => onToggle(symptom)}
-            className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
-              selected.includes(symptom)
-                ? "bg-brand-forest text-white shadow-md"
-                : "bg-white text-stone-600 border border-stone-200"
-            }`}
-          >
-            {symptom}
-          </button>
-        ))}
-      </div>
+      </AnimatePresence>
     </div>
   );
 }
