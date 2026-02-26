@@ -28,6 +28,7 @@ import {
 import type { LucideIcon } from "lucide-react";
 import OnboardingWizard from "@/components/pwa/OnboardingWizard";
 import AppTourModal from "@/components/pwa/AppTourModal";
+import GlowRing from "@/components/pwa/GlowRing";
 
 const PHASE_ICONS: Record<string, LucideIcon> = { Snowflake, Sprout, Sun, Leaf };
 
@@ -139,28 +140,7 @@ export default function AppDashboard() {
       >
         <div className="relative">
           <div className="absolute -inset-4 bg-brand-forest/10 rounded-full blur-2xl animate-pulse-slow" />
-          {checkIn ? (
-            <div className="glow-ring">
-              <div className="z-10 text-center">
-                <span className="block text-4xl font-display font-bold text-brand-forest">
-                  {glowScore ?? 0}
-                </span>
-                <span className="text-xs font-medium uppercase tracking-widest text-brand-forest/60">
-                  Glow Score
-                </span>
-              </div>
-            </div>
-          ) : (
-            <Link href="/app/checkin" className="block">
-              <div className="glow-ring">
-                <div className="z-10 text-center">
-                  <Sparkles className="w-7 h-7 text-brand-sage mx-auto mb-1" />
-                  <span className="block text-base font-bold text-brand-forest">Чек-Ін</span>
-                  <span className="text-[10px] text-brand-forest/50">Натисни тук</span>
-                </div>
-              </div>
-            </Link>
-          )}
+          <GlowRing score={glowScore} hasCheckIn={!!checkIn} />
         </div>
 
         <div className="space-y-1">
