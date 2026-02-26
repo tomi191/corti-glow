@@ -12,7 +12,7 @@ const features = [
     color: "#B2D8C6",
     title: "Моментална Лекота",
     description:
-      "Бромелаин и Магнезий работят заедно за бързо премахване на подуването и водата.",
+      "Бромелаин и Магнезий работят заедно за бързо облекчаване на подуването и задържаната вода.",
     stat: "24ч",
     statLabel: "за видим резултат",
   },
@@ -21,7 +21,7 @@ const features = [
     color: "#FFC1CC",
     title: "Дълбок Анти-Стрес",
     description:
-      "KSM-66® Ашваганда понижава кортизола с до 27% за спокоен ум и тяло.",
+      "KSM-66® Ашваганда намалява кортизола с до 27% за спокоен ум и тяло.",
     stat: "-27%",
     statLabel: "кортизол",
   },
@@ -30,7 +30,7 @@ const features = [
     color: "#F4E3B2",
     title: "Хормонален Баланс",
     description:
-      "Мио-инозитол подкрепя цикъла, овулацията и инсулиновата чувствителност — за по-лек ПМС и хормонален баланс.",
+      "Мио-инозитол поддържа редовен цикъл, овулацията и инсулиновата чувствителност — за по-лек ПМС и хормонален баланс.",
     stat: "2000mg",
     statLabel: "клинична доза",
   },
@@ -47,34 +47,24 @@ export function PremiumFeatures() {
 
       <div className="max-w-7xl mx-auto px-6 relative">
         {/* Header */}
-        <div className="text-center max-w-3xl mx-auto mb-12 md:mb-20">
-          <motion.span
-            initial={{ opacity: 0, y: 20 }}
-            animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.6 }}
-            className="inline-flex items-center gap-2 text-[#2D4A3E] text-sm font-medium uppercase tracking-widest mb-6"
-          >
-            <Sparkles className="w-4 h-4" />
-            Тройна Формула
-          </motion.span>
-
+        <div className="text-center mb-16 md:mb-24">
+          <AnimatedHeading delay={0.1}>
+            <span className="text-[#B2D8C6] font-medium tracking-widest uppercase text-sm font-display">
+              Тройна Формула
+            </span>
+          </AnimatedHeading>
           <AnimatedHeading delay={0.2}>
-            <h2 className="text-2xl sm:text-4xl lg:text-6xl font-semibold text-[#2D4A3E] tracking-tight mb-6">
-              Един Моктейл.
-              <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#B2D8C6] to-[#FFC1CC]">
-                Три Резултата.
-              </span>
+            <h2 className="text-5xl md:text-7xl font-normal text-[#2D4A3E] mt-4 font-serif leading-none">
+              Един Моктейл. <span className="italic block md:inline">Три Резултата.</span>
             </h2>
           </AnimatedHeading>
-
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.6, delay: 0.4 }}
             className="text-lg text-stone-600 font-light"
           >
-            Замени вечерното вино с функционален ритуал, създаден за твоето
+            Замени вечерната рутина с функционален ритуал, създаден за твоето
             тяло.
           </motion.p>
         </div>
@@ -115,6 +105,6 @@ export function PremiumFeatures() {
           ))}
         </div>
       </div>
-    </section>
+    </section >
   );
 }

@@ -79,10 +79,10 @@ export function PremiumBundles({ variants: propVariants }: PremiumBundlesProps) 
           </motion.span>
 
           <AnimatedHeading delay={0.2}>
-            <h2 className="text-2xl sm:text-4xl lg:text-6xl font-semibold text-[#2D4A3E] tracking-tight mb-6">
+            <h2 className="text-5xl md:text-7xl font-normal text-[#2D4A3E] mt-4 font-serif leading-none">
               Започни Своята
               <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#2D4A3E] via-[#B2D8C6] to-[#FFC1CC]">
+              <span className="italic block mt-1 font-light text-[#2D4A3E]">
                 Трансформация
               </span>
             </h2>
@@ -109,21 +109,19 @@ export function PremiumBundles({ variants: propVariants }: PremiumBundlesProps) 
             <div className="inline-flex items-center bg-stone-100 rounded-full p-1">
               <button
                 onClick={() => setIsSubscription(false)}
-                className={`px-5 py-2.5 rounded-full text-sm font-medium transition-all ${
-                  !isSubscription
-                    ? "bg-white text-[#2D4A3E] shadow-sm"
-                    : "text-stone-500 hover:text-stone-700"
-                }`}
+                className={`px-5 py-2.5 rounded-full text-sm font-medium transition-all ${!isSubscription
+                  ? "bg-white text-[#2D4A3E] shadow-sm"
+                  : "text-stone-500 hover:text-stone-700"
+                  }`}
               >
                 Еднократна покупка
               </button>
               <button
                 onClick={() => setIsSubscription(true)}
-                className={`px-5 py-2.5 rounded-full text-sm font-medium transition-all flex items-center gap-1.5 ${
-                  isSubscription
-                    ? "bg-[#2D4A3E] text-white shadow-sm"
-                    : "text-stone-500 hover:text-stone-700"
-                }`}
+                className={`px-5 py-2.5 rounded-full text-sm font-medium transition-all flex items-center gap-1.5 ${isSubscription
+                  ? "bg-[#2D4A3E] text-white shadow-sm"
+                  : "text-stone-500 hover:text-stone-700"
+                  }`}
               >
                 <RefreshCw className="w-3.5 h-3.5" />
                 Абонамент — Спести {SUBSCRIPTION_DISCOUNT * 100}%
@@ -155,13 +153,12 @@ export function PremiumBundles({ variants: propVariants }: PremiumBundlesProps) 
 
               <GlassCard
                 hover={false}
-                className={`p-8 h-full flex flex-col transition-all duration-500 ${
-                  variant.isBestSeller
-                    ? "ring-2 ring-[#B2D8C6] shadow-[0_20px_60px_rgba(178,216,198,0.3)]"
-                    : hoveredId === variant.id
+                className={`p-8 h-full flex flex-col transition-all duration-500 ${variant.isBestSeller
+                  ? "ring-2 ring-[#B2D8C6] shadow-[0_20px_60px_rgba(178,216,198,0.3)]"
+                  : hoveredId === variant.id
                     ? "shadow-[0_20px_60px_rgba(45,74,62,0.15)]"
                     : ""
-                }`}
+                  }`}
               >
                 {/* Header */}
                 <div className="mb-6">
@@ -195,31 +192,43 @@ export function PremiumBundles({ variants: propVariants }: PremiumBundlesProps) 
                 {/* Price */}
                 <div className="mb-6">
                   {isSubscription ? (
-                    <>
+                    SUBSCRIPTION_VARIANTS[variant.id] ? (
+                      <>
+                        <div className="flex items-baseline gap-2">
+                          <span
+                            className={`text-4xl font-bold ${variant.isBestSeller ? "text-[#2D4A3E]" : "text-stone-800"
+                              }`}
+                          >
+                            {formatPrice(SUBSCRIPTION_VARIANTS[variant.id].subscriptionPrice)}
+                          </span>
+                          <span className="text-stone-400 line-through">
+                            {formatPrice(variant.price)}
+                          </span>
+                          <span className="text-xs text-stone-500">/месец</span>
+                        </div>
+                        <p className="text-[#2D4A3E] text-sm font-medium mt-1">
+                          + Безплатна доставка · Отказ по всяко време
+                        </p>
+                      </>
+                    ) : (
                       <div className="flex items-baseline gap-2">
                         <span
-                          className={`text-4xl font-bold ${
-                            variant.isBestSeller ? "text-[#2D4A3E]" : "text-stone-800"
-                          }`}
+                          className={`text-4xl font-bold ${variant.isBestSeller ? "text-[#2D4A3E]" : "text-stone-800"
+                            }`}
                         >
-                          {formatPrice(SUBSCRIPTION_VARIANTS[variant.id]?.subscriptionPrice ?? variant.price)}
-                        </span>
-                        <span className="text-stone-400 line-through">
                           {formatPrice(variant.price)}
                         </span>
-                        <span className="text-xs text-stone-500">/месец</span>
+                        <p className="text-sm text-stone-400 mt-1">
+                          Абонаментът не е наличен за този пакет
+                        </p>
                       </div>
-                      <p className="text-[#2D4A3E] text-sm font-medium mt-1">
-                        + Безплатна доставка · Отказ по всяко време
-                      </p>
-                    </>
+                    )
                   ) : (
                     <>
                       <div className="flex items-baseline gap-2">
                         <span
-                          className={`text-4xl font-bold ${
-                            variant.isBestSeller ? "text-[#2D4A3E]" : "text-stone-800"
-                          }`}
+                          className={`text-4xl font-bold ${variant.isBestSeller ? "text-[#2D4A3E]" : "text-stone-800"
+                            }`}
                         >
                           {formatPrice(variant.price)}
                         </span>

@@ -18,62 +18,62 @@ const ingredients: {
   studies: string;
   image: string;
 }[] = [
-  {
-    id: "ashwagandha",
-    name: "KSM-66® Ашваганда",
-    dose: "600mg",
-    icon: Leaf,
-    color: "#B2D8C6",
-    description: "Златният стандарт в адаптогените. Клинично доказано понижава кортизола с до 27%.",
-    benefits: ["Намалява стреса", "Подобрява съня", "Повишава енергията"],
-    studies: "24 клинични проучвания",
-    image: "/images/ingredients-ashwagandha.webp",
-  },
-  {
-    id: "magnesium",
-    name: "Магнезий бисглицинат",
-    dose: "300mg",
-    icon: Gem,
-    color: "#FFC1CC",
-    description: "Най-усвоимата форма магнезий. Успокоява нервната система и мускулите.",
-    benefits: ["Отпуска мускулите", "Подкрепя нервите", "Подобрява съня"],
-    studies: "Биодостъпност 80%+",
-    image: "/images/ingredients-magnesium.webp",
-  },
-  {
-    id: "l-theanine",
-    name: "L-Теанин",
-    dose: "200mg",
-    icon: Leaf,
-    color: "#F4E3B2",
-    description: "Аминокиселина от зелен чай. Насърчава алфа мозъчните вълни за спокойна концентрация без сънливост.",
-    benefits: ["Спокойна концентрация", "Намалява тревожността", "Подобрява фокуса"],
-    studies: "Ефект за 40 минути",
-    image: "/images/ingredients-l-theanine.webp",
-  },
-  {
-    id: "inositol",
-    name: "Мио-инозитол",
-    dose: "2000mg",
-    icon: FlaskConical,
-    color: "#F4E3B2",
-    description: "Клинична доза за хормонален баланс. Особено ефективен при PCOS.",
-    benefits: ["Балансира хормоните", "Регулира цикъла", "Намалява тревожността"],
-    studies: "Препоръчван от ендокринолози",
-    image: "/images/ingredients-inositol.webp",
-  },
-  {
-    id: "bromelain",
-    name: "Бромелаин",
-    dose: "500mg",
-    icon: Cherry,
-    color: "#B2D8C6",
-    description: "Естествен ензим от ананас. Премахва подуването и подпомага храносмилането.",
-    benefits: ["Де-блоут ефект", "Подобрява храносмилането", "Противовъзпалителен"],
-    studies: "Действа за 24 часа",
-    image: "/images/ingredients-bromelain.webp",
-  },
-];
+    {
+      id: "ashwagandha",
+      name: "KSM-66® Ашваганда",
+      dose: "600mg",
+      icon: Leaf,
+      color: "#B2D8C6",
+      description: "Златният стандарт в адаптогените. Клинично доказано намалява кортизола с до 27%.",
+      benefits: ["Намалява стреса", "Подобрява съня", "Повишава енергията"],
+      studies: "24 клинични проучвания",
+      image: "/images/ingredients-ashwagandha.webp",
+    },
+    {
+      id: "magnesium",
+      name: "Магнезий бисглицинат",
+      dose: "300mg",
+      icon: Gem,
+      color: "#FFC1CC",
+      description: "Най-усвоимата форма магнезий. Успокоява нервната система и отпуска мускулите.",
+      benefits: ["Отпуска мускулите", "Поддържа нервите", "Подобрява съня"],
+      studies: "Биодостъпност 80%+",
+      image: "/images/ingredients-magnesium.webp",
+    },
+    {
+      id: "l-theanine",
+      name: "L-Теанин",
+      dose: "200mg",
+      icon: Leaf,
+      color: "#F4E3B2",
+      description: "Аминокиселина от зелен чай. Стимулира алфа мозъчните вълни за спокойна концентрация без сънливост.",
+      benefits: ["Спокойна концентрация", "Намалява тревожността", "Подобрява фокуса"],
+      studies: "Ефект за 40 минути",
+      image: "/images/ingredients-l-theanine.webp",
+    },
+    {
+      id: "inositol",
+      name: "Мио-инозитол",
+      dose: "2000mg",
+      icon: FlaskConical,
+      color: "#F4E3B2",
+      description: "Клинична доза за хормонален баланс. Особено ефективен при ПКОС.",
+      benefits: ["Балансира хормоните", "Поддържа редовен цикъл", "Намалява тревожността"],
+      studies: "Препоръчван от ендокринолози",
+      image: "/images/ingredients-inositol.webp",
+    },
+    {
+      id: "bromelain",
+      name: "Бромелаин",
+      dose: "500mg",
+      icon: Cherry,
+      color: "#B2D8C6",
+      description: "Естествен ензим от ананас. Премахва подуването и подпомага храносмилането.",
+      benefits: ["Де-блоут ефект", "Подобрява храносмилането", "Противовъзпалително действие"],
+      studies: "Действа за 24 часа",
+      image: "/images/ingredients-bromelain.webp",
+    },
+  ];
 
 export function PremiumIngredients() {
   const ref = useRef(null);
@@ -113,10 +113,10 @@ export function PremiumIngredients() {
           </motion.span>
 
           <AnimatedHeading delay={0.2}>
-            <h2 className="text-2xl sm:text-4xl lg:text-6xl font-semibold text-[#2D4A3E] tracking-tight mb-6">
+            <h2 className="text-4xl md:text-6xl font-normal text-[#2D4A3E] mt-4 font-serif leading-tight">
               Всяка Съставка
               <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#B2D8C6] via-[#2D4A3E] to-[#FFC1CC]">
+              <span className="italic text-transparent bg-clip-text bg-gradient-to-r from-[#B2D8C6] via-[#2D4A3E] to-[#FFC1CC]">
                 с Мисия
               </span>
             </h2>
@@ -145,11 +145,10 @@ export function PremiumIngredients() {
               >
                 <button
                   onClick={() => setActiveIngredient(ingredient)}
-                  className={`w-full text-left p-5 rounded-2xl transition-all duration-500 group ${
-                    activeIngredient.id === ingredient.id
-                      ? "bg-white shadow-[0_20px_60px_rgba(45,74,62,0.15)]"
-                      : "bg-white/50 hover:bg-white/80"
-                  }`}
+                  className={`w-full text-left p-5 rounded-2xl transition-all duration-500 group ${activeIngredient.id === ingredient.id
+                    ? "bg-white shadow-[0_20px_60px_rgba(45,74,62,0.15)]"
+                    : "bg-white/50 hover:bg-white/80"
+                    }`}
                 >
                   <div className="flex items-center gap-4">
                     <div
@@ -178,11 +177,10 @@ export function PremiumIngredients() {
                       </p>
                     </div>
                     <ChevronRight
-                      className={`w-5 h-5 text-stone-400 transition-transform duration-300 ${
-                        activeIngredient.id === ingredient.id
-                          ? "rotate-90 text-[#2D4A3E]"
-                          : ""
-                      }`}
+                      className={`w-5 h-5 text-stone-400 transition-transform duration-300 ${activeIngredient.id === ingredient.id
+                        ? "rotate-90 text-[#2D4A3E]"
+                        : ""
+                        }`}
                     />
                   </div>
                 </button>

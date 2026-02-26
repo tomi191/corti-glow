@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Plus_Jakarta_Sans, Outfit } from "next/font/google";
+import { Plus_Jakarta_Sans, Outfit, Cormorant_Garamond } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
 import { SmoothScrollProvider } from "@/components/providers/SmoothScroll";
 import { WaitlistProvider } from "@/components/providers/WaitlistProvider";
@@ -17,7 +17,15 @@ const plusJakarta = Plus_Jakarta_Sans({
 const outfit = Outfit({
   variable: "--font-outfit",
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600"],
+  weight: ["300", "400", "500", "600", "700", "800"],
+  display: "swap",
+});
+
+const cormorant = Cormorant_Garamond({
+  variable: "--font-cormorant",
+  subsets: ["latin", "cyrillic"],
+  weight: ["300", "400", "600", "700"],
+  style: ["normal", "italic"],
   display: "swap",
 });
 
@@ -44,13 +52,13 @@ export const metadata: Metadata = {
     type: "website",
     locale: "bg_BG",
     url: "https://luralab.eu",
-    siteName: "LURA",
+    siteName: "LuraLab",
     title: "LURA | Corti-Glow Ритуал",
     description:
       "Изпий стреса. Прибери коремчето. 14-дневен ритуал за хормонален баланс.",
     images: [
       {
-        url: "/images/og-image.png",
+        url: "/images/og-image.jpg",
         width: 1200,
         height: 630,
         alt: "LURA Corti-Glow",
@@ -59,6 +67,10 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
+    title: "LURA | Corti-Glow Ритуал",
+    description:
+      "Изпий стреса. Прибери коремчето. 14-дневен ритуал за хормонален баланс.",
+    images: ["/images/og-image.png"],
   },
   robots: {
     index: true,
@@ -149,7 +161,7 @@ export default function RootLayout({
             dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
           />
         </head>
-        <body className={`${plusJakarta.variable} ${outfit.variable} antialiased font-sans bg-white overflow-x-hidden`}>
+        <body className={`${plusJakarta.variable} ${outfit.variable} ${cormorant.variable} antialiased font-sans bg-white overflow-x-hidden`}>
           <GoogleAnalytics />
           <WaitlistProvider>
             <SmoothScrollProvider>{children}</SmoothScrollProvider>

@@ -54,10 +54,10 @@ export function PremiumCTA() {
           </motion.span>
 
           <AnimatedHeading delay={0.2}>
-            <h2 className="text-2xl sm:text-4xl lg:text-7xl font-semibold text-white tracking-tight mb-8">
+            <h2 className="text-5xl md:text-8xl font-normal text-white mt-4 mb-8 font-serif leading-none">
               Готова ли си за
               <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#B2D8C6] via-white to-[#FFC1CC]">
+              <span className="italic block mt-1 font-light opacity-90">
                 Трансформацията?
               </span>
             </h2>
@@ -69,7 +69,7 @@ export function PremiumCTA() {
             transition={{ duration: 0.6, delay: 0.4 }}
             className="text-xl text-white/70 font-light max-w-2xl mx-auto mb-8 md:mb-12"
           >
-            Присъедини се към 500+ жени, които вече преоткриха спокойствието
+            Присъедини се към стотиците жени, които вече откриха отново спокойствието
             и естествената красота с Corti-Glow.
           </motion.p>
 
@@ -89,6 +89,11 @@ export function PremiumCTA() {
               {IS_PRELAUNCH ? "Запиши се Първа" : "Поръчай Сега"}
               <ArrowRight className="w-5 h-5" />
             </MagneticButton>
+            {IS_PRELAUNCH && (
+              <p className="text-white/60 text-sm mt-3 sm:mt-0 sm:self-center">
+                + Безплатен PDF: &ldquo;3 сутрешни навика, които свалят кортизола&rdquo;
+              </p>
+            )}
             <MagneticButton
               variant="ghost"
               size="lg"
@@ -123,6 +128,21 @@ export function PremiumCTA() {
                 <span className="text-white/80 text-sm">{badge.label}</span>
               </motion.div>
             ))}
+          </motion.div>
+
+          {/* Manifesto Quote */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={isInView ? { opacity: 1 } : {}}
+            transition={{ duration: 0.8, delay: 0.8 }}
+            className="mt-16 pt-8 border-t border-white/10 max-w-2xl mx-auto text-center"
+          >
+            <p className="font-serif italic text-lg sm:text-xl text-white/80 leading-relaxed font-light">
+              &ldquo;Създадохме Corti-Glow, защото вярваме, че красотата започва отвътре — когато тялото е спокойно,&nbsp; а умът — свободен.&rdquo;
+            </p>
+            <p className="mt-4 text-xs tracking-[0.2em] uppercase text-[#B2D8C6] opacity-80 font-medium">
+              — От Екипа на Lura
+            </p>
           </motion.div>
         </div>
 

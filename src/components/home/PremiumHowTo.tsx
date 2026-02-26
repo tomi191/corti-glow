@@ -30,9 +30,9 @@ const steps = [
     step: 3,
     time: "Релакс",
     icon: Sparkles,
-    title: "Насладете се",
+    title: "Наслади Се",
     description: "Пий бавно и се наслади на вкуса.",
-    tip: "Идеално 1-2 часа преди сън",
+    tip: "Идеално 1–2 часа преди сън",
     color: "#F4E3B2",
   },
 ];
@@ -61,6 +61,7 @@ export function PremiumHowTo() {
           src="/images/product-pouring.webp"
           alt="Corti-Glow pouring into glass"
           fill
+          sizes="100vw"
           className="object-cover object-center"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#F5F2EF]/50 to-[#F5F2EF]" />
@@ -70,7 +71,7 @@ export function PremiumHowTo() {
       <div className="absolute inset-0 top-[50vh]">
         <svg className="absolute inset-0 w-full h-full opacity-[0.03]">
           <pattern
-            id="grid"
+            id="howto-grid"
             width="60"
             height="60"
             patternUnits="userSpaceOnUse"
@@ -78,11 +79,11 @@ export function PremiumHowTo() {
             <path
               d="M 60 0 L 0 0 0 60"
               fill="none"
-              stroke="#2D4A3E"
+              stroke="currentColor"
               strokeWidth="1"
             />
           </pattern>
-          <rect width="100%" height="100%" fill="url(#grid)" />
+          <rect width="100%" height="100%" fill="url(#howto-grid)" />
         </svg>
       </div>
 
@@ -100,10 +101,10 @@ export function PremiumHowTo() {
           </motion.span>
 
           <AnimatedHeading delay={0.2}>
-            <h2 className="text-2xl sm:text-4xl lg:text-6xl font-semibold text-[#2D4A3E] tracking-tight mb-6">
+            <h2 className="text-5xl md:text-7xl font-normal text-[#2D4A3E] mt-4 font-serif leading-none">
               Толкова Лесно.
               <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#B2D8C6] to-[#FFC1CC]">
+              <span className="italic block mt-1 bg-clip-text text-transparent bg-gradient-to-r from-[#B2D8C6] to-[#FFC1CC]">
                 Толкова Вкусно.
               </span>
             </h2>
@@ -115,7 +116,7 @@ export function PremiumHowTo() {
             transition={{ duration: 0.6, delay: 0.4 }}
             className="text-lg text-stone-600 font-light"
           >
-            Замени вечерната захар с функционален ритуал за красота отвътре.
+            Замени вечерната захар с ритуал за красота отвътре.
           </motion.p>
         </div>
 
@@ -192,9 +193,8 @@ export function PremiumHowTo() {
                   initial={{ opacity: 0, x: index % 2 === 0 ? -40 : 40 }}
                   animate={isInView ? { opacity: 1, x: 0 } : {}}
                   transition={{ duration: 0.6, delay: 0.9 + index * 0.1 }}
-                  className={`flex items-center gap-8 ${
-                    index % 2 === 0 ? "md:flex-row" : "md:flex-row-reverse"
-                  }`}
+                  className={`flex items-center gap-8 ${index % 2 === 0 ? "md:flex-row" : "md:flex-row-reverse"
+                    }`}
                 >
                   <div className={`flex-1 ${index % 2 === 0 ? "md:text-right" : ""}`}>
                     <div className="inline-flex items-center gap-3 px-6 py-4 rounded-2xl bg-white shadow-lg">

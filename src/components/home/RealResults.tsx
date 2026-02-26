@@ -8,7 +8,7 @@ import Link from "next/link";
 
 const clinicalRefs = [
   {
-    text: "KSM-66® Ашваганда намалява серумния кортизол с 27.9% за 60 дни",
+    text: "KSM-66® Ашваганда намалява нивата на кортизол с 27.9% за 60 дни",
     source: "Journal of the American Nutraceutical Association, 2008",
   },
   {
@@ -16,7 +16,7 @@ const clinicalRefs = [
     source: "Journal of Research in Medical Sciences, 2012",
   },
   {
-    text: "L-Теанинът повишава алфа мозъчните вълни за 40 минути след прием",
+    text: "L-Теанинът стимулира алфа мозъчните вълни за 40 минути след прием",
     source: "Nutritional Neuroscience, 2008",
   },
 ];
@@ -24,7 +24,7 @@ const clinicalRefs = [
 const ugcResults = [
   {
     metric: "-3 см талия",
-    quote: "След 2 седмици подуването просто изчезна. Дрехите ми стоят различно.",
+    quote: "След 2 седмици подуването просто изчезна. Дрехите ми стоят съвсем различно.",
     author: "Елена К.",
     verified: true,
   },
@@ -63,11 +63,11 @@ export function RealResults() {
           transition={{ duration: 0.5 }}
           className="text-center mb-12"
         >
-          <span className="text-xs font-medium uppercase tracking-widest text-[#B2D8C6] mb-3 block">
+          <span className="text-[#B2D8C6] font-medium tracking-widest uppercase text-sm font-display mb-4 block">
             Реални Резултати
           </span>
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold text-[#2D4A3E]">
-            Науката + Клиентски Истории
+          <h2 className="text-5xl md:text-7xl font-light text-[#2D4A3E] mt-4 font-serif leading-tight">
+            Науката + <span className="font-normal italic">Клиентски Истории</span>
           </h2>
         </motion.div>
 
@@ -80,7 +80,7 @@ export function RealResults() {
         >
           <Image
             src="/images/results-timeline.webp"
-            alt="Before and after results"
+            alt="Corti-Glow Преди и След: Видимо намаляване на подуването и изчистване на кожата за 30 дни"
             fill
             sizes="(max-width: 768px) 100vw, 1152px"
             className="object-cover"
@@ -182,6 +182,6 @@ export function RealResults() {
           </div>
         </motion.div>
       </div>
-    </section>
+    </section >
   );
 }

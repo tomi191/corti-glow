@@ -59,7 +59,7 @@ export function MobileMenu() {
           >
             {/* Header */}
             <div className="px-6 py-4 border-b border-stone-100 flex items-center justify-between">
-              <span className="text-xl font-semibold tracking-widest text-[#2D4A3E]">
+              <span className="text-xl font-semibold tracking-widest text-[#2D4A3E] font-display">
                 LURA
               </span>
               <button
@@ -75,7 +75,7 @@ export function MobileMenu() {
             <div className="flex-1 overflow-y-auto p-6">
               <div className="space-y-6">
                 <div>
-                  <h3 className="text-xs font-bold text-stone-400 uppercase tracking-wider mb-3">
+                  <h3 className="text-xs font-bold text-stone-400 uppercase tracking-wider mb-3 font-display">
                     Магазин
                   </h3>
                   <div className="space-y-3">
@@ -84,7 +84,7 @@ export function MobileMenu() {
                         key={link.href}
                         href={link.href}
                         onClick={() => setIsOpen(false)}
-                        className="block text-lg font-medium text-stone-800 hover:text-[#2D4A3E]"
+                        className="block text-lg font-medium text-stone-800 hover:text-[#2D4A3E] font-display"
                       >
                         {link.label}
                       </Link>
@@ -93,7 +93,7 @@ export function MobileMenu() {
                 </div>
 
                 <div>
-                  <h3 className="text-xs font-bold text-stone-400 uppercase tracking-wider mb-3">
+                  <h3 className="text-xs font-bold text-stone-400 uppercase tracking-wider mb-3 font-display">
                     Помощ
                   </h3>
                   <div className="space-y-3">
@@ -102,7 +102,7 @@ export function MobileMenu() {
                         key={link.href}
                         href={link.href}
                         onClick={() => setIsOpen(false)}
-                        className="block text-lg font-medium text-stone-800 hover:text-[#2D4A3E]"
+                        className="block text-lg font-medium text-stone-800 hover:text-[#2D4A3E] font-display"
                       >
                         {link.label}
                       </Link>

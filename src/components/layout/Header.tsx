@@ -45,8 +45,14 @@ export function Header() {
             >
               <Sparkles className="w-3 h-3" />
               <span className="tracking-wide">
-                БЕЗПЛАТНА ДОСТАВКА НАД {SHIPPING_THRESHOLD} €
-                <span className="hidden sm:inline"> • 14-ДНЕВНА ГАРАНЦИЯ</span>
+                {IS_PRELAUNCH ? (
+                  "ЗАПИШИ СЕ И ПОЛУЧИ БЕЗПЛАТЕН PDF ГАЙД"
+                ) : (
+                  <>
+                    БЕЗПЛАТНА ДОСТАВКА НАД {SHIPPING_THRESHOLD} €
+                    <span className="hidden sm:inline"> • 14-ДНЕВНА ГАРАНЦИЯ</span>
+                  </>
+                )}
               </span>
               <Sparkles className="w-3 h-3" />
             </motion.div>
@@ -59,21 +65,36 @@ export function Header() {
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-        className={`sticky top-0 z-40 transition-all duration-500 ${
-          scrolled
+        className={`sticky top-0 z-40 transition-all duration-500 ${scrolled
             ? "bg-white/95 backdrop-blur-xl shadow-[0_4px_30px_rgba(0,0,0,0.08)] border-b border-stone-100"
             : "bg-white/70 backdrop-blur-md"
-        }`}
+          }`}
       >
         <div className="max-w-7xl mx-auto px-6">
           <div
-            className={`flex items-center justify-between transition-all duration-300 ${
-              scrolled ? "h-16" : "h-20"
-            }`}
+            className={`flex items-center justify-between transition-all duration-300 ${scrolled ? "h-16" : "h-20"
+              }`}
           >
-            {/* Left - Mobile Menu */}
-            <div className="flex items-center gap-4 w-1/3">
+            {/* Left - Mobile Menu + Primary Nav */}
+            <div className="flex items-center gap-8 w-1/3">
               <MobileMenu />
+              {NAV_LINKS.slice(0, 2).map((link, index) => (
+                <motion.div
+                  key={link.href}
+                  initial={{ opacity: 0, y: -20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 * index }}
+                  className="hidden md:block"
+                >
+                  <Link
+                    href={link.href}
+                    className="relative text-sm font-medium text-stone-600 hover:text-[#2D4A3E] transition-colors group"
+                  >
+                    {link.label}
+                    <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#B2D8C6] group-hover:w-full transition-all duration-300" />
+                  </Link>
+                </motion.div>
+              ))}
             </div>
 
             {/* Center - Logo */}
@@ -81,9 +102,8 @@ export function Header() {
               <Link href="/" className="group relative">
                 <motion.span
                   whileHover={{ scale: 1.05 }}
-                  className={`block font-semibold tracking-[0.3em] text-[#2D4A3E] transition-all duration-300 ${
-                    scrolled ? "text-xl" : "text-2xl"
-                  }`}
+                  className={`block font-semibold tracking-[0.3em] text-[#2D4A3E] transition-all duration-300 ${scrolled ? "text-xl" : "text-2xl"
+                    }`}
                 >
                   LURA
                 </motion.span>
@@ -94,14 +114,14 @@ export function Header() {
               </Link>
             </div>
 
-            {/* Right - Nav Links & Cart */}
+            {/* Right - Secondary Nav + Cart */}
             <div className="flex items-center justify-end gap-8 w-1/3">
-              {NAV_LINKS.map((link, index) => (
+              {NAV_LINKS.slice(2).map((link, index) => (
                 <motion.div
                   key={link.href}
                   initial={{ opacity: 0, y: -20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.1 * index }}
+                  transition={{ delay: 0.1 * (index + 2) }}
                   className="hidden md:block"
                 >
                   <Link

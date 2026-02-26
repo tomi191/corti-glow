@@ -3,18 +3,19 @@
 import { useRef } from "react";
 import Image from "next/image";
 import { motion, useInView } from "framer-motion";
-import { Star, Quote, Verified, TrendingUp } from "lucide-react";
+import { Star, Shield, CheckCircle, TrendingUp, Quote } from "lucide-react";
 import { AnimatedHeading } from "@/components/ui/AnimatedText";
 import { ScrollReveal, StaggerContainer, StaggerItem } from "@/components/ui/ScrollReveal";
+import { STATS } from "@/lib/constants";
 
 const reviews = [
   {
     id: 1,
     size: "large", // Takes 2 columns
     rating: 5,
-    title: "Животът ми се промени!",
+    title: "Не очаквах такава промяна!",
     content:
-      "След 3 седмици с Corti-Glow забелязах огромна разлика. Подуването изчезна, спя като бебе, и колегите ме питат какво правя различно. Кожата ми сияе!",
+      "След 3 седмици с Corti-Glow забелязах огромна разлика. Подуването изчезна, спя спокойно, а колегите ме питат какво правя различно. Кожата ми просто сияе!",
     author: "Мария К.",
     location: "София",
     verified: true,
@@ -50,7 +51,7 @@ const reviews = [
     rating: 5,
     title: "Хормоните ми са балансирани",
     content:
-      "Имах проблеми с PCOS години. Инозитолът в тази доза е точно това, което ми препоръча ендокринологът.",
+      "Имах проблеми с ПКОС години наред. Инозитолът в тази доза е точно това, което ми препоръча ендокринологът.",
     author: "Габриела Т.",
     location: "Бургас",
     verified: true,
@@ -74,7 +75,7 @@ const reviews = [
     rating: 5,
     title: "Скептична бях, но...",
     content:
-      "Честно казано, не вярвах че ще работи. Но след 2 седмици дрехите ми стоят различно, чувствам се по-спокойна, и мъжът ми забеляза че съм по-щастлива. Вече съм на третата кутия!",
+      "Честно казано, не вярвах, че ще работи. Но след 2 седмици дрехите ми стоят различно, чувствам се по-спокойна, а мъжът ми забеляза, че съм по-усмихната. Вече съм на третата кутия!",
     author: "Петя Д.",
     location: "Стара Загора",
     verified: true,
@@ -83,7 +84,7 @@ const reviews = [
   },
 ];
 
-function ReviewCard({ review, index }: { review: typeof reviews[0]; index: number }) {
+function ReviewCard({ review, index }: { review: any; index: number }) {
   const isLarge = review.size === "large";
   const isSmall = review.size === "small";
   const hasImage = !!review.image;
@@ -103,8 +104,8 @@ function ReviewCard({ review, index }: { review: typeof reviews[0]; index: numbe
         ${hasImage
           ? "bg-[#2D4A3E] text-white"
           : review.highlight
-          ? "bg-gradient-to-br from-[#2D4A3E] to-[#1a2d25] text-white"
-          : "bg-white border border-stone-100"
+            ? "bg-gradient-to-br from-[#2D4A3E] to-[#1a2d25] text-white"
+            : "bg-white border border-stone-100"
         }
         shadow-[0_4px_20px_rgba(0,0,0,0.06)] hover:shadow-[0_20px_60px_rgba(45,74,62,0.15)]
         transition-all duration-500
@@ -132,7 +133,7 @@ function ReviewCard({ review, index }: { review: typeof reviews[0]; index: numbe
       <div className={`relative p-6 ${isLarge ? "md:p-8" : ""} ${isSmall ? "p-5" : ""} h-full flex flex-col`}>
         {/* Quote icon for large cards */}
         {isLarge && (
-          <Quote
+          <Shield
             className={`w-10 h-10 mb-4 ${review.highlight ? "text-[#B2D8C6]/50" : "text-[#B2D8C6]"}`}
           />
         )}
@@ -142,16 +143,32 @@ function ReviewCard({ review, index }: { review: typeof reviews[0]; index: numbe
           {[...Array(review.rating)].map((_, i) => (
             <Star
               key={i}
-              className={`w-4 h-4 fill-current ${review.highlight ? "text-[#F4E3B2]" : "text-[#F4E3B2]"}`}
+              className="w-4 h-4 fill-current text-[#F4E3B2]"
             />
           ))}
         </div>
 
+        {isLarge && (
+          <div className="flex items-center gap-4 mb-4">
+            <div className="flex -space-x-3">
+              {[1, 2, 3, 4].map((i) => (
+                <div
+                  key={i}
+                  className="w-10 h-10 rounded-full bg-gradient-to-br from-[#FFC1CC] to-[#B2D8C6] border-2 border-white"
+                />
+              ))}
+            </div>
+            <div className="text-sm">
+              <p className="font-bold text-[#2D4A3E]">{STATS.clients}+ Жени</p>
+              <p className="text-[#2D4A3E]/70">са избрали Corti-Glow</p>
+            </div>
+          </div>
+        )}
+
         {/* Title */}
         <h3
-          className={`font-semibold mb-2 ${isLarge ? "text-xl" : isSmall ? "text-base" : "text-lg"} ${
-            review.highlight || hasImage ? "text-white" : "text-[#2D4A3E]"
-          }`}
+          className={`font-semibold mb-2 ${isLarge ? "text-xl" : isSmall ? "text-base" : "text-lg"} ${review.highlight || hasImage ? "text-white" : "text-[#2D4A3E]"
+            }`}
         >
           &ldquo;{review.title}&rdquo;
         </h3>
@@ -159,9 +176,8 @@ function ReviewCard({ review, index }: { review: typeof reviews[0]; index: numbe
         {/* Content */}
         {!isSmall && (
           <p
-            className={`text-sm leading-relaxed flex-1 ${
-              review.highlight || hasImage ? "text-white/80" : "text-stone-600"
-            }`}
+            className={`text-sm leading-relaxed flex-1 ${review.highlight || hasImage ? "text-white/80" : "text-stone-600"
+              }`}
           >
             {review.content}
           </p>
@@ -170,11 +186,10 @@ function ReviewCard({ review, index }: { review: typeof reviews[0]; index: numbe
         {/* Stat badge */}
         {review.stat && (
           <div
-            className={`inline-flex items-center gap-2 px-3 py-2 rounded-xl mt-4 ${
-              review.highlight ? "bg-white/10" : "bg-[#B2D8C6]/20"
-            }`}
+            className={`inline-flex items-center gap-2 px-3 py-2 rounded-xl mt-4 ${review.highlight ? "bg-white/10" : "bg-[#B2D8C6]/20"
+              }`}
           >
-            <TrendingUp className={`w-4 h-4 ${review.highlight ? "text-[#B2D8C6]" : "text-[#2D4A3E]"}`} />
+            <Shield className={`w-4 h-4 ${review.highlight ? "text-[#B2D8C6]" : "text-[#2D4A3E]"}`} />
             <span className={`font-bold ${review.highlight ? "text-white" : "text-[#2D4A3E]"}`}>
               {review.stat.value}
             </span>
@@ -185,15 +200,13 @@ function ReviewCard({ review, index }: { review: typeof reviews[0]; index: numbe
         )}
 
         {/* Author */}
-        <div className={`flex items-center gap-3 mt-4 pt-4 border-t ${
-          review.highlight || hasImage ? "border-white/10" : "border-stone-100"
-        }`}>
+        <div className={`flex items-center gap-3 mt-4 pt-4 border-t ${review.highlight || hasImage ? "border-white/10" : "border-stone-100"
+          }`}>
           <div
-            className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold ${
-              review.highlight || hasImage
-                ? "bg-gradient-to-br from-[#B2D8C6] to-[#FFC1CC] text-[#2D4A3E]"
-                : "bg-gradient-to-br from-[#FFC1CC]/50 to-[#B2D8C6]/50 text-[#2D4A3E]"
-            }`}
+            className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold ${review.highlight || hasImage
+              ? "bg-gradient-to-br from-[#B2D8C6] to-[#FFC1CC] text-[#2D4A3E]"
+              : "bg-gradient-to-br from-[#FFC1CC]/50 to-[#B2D8C6]/50 text-[#2D4A3E]"
+              }`}
           >
             {review.author.charAt(0)}
           </div>
@@ -203,7 +216,7 @@ function ReviewCard({ review, index }: { review: typeof reviews[0]; index: numbe
                 {review.author}
               </span>
               {review.verified && (
-                <Verified className="w-4 h-4 text-[#B2D8C6]" />
+                <CheckCircle className="w-4 h-4 text-[#B2D8C6]" />
               )}
             </div>
             <span className={`text-xs ${review.highlight || hasImage ? "text-white/70" : "text-stone-400"}`}>
@@ -224,13 +237,18 @@ export function BentoReviews() {
     <section ref={ref} className="py-16 md:py-32 relative overflow-hidden bg-[#F5F2EF]">
       {/* Background pattern */}
       <div className="absolute inset-0 opacity-50">
-        <svg className="absolute inset-0 w-full h-full" style={{ opacity: 0.03 }}>
-          <defs>
-            <pattern id="dots" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
-              <circle cx="2" cy="2" r="1" fill="#2D4A3E" />
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#dots)" />
+        <svg className="absolute inset-0 w-full h-full opacity-[0.4]">
+          <pattern
+            id="bento-dots"
+            x="0"
+            y="0"
+            width="20"
+            height="20"
+            patternUnits="userSpaceOnUse"
+          >
+            <circle cx="2" cy="2" r="1" className="text-white" fill="currentColor" />
+          </pattern>
+          <rect width="100%" height="100%" fill="url(#bento-dots)" />
         </svg>
       </div>
 
@@ -240,16 +258,16 @@ export function BentoReviews() {
           <ScrollReveal animation="blur-in">
             <span className="inline-flex items-center gap-2 text-[#2D4A3E] text-sm font-medium uppercase tracking-widest mb-6">
               <Star className="w-4 h-4 fill-current text-[#F4E3B2]" />
-              500+ Доволни Клиенти
+              Нашата Общност
             </span>
           </ScrollReveal>
 
           <ScrollReveal animation="blur-slide" delay={0.1}>
             <AnimatedHeading>
-              <h2 className="text-2xl sm:text-4xl lg:text-6xl font-semibold text-[#2D4A3E] tracking-tight mb-6">
+              <h2 className="text-5xl md:text-7xl font-normal text-[#2D4A3E] mt-4 font-serif leading-none">
                 Истории на
                 <br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#B2D8C6] via-[#2D4A3E] to-[#FFC1CC]">
+                <span className="italic block mt-1 font-light text-[#2D4A3E]">
                   Трансформация
                 </span>
               </h2>
@@ -274,9 +292,9 @@ export function BentoReviews() {
         <ScrollReveal animation="fade-up" delay={0.5}>
           <div className="flex flex-wrap justify-center gap-8 md:gap-16 mt-16 pt-12 border-t border-stone-200">
             {[
-              { value: "4.9", label: "Средна оценка", suffix: "/5" },
-              { value: "500+", label: "Доволни клиенти", suffix: "" },
-              { value: "92%", label: "Виждат резултат", suffix: "" },
+              { value: `${STATS.rating}`, label: "Средна оценка", suffix: "/5" },
+              { value: `${STATS.clients}+`, label: "Доволни клиентки", suffix: "" },
+              { value: `${STATS.results}%`, label: "Виждат резултат", suffix: "" },
             ].map((stat) => (
               <div key={stat.label} className="text-center">
                 <div className="text-3xl md:text-4xl font-bold text-[#2D4A3E]">

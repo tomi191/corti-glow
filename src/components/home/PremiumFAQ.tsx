@@ -6,30 +6,13 @@ import { HelpCircle, Plus, Minus, MessageCircle } from "lucide-react";
 import { AnimatedHeading } from "@/components/ui/AnimatedText";
 import { homepageFaqs } from "@/data/homepage-faqs";
 
-const faqJsonLd = {
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  mainEntity: homepageFaqs.map((faq) => ({
-    "@type": "Question",
-    name: faq.question,
-    acceptedAnswer: {
-      "@type": "Answer",
-      text: faq.answer,
-    },
-  })),
-};
-
 export function PremiumFAQ() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
-  const [openIndex, setOpenIndex] = useState<number | null>(0);
+  const [openId, setOpenId] = useState<string | null>(homepageFaqs[0]?.id ?? null);
 
   return (
     <section ref={ref} className="py-16 md:py-32 relative overflow-hidden">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
-      />
       {/* Background */}
       <div className="absolute inset-0 bg-gradient-to-b from-white via-[#2D4A3E]/5 to-white" />
 
@@ -47,10 +30,10 @@ export function PremiumFAQ() {
           </motion.span>
 
           <AnimatedHeading delay={0.2}>
-            <h2 className="text-2xl sm:text-4xl lg:text-6xl font-semibold text-[#2D4A3E] tracking-tight mb-6">
+            <h2 className="text-5xl md:text-7xl font-normal text-[#2D4A3E] mt-4 font-serif leading-none">
               Имаш Въпроси?
               <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#B2D8C6] to-[#FFC1CC]">
+              <span className="italic block mt-1 text-[#2D4A3E]/70 font-light">
                 Имаме Отговори.
               </span>
             </h2>
@@ -61,41 +44,38 @@ export function PremiumFAQ() {
         <div className="space-y-4">
           {homepageFaqs.map((faq, index) => (
             <motion.div
-              key={index}
+              key={faq.id}
               initial={{ opacity: 0, y: 20 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.5, delay: 0.1 * index }}
             >
               <div
-                className={`rounded-2xl overflow-hidden transition-all duration-500 ${
-                  openIndex === index
-                    ? "bg-white shadow-[0_20px_60px_rgba(45,74,62,0.1)]"
-                    : "bg-white/60 hover:bg-white/80"
-                }`}
+                className={`rounded-2xl overflow-hidden transition-all duration-500 ${openId === faq.id
+                  ? "bg-white shadow-[0_20px_60px_rgba(45,74,62,0.1)]"
+                  : "bg-white/60 hover:bg-white/80"
+                  }`}
               >
                 <button
-                  onClick={() => setOpenIndex(openIndex === index ? null : index)}
+                  onClick={() => setOpenId(openId === faq.id ? null : faq.id)}
                   className="w-full px-8 py-6 flex items-center justify-between text-left"
-                  aria-expanded={openIndex === index}
-                  aria-controls={`faq-answer-${index}`}
+                  aria-expanded={openId === faq.id}
+                  aria-controls={`faq-answer-${faq.id}`}
                 >
                   <span
-                    className={`font-medium transition-colors duration-300 ${
-                      openIndex === index ? "text-[#2D4A3E]" : "text-stone-700"
-                    }`}
+                    className={`font-medium transition-colors duration-300 ${openId === faq.id ? "text-[#2D4A3E]" : "text-stone-700"
+                      }`}
                   >
                     {faq.question}
                   </span>
                   <motion.div
-                    animate={{ rotate: openIndex === index ? 180 : 0 }}
+                    animate={{ rotate: openId === faq.id ? 180 : 0 }}
                     transition={{ duration: 0.3 }}
-                    className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors duration-300 ${
-                      openIndex === index
-                        ? "bg-[#2D4A3E] text-white"
-                        : "bg-stone-100 text-stone-600"
-                    }`}
+                    className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors duration-300 ${openId === faq.id
+                      ? "bg-[#2D4A3E] text-white"
+                      : "bg-stone-100 text-stone-600"
+                      }`}
                   >
-                    {openIndex === index ? (
+                    {openId === faq.id ? (
                       <Minus className="w-4 h-4" />
                     ) : (
                       <Plus className="w-4 h-4" />
@@ -104,13 +84,13 @@ export function PremiumFAQ() {
                 </button>
 
                 <AnimatePresence>
-                  {openIndex === index && (
+                  {openId === faq.id && (
                     <motion.div
                       initial={{ height: 0, opacity: 0 }}
                       animate={{ height: "auto", opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}
                       transition={{ duration: 0.3 }}
-                      id={`faq-answer-${index}`}
+                      id={`faq-answer-${faq.id}`}
                       role="region"
                     >
                       <div className="px-8 pb-6">

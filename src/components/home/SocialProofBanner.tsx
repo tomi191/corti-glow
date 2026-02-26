@@ -2,6 +2,7 @@
 
 import { useRef, useEffect, useState } from "react";
 import { motion, useInView } from "framer-motion";
+import { STATS } from "@/lib/constants";
 
 interface StatItem {
   value: number;
@@ -10,10 +11,10 @@ interface StatItem {
 }
 
 const stats: StatItem[] = [
-  { value: 4.9, suffix: "/5", label: "Оценка" },
-  { value: 500, suffix: "+", label: "Клиенти" },
-  { value: 92, suffix: "%", label: "Виждат Резултат" },
-  { value: 27, suffix: "%", label: "По-нисък Кортизол" },
+  { value: STATS.rating, suffix: "/5", label: "Оценка" },
+  { value: STATS.clients, suffix: "+", label: "Клиентки" },
+  { value: STATS.results, suffix: "%", label: "Виждат Резултат" },
+  { value: STATS.cortisol, suffix: "%", label: "По-нисък Кортизол" },
 ];
 
 function CountUp({ target, suffix, isInView }: { target: number; suffix: string; isInView: boolean }) {
@@ -42,7 +43,7 @@ function CountUp({ target, suffix, isInView }: { target: number; suffix: string;
 
   return (
     <span>
-      {isDecimal ? count.toFixed(1) : Math.round(count)}
+      {isDecimal && count > 0 ? count.toFixed(1) : Math.round(count)}
       {suffix}
     </span>
   );
@@ -64,7 +65,7 @@ export function SocialProofBanner() {
               transition={{ duration: 0.4, delay: i * 0.1 }}
               className="text-center"
             >
-              <div className="text-2xl sm:text-3xl font-bold text-white">
+              <div className="text-2xl sm:text-3xl font-bold text-white font-display">
                 {i === 3 && "-"}
                 <CountUp target={stat.value} suffix={stat.suffix} isInView={isInView} />
               </div>

@@ -17,16 +17,17 @@ import { homepageFaqs } from "@/data/homepage-faqs";
 import { getProduct } from "@/lib/actions/products";
 import type { ProductVariant } from "@/types";
 import type { ProductVariantDB } from "@/lib/supabase/types";
+import { IS_PRELAUNCH } from "@/lib/constants";
 
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: "Corti-Glow Ритуал — Анти-Стрес & Де-Блоут",
   description:
-    "Открий Corti-Glow – вкусният моктейл с горска ягода, който понижава кортизола с до 27%. 500+ доволни клиенти.",
+    "Открий Corti-Glow – вкусният моктейл с горска ягода, който намалява кортизола с до 27%. 500+ доволни клиентки.",
   openGraph: {
     title: "LURA | Corti-Glow Ритуал",
-    description: "Изпий стреса. Прибери коремчето.",
+    description: "Изпий стреса. Сияй отвътре.",
     images: [{ url: "/images/og-image.png", width: 1200, height: 630 }],
   },
   alternates: {
@@ -50,14 +51,17 @@ function mapVariants(dbVariants: ProductVariantDB[]): ProductVariant[] {
 
 export default async function HomePage() {
   // Fetch product variants from DB (with fallback to hardcoded in PremiumBundles)
+  // Skip DB call in prelaunch mode — bundles use hardcoded data anyway
   let variants: ProductVariant[] | undefined;
-  try {
-    const { product } = await getProduct("corti-glow");
-    if (product?.variants) {
-      variants = mapVariants(product.variants as unknown as ProductVariantDB[]);
+  if (!IS_PRELAUNCH) {
+    try {
+      const { product } = await getProduct("corti-glow");
+      if (product?.variants) {
+        variants = mapVariants(product.variants as unknown as ProductVariantDB[]);
+      }
+    } catch {
+      // Silently fall back to hardcoded data in PremiumBundles
     }
-  } catch {
-    // Silently fall back to hardcoded data in PremiumBundles
   }
 
   const faqSchema = {

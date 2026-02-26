@@ -28,7 +28,7 @@ export function GlowGuideCTA() {
             <div className="relative w-52 h-52 rounded-2xl overflow-hidden shadow-2xl ring-2 ring-white/20">
               <Image
                 src="/images/glow-guide-cta.webp"
-                alt="Glow Guide Test"
+                alt="Glow Guide — персонализиран тест за стрес и красота"
                 fill
                 sizes="208px"
                 className="object-cover"
@@ -52,11 +52,11 @@ export function GlowGuideCTA() {
               initial={{ opacity: 0, y: 20 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.5, delay: 0.1 }}
-              className="text-2xl sm:text-3xl lg:text-4xl font-semibold text-white leading-tight mb-4"
+              className="text-2xl sm:text-3xl lg:text-4xl font-serif font-light text-white leading-tight mb-4"
             >
               Какъв е Твоят
               <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#B2D8C6] to-[#FFC1CC]">
+              <span className="italic font-semibold text-transparent bg-clip-text bg-gradient-to-r from-[#B2D8C6] to-[#FFC1CC]">
                 Stress-Beauty Score?
               </span>
             </motion.h2>
@@ -68,7 +68,7 @@ export function GlowGuideCTA() {
               className="text-white/70 font-light mb-8 leading-relaxed"
             >
               6 въпроса за 2 минути. Разбери как стресът влияе на кожата, съня и
-              фигурата ти и получи персонализирана AI препоръка.
+              фигурата ти — и получи персонализирана препоръка.
             </motion.p>
 
             <motion.div
