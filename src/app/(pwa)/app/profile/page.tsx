@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useUser, useClerk } from "@clerk/nextjs";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { usePwaStore } from "@/stores/pwa-store";
+import { haptic } from "@/lib/haptics";
 import {
   LogOut,
   Shield,
@@ -15,6 +16,11 @@ import {
   Repeat,
   Bell,
   Loader2,
+  Flame,
+  TrendingUp,
+  Activity,
+  Moon,
+  ChevronRight,
 } from "lucide-react";
 import {
   isPushSupported,
@@ -23,6 +29,108 @@ import {
   subscribeToPush,
   getExistingSubscription,
 } from "@/lib/push-notifications";
+
+// --- Shimmer Skeleton ---
+function ShimmerSkeleton({ className }: { className?: string }) {
+  return (
+    <div
+      className={`rounded-[2rem] overflow-hidden ${className ?? ""}`}
+      style={{
+        background:
+          "linear-gradient(90deg, rgba(255,255,255,0.3) 25%, rgba(255,255,255,0.6) 50%, rgba(255,255,255,0.3) 75%)",
+        backgroundSize: "200% 100%",
+        animation: "shimmer 1.5s ease-in-out infinite",
+      }}
+    />
+  );
+}
+
+// --- Stagger animation variants ---
+const containerVariants = {
+  hidden: {},
+  show: {
+    transition: { staggerChildren: 0.08 },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 16, scale: 0.97 },
+  show: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] as const },
+  },
+};
+
+// --- Premium Toggle ---
+function PremiumToggle({
+  enabled,
+  onToggle,
+  loading,
+  label,
+}: {
+  enabled: boolean;
+  onToggle: () => void;
+  loading?: boolean;
+  label: string;
+}) {
+  return (
+    <button
+      onClick={() => {
+        haptic.light();
+        onToggle();
+      }}
+      disabled={loading}
+      className={`relative w-12 h-7 rounded-full transition-colors ${
+        enabled ? "bg-brand-forest" : "bg-stone-300"
+      }`}
+      aria-label={label}
+    >
+      {loading ? (
+        <Loader2 className="w-4 h-4 text-white absolute top-1.5 left-1/2 -translate-x-1/2 animate-spin" />
+      ) : (
+        <span
+          className={`block w-5 h-5 bg-white rounded-full shadow transition-transform ${
+            enabled ? "translate-x-6" : "translate-x-1"
+          }`}
+        />
+      )}
+    </button>
+  );
+}
+
+// --- Streak calculator ---
+function computeStreak(checkIns: { date: string }[]): number {
+  if (checkIns.length === 0) return 0;
+  const sorted = [...checkIns]
+    .map((c) => c.date)
+    .sort()
+    .reverse();
+
+  const today = new Date();
+  const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+  const yesterday = new Date(today);
+  yesterday.setDate(yesterday.getDate() - 1);
+  const yesterdayStr = `${yesterday.getFullYear()}-${String(yesterday.getMonth() + 1).padStart(2, "0")}-${String(yesterday.getDate()).padStart(2, "0")}`;
+
+  // Streak must start from today or yesterday
+  if (sorted[0] !== todayStr && sorted[0] !== yesterdayStr) return 0;
+
+  let streak = 1;
+  for (let i = 1; i < sorted.length; i++) {
+    const prev = new Date(sorted[i - 1]);
+    const curr = new Date(sorted[i]);
+    const diffMs = prev.getTime() - curr.getTime();
+    const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24));
+    if (diffDays === 1) {
+      streak++;
+    } else {
+      break;
+    }
+  }
+  return streak;
+}
 
 export default function ProfilePage() {
   const { user, isLoaded } = useUser();
@@ -33,6 +141,7 @@ export default function ProfilePage() {
     lastPeriodDate,
     cycleLength,
     periodDuration,
+    checkIns,
     pushEnabled,
     setLastPeriodDate,
     setCycleLength,
@@ -45,6 +154,7 @@ export default function ProfilePage() {
   const [duration, setDuration] = useState(5);
   const [saved, setSaved] = useState(false);
   const [pushLoading, setPushLoading] = useState(false);
+  const [cycleReminder, setCycleReminder] = useState(true);
 
   useEffect(() => {
     setMounted(true);
@@ -53,17 +163,31 @@ export default function ProfilePage() {
     setDuration(periodDuration);
   }, [lastPeriodDate, cycleLength, periodDuration]);
 
+  // Compute stats
+  const stats = useMemo(() => {
+    const totalCheckIns = checkIns.length;
+    const streak = computeStreak(checkIns);
+    const avgGlow =
+      checkIns.length > 0
+        ? Math.round(
+            checkIns.reduce((sum, c) => sum + c.glowScore, 0) / checkIns.length
+          )
+        : 0;
+    return { totalCheckIns, streak, avgGlow, cycleLength };
+  }, [checkIns, cycleLength]);
+
   if (!mounted || !isLoaded) {
     return (
-      <div className="max-w-lg mx-auto space-y-6 py-6">
-        <div className="flex items-center gap-4 p-5 glass rounded-3xl">
-          <div className="w-14 h-14 rounded-full bg-white/40 animate-pulse" />
-          <div className="space-y-2 flex-1">
-            <div className="h-4 w-32 bg-white/40 rounded animate-pulse" />
-            <div className="h-3 w-48 bg-white/30 rounded animate-pulse" />
-          </div>
+      <div className="max-w-lg mx-auto space-y-5 py-6">
+        <style>{`@keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }`}</style>
+        <ShimmerSkeleton className="h-24" />
+        <div className="grid grid-cols-2 gap-3">
+          <ShimmerSkeleton className="h-28" />
+          <ShimmerSkeleton className="h-28" />
+          <ShimmerSkeleton className="h-28" />
+          <ShimmerSkeleton className="h-28" />
         </div>
-        <div className="h-64 bg-white/30 rounded-3xl animate-pulse" />
+        <ShimmerSkeleton className="h-64" />
       </div>
     );
   }
@@ -75,6 +199,7 @@ export default function ProfilePage() {
     setCycleLength(length);
     setPeriodDuration(duration);
     setSaved(true);
+    haptic.success();
     setTimeout(() => setSaved(false), 2000);
   }
 
@@ -84,7 +209,6 @@ export default function ProfilePage() {
 
     try {
       if (pushEnabled) {
-        // Disable: unsubscribe
         const reg = await registerServiceWorker();
         if (reg) {
           const sub = await getExistingSubscription(reg);
@@ -99,13 +223,10 @@ export default function ProfilePage() {
         }
         setPushEnabled(false);
       } else {
-        // Enable: subscribe
         const reg = await registerServiceWorker();
         if (!reg) return;
-
         const sub = await subscribeToPush(reg);
         if (!sub) return;
-
         const res = await fetch("/api/push/subscribe", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -113,13 +234,18 @@ export default function ProfilePage() {
             subscription: {
               endpoint: sub.endpoint,
               keys: {
-                p256dh: btoa(String.fromCharCode(...new Uint8Array(sub.getKey("p256dh")!))),
-                auth: btoa(String.fromCharCode(...new Uint8Array(sub.getKey("auth")!))),
+                p256dh: btoa(
+                  String.fromCharCode(
+                    ...new Uint8Array(sub.getKey("p256dh")!)
+                  )
+                ),
+                auth: btoa(
+                  String.fromCharCode(...new Uint8Array(sub.getKey("auth")!))
+                ),
               },
             },
           }),
         });
-
         if (res.ok) {
           setPushEnabled(true);
         }
@@ -131,45 +257,131 @@ export default function ProfilePage() {
     }
   }
 
+  const statCards: {
+    label: string;
+    value: string | number;
+    icon: typeof Flame;
+    iconBg: string;
+    iconColor: string;
+  }[] = [
+    {
+      label: "Чек-инове",
+      value: stats.totalCheckIns,
+      icon: Activity,
+      iconBg: "bg-brand-sage/30",
+      iconColor: "text-brand-forest",
+    },
+    {
+      label: "Текущ стрийк",
+      value: `${stats.streak} дни`,
+      icon: Flame,
+      iconBg: "bg-orange-50",
+      iconColor: "text-orange-500",
+    },
+    {
+      label: "Среден Glow",
+      value: stats.avgGlow > 0 ? stats.avgGlow : "—",
+      icon: TrendingUp,
+      iconBg: "bg-brand-blush/30",
+      iconColor: "text-pink-500",
+    },
+    {
+      label: "Дължина на цикъл",
+      value: `${stats.cycleLength} дни`,
+      icon: Moon,
+      iconBg: "bg-brand-cream/40",
+      iconColor: "text-amber-600",
+    },
+  ];
+
   return (
-    <div className="max-w-lg mx-auto space-y-6 py-6">
-      {/* User card */}
+    <motion.div
+      className="max-w-lg mx-auto space-y-5 py-6"
+      variants={containerVariants}
+      initial="hidden"
+      animate="show"
+    >
+      <style>{`@keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }`}</style>
+
+      {/* Avatar / User Section */}
       <motion.div
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="flex items-center gap-4 p-5 glass rounded-3xl"
+        variants={itemVariants}
+        className="glass rounded-[2rem] p-5 flex items-center gap-4 shadow-lg shadow-brand-forest/5 relative overflow-hidden"
       >
-        {user.imageUrl ? (
-          <Image
-            src={user.imageUrl}
-            alt={user.fullName || "Аватар"}
-            width={56}
-            height={56}
-            className="rounded-full border-2 border-white"
-          />
-        ) : (
-          <div className="w-14 h-14 rounded-full bg-brand-sage/30 flex items-center justify-center">
-            <User className="w-7 h-7 text-brand-forest" />
-          </div>
-        )}
-        <div className="min-w-0">
-          <p className="font-display font-semibold text-brand-forest truncate">
+        {/* Decorative organic shapes */}
+        <div className="absolute -top-6 -right-6 w-24 h-24 rounded-full bg-brand-sage/10 blur-sm" />
+        <div className="absolute -bottom-4 -left-4 w-16 h-16 rounded-full bg-brand-blush/10 blur-sm" />
+
+        <div className="relative">
+          {user.imageUrl ? (
+            <Image
+              src={user.imageUrl}
+              alt={user.fullName || "Аватар"}
+              width={64}
+              height={64}
+              className="rounded-2xl border-2 border-white shadow-md"
+            />
+          ) : (
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-brand-sage/40 to-brand-blush/40 flex items-center justify-center shadow-md">
+              <User className="w-8 h-8 text-brand-forest" />
+            </div>
+          )}
+          {/* Online indicator */}
+          <div className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-emerald-400 border-2 border-white" />
+        </div>
+
+        <div className="min-w-0 relative">
+          <p className="font-display text-lg font-bold text-brand-forest truncate">
             {user.fullName || "Потребител"}
           </p>
           <p className="text-sm text-stone-500 truncate">
             {user.primaryEmailAddress?.emailAddress}
           </p>
+          {stats.streak > 0 && (
+            <div className="flex items-center gap-1 mt-1">
+              <Flame className="w-3.5 h-3.5 text-orange-500" />
+              <span className="text-xs font-semibold text-orange-600">
+                {stats.streak} дни стрийк
+              </span>
+            </div>
+          )}
         </div>
+      </motion.div>
+
+      {/* Stats Grid */}
+      <motion.div variants={itemVariants} className="grid grid-cols-2 gap-3">
+        {statCards.map((stat) => {
+          const Icon = stat.icon;
+          return (
+            <div
+              key={stat.label}
+              className="glass rounded-[1.5rem] p-4 flex flex-col gap-2 shadow-md shadow-brand-forest/5"
+            >
+              <div
+                className={`w-9 h-9 rounded-xl ${stat.iconBg} flex items-center justify-center`}
+              >
+                <Icon className={`w-4.5 h-4.5 ${stat.iconColor}`} />
+              </div>
+              <div>
+                <p className="text-xl font-bold text-brand-forest">
+                  {stat.value}
+                </p>
+                <p className="text-[11px] font-medium text-stone-400 uppercase tracking-wide">
+                  {stat.label}
+                </p>
+              </div>
+            </div>
+          );
+        })}
       </motion.div>
 
       {/* Cycle Settings */}
       <motion.section
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1 }}
-        className="glass rounded-[2rem] p-5 space-y-5"
+        variants={itemVariants}
+        className="glass rounded-[2rem] p-5 space-y-5 shadow-md shadow-brand-forest/5"
       >
-        <h3 className="text-xs font-bold uppercase tracking-widest text-brand-forest/60">
+        <h3 className="text-xs font-bold uppercase tracking-widest text-brand-forest/60 flex items-center gap-2">
+          <Calendar className="w-3.5 h-3.5" />
           Настройки на цикъла
         </h3>
 
@@ -184,7 +396,7 @@ export default function ProfilePage() {
             value={date}
             onChange={(e) => setDate(e.target.value)}
             max={new Date().toISOString().split("T")[0]}
-            className="w-full py-3 px-4 border border-stone-200 rounded-xl text-stone-800 bg-white/60 focus:outline-none focus:ring-2 focus:ring-brand-sage/50 focus:border-brand-sage"
+            className="w-full py-3 px-4 border border-stone-200 rounded-xl text-stone-800 bg-white/60 focus:outline-none focus:ring-2 focus:ring-brand-sage/50 focus:border-brand-sage transition-shadow"
           />
         </label>
 
@@ -231,7 +443,9 @@ export default function ProfilePage() {
               {length}
             </span>
           </div>
-          <p className="text-xs text-stone-400">Типичен: 21-40 дни (средно 28)</p>
+          <p className="text-xs text-stone-400">
+            Типичен: 21-40 дни (средно 28)
+          </p>
         </label>
 
         {/* Save button */}
@@ -251,20 +465,21 @@ export default function ProfilePage() {
         </button>
       </motion.section>
 
-      {/* Notifications */}
+      {/* Quick Settings / Notifications */}
       <motion.section
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.15 }}
-        className="glass rounded-[2rem] p-5 space-y-4"
+        variants={itemVariants}
+        className="glass rounded-[2rem] p-5 space-y-4 shadow-md shadow-brand-forest/5"
       >
-        <h3 className="text-xs font-bold uppercase tracking-widest text-brand-forest/60">
-          Известия
+        <h3 className="text-xs font-bold uppercase tracking-widest text-brand-forest/60 flex items-center gap-2">
+          <Bell className="w-3.5 h-3.5" />
+          Настройки
         </h3>
 
+        {/* Push notifications */}
         {isIOSInBrowser() ? (
           <p className="text-sm text-stone-500">
-            Първо добави приложението на началния екран, за да получаваш известия.
+            Първо добави приложението на началния екран, за да получаваш
+            известия.
           </p>
         ) : isPushSupported() ? (
           <div className="flex items-center justify-between">
@@ -276,43 +491,54 @@ export default function ProfilePage() {
                 Напомняния за чек-ин
               </span>
             </div>
-
-            <button
-              onClick={handlePushToggle}
-              disabled={pushLoading}
-              className={`relative w-12 h-7 rounded-full transition-colors ${
-                pushEnabled ? "bg-brand-forest" : "bg-stone-300"
-              }`}
-              aria-label={pushEnabled ? "Изключи известията" : "Включи известията"}
-            >
-              {pushLoading ? (
-                <Loader2 className="w-4 h-4 text-white absolute top-1.5 left-1/2 -translate-x-1/2 animate-spin" />
-              ) : (
-                <span
-                  className={`block w-5 h-5 bg-white rounded-full shadow transition-transform ${
-                    pushEnabled ? "translate-x-6" : "translate-x-1"
-                  }`}
-                />
-              )}
-            </button>
+            <PremiumToggle
+              enabled={pushEnabled}
+              onToggle={handlePushToggle}
+              loading={pushLoading}
+              label={
+                pushEnabled ? "Изключи известията" : "Включи известията"
+              }
+            />
           </div>
         ) : (
           <p className="text-sm text-stone-500">
             Браузърът ти не поддържа push известия.
           </p>
         )}
+
+        {/* Cycle reminder toggle (UI-only) */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-brand-blush/30 flex items-center justify-center">
+              <Calendar className="w-4 h-4 text-pink-500" />
+            </div>
+            <span className="text-sm font-medium text-stone-700">
+              Напомняне за цикъл
+            </span>
+          </div>
+          <PremiumToggle
+            enabled={cycleReminder}
+            onToggle={() => setCycleReminder(!cycleReminder)}
+            label={
+              cycleReminder
+                ? "Изключи напомняне за цикъл"
+                : "Включи напомняне за цикъл"
+            }
+          />
+        </div>
       </motion.section>
 
       {/* Account actions */}
       <motion.section
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2 }}
-        className="glass rounded-[2rem] divide-y divide-stone-200/50"
+        variants={itemVariants}
+        className="glass rounded-[2rem] divide-y divide-stone-200/50 shadow-md shadow-brand-forest/5 overflow-hidden"
       >
         <button
-          onClick={() => openUserProfile()}
-          className="flex items-center gap-3 w-full px-5 py-4 text-left hover:bg-white/30 transition-colors first:rounded-t-[2rem]"
+          onClick={() => {
+            haptic.light();
+            openUserProfile();
+          }}
+          className="flex items-center gap-3 w-full px-5 py-4 text-left hover:bg-white/30 transition-colors"
         >
           <div className="w-9 h-9 rounded-xl bg-brand-sage/30 flex items-center justify-center">
             <Shield className="w-4 h-4 text-brand-forest" />
@@ -320,11 +546,15 @@ export default function ProfilePage() {
           <span className="flex-1 text-sm font-medium text-stone-700">
             Управление на акаунта
           </span>
+          <ChevronRight className="w-4 h-4 text-stone-400" />
         </button>
 
         <button
-          onClick={() => signOut({ redirectUrl: "/" })}
-          className="flex items-center gap-3 w-full px-5 py-4 text-left hover:bg-white/30 transition-colors last:rounded-b-[2rem]"
+          onClick={() => {
+            haptic.light();
+            signOut({ redirectUrl: "/" });
+          }}
+          className="flex items-center gap-3 w-full px-5 py-4 text-left hover:bg-white/30 transition-colors"
         >
           <div className="w-9 h-9 rounded-xl bg-red-50 flex items-center justify-center">
             <LogOut className="w-4 h-4 text-red-500" />
@@ -332,13 +562,17 @@ export default function ProfilePage() {
           <span className="flex-1 text-sm font-medium text-red-600">
             Изход
           </span>
+          <ChevronRight className="w-4 h-4 text-stone-400" />
         </button>
       </motion.section>
 
       {/* App info */}
-      <p className="text-center text-xs text-stone-400">
+      <motion.p
+        variants={itemVariants}
+        className="text-center text-xs text-stone-400"
+      >
         LURA App v2.0
-      </p>
-    </div>
+      </motion.p>
+    </motion.div>
   );
 }
