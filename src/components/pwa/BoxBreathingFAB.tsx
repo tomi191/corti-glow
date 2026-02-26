@@ -10,18 +10,48 @@ const PHASE_DURATION = 4;
 const CYCLE_TOTAL = 16;
 
 const PHASES = [
-  { label: "Вдишай", scale: 1.4, color: "#B2D8C6" },   // sage — expand
-  { label: "Задръж", scale: 1.4, color: "#8FBFAA" },    // deeper sage — hold big
-  { label: "Издишай", scale: 0.85, color: "#FFC1CC" },  // blush — contract
-  { label: "Задръж", scale: 0.85, color: "#F4E3B2" },   // cream — hold small
+  { label: "Вдишай", scale: 1.4 },   // expand
+  { label: "Задръж", scale: 1.4 },    // hold big
+  { label: "Издишай", scale: 0.85 },  // contract
+  { label: "Задръж", scale: 0.85 },   // hold small
 ] as const;
+
+// Cycle-specific motivational texts (Bulgarian)
+const BREATHING_TEXTS = [
+  "Уравновесяваме кислорода в тялото... Нервната система започва да се успокоява.",
+  "Кортизолът намалява. Тялото минава в режим на възстановяване.",
+  "Сърдечният ритъм се стабилизира. Дишането е твоят инструмент.",
+  "Пълно спокойствие. Продължи колкото желаеш.",
+  "Вече си в зоната. Всеки вдих подсилва ефекта.",
+];
+
+// Visual transformation: stress → calm per cycle
+const CYCLE_COLORS = [
+  "#FFC1CC", // Cycle 1: blush (stress)
+  "#E2D0C1", // Cycle 2: warm (settling)
+  "#B2D8C6", // Cycle 3: sage (calm)
+  "#8FBFAA", // Cycle 4+: deep sage (deep calm)
+];
+
+const CYCLE_RADII = [
+  "40% 60% 70% 30% / 40% 50% 60% 50%",       // Cycle 1: chaotic/stressed
+  "42% 58% 55% 45% / 43% 57% 48% 52%",       // Cycle 2: settling
+  "44% 56% 52% 48% / 45% 55% 46% 54%",       // Cycle 3: almost smooth
+  "48% 52% 50% 50% / 49% 51% 49% 51%",       // Cycle 4+: nearly perfect circle
+];
 
 function getBreathPhase(tick: number) {
   const pos = tick % CYCLE_TOTAL;
   const phaseIndex = Math.min(Math.floor(pos / PHASE_DURATION), 3);
   const phase = PHASES[phaseIndex];
   const countdown = PHASE_DURATION - (pos - phaseIndex * PHASE_DURATION);
-  return { ...phase, phaseIndex, countdown };
+  const cycles = Math.floor(tick / CYCLE_TOTAL) + 1;
+  const visualIndex = Math.min(cycles - 1, 3);
+  const textIndex = Math.min(cycles - 1, 4);
+  const cycleColor = CYCLE_COLORS[visualIndex];
+  const cycleRadius = CYCLE_RADII[visualIndex];
+  const cycleText = BREATHING_TEXTS[textIndex];
+  return { ...phase, phaseIndex, countdown, cycles, cycleColor, cycleRadius, cycleText, textIndex };
 }
 
 // Floating particles — fixed values (no hydration mismatch since overlay is client-only)
@@ -108,8 +138,7 @@ function BreathingOverlay({ onClose }: { onClose: () => void }) {
     tryHaptic(tick);
   }, [tick, tryHaptic]);
 
-  const { label, countdown, scale, color, phaseIndex } = getBreathPhase(tick);
-  const cycles = Math.floor(tick / CYCLE_TOTAL) + 1;
+  const { label, countdown, scale, phaseIndex, cycles, cycleColor, cycleRadius, cycleText, textIndex } = getBreathPhase(tick);
 
   return (
     <motion.div
@@ -126,15 +155,15 @@ function BreathingOverlay({ onClose }: { onClose: () => void }) {
         {/* Ambient color blob — top left */}
         <motion.div
           className="absolute -top-[20%] -left-[20%] w-[70%] h-[60%] rounded-full blur-[100px]"
-          animate={{ backgroundColor: color }}
-          transition={{ duration: PHASE_DURATION, ease: "easeInOut" }}
+          animate={{ backgroundColor: cycleColor }}
+          transition={{ duration: 1, ease: "easeInOut" }}
           style={{ opacity: 0.08 }}
         />
         {/* Ambient color blob — bottom right */}
         <motion.div
           className="absolute -bottom-[20%] -right-[20%] w-[60%] h-[50%] rounded-full blur-[90px]"
-          animate={{ backgroundColor: color }}
-          transition={{ duration: PHASE_DURATION, ease: "easeInOut" }}
+          animate={{ backgroundColor: cycleColor }}
+          transition={{ duration: 1, ease: "easeInOut" }}
           style={{ opacity: 0.06 }}
         />
       </div>
@@ -172,26 +201,40 @@ function BreathingOverlay({ onClose }: { onClose: () => void }) {
       <div className="absolute inset-0 flex items-center justify-center">
         {/* Layer 1: Outer aura (largest, most blurred) */}
         <motion.div
-          className="absolute rounded-[43%_57%_52%_48%/45%_55%_45%_55%]"
+          className="absolute"
           style={{ width: 280, height: 280, filter: "blur(60px)", willChange: "transform, filter" }}
-          animate={{ scale, backgroundColor: color, opacity: 0.25 }}
-          transition={{ duration: PHASE_DURATION, ease: "easeInOut" }}
+          animate={{ scale, backgroundColor: cycleColor, borderRadius: cycleRadius, opacity: 0.25 }}
+          transition={{
+            scale: { duration: PHASE_DURATION, ease: "easeInOut" },
+            backgroundColor: { duration: 1, ease: "easeInOut" },
+            borderRadius: { duration: 1, ease: "easeInOut" },
+            opacity: { duration: PHASE_DURATION, ease: "easeInOut" },
+          }}
         />
 
         {/* Layer 2: Middle glow */}
         <motion.div
-          className="absolute rounded-[45%_55%_50%_50%/48%_52%_48%_52%]"
+          className="absolute"
           style={{ width: 200, height: 200, filter: "blur(30px)", willChange: "transform, filter" }}
-          animate={{ scale, backgroundColor: color, opacity: 0.4 }}
-          transition={{ duration: PHASE_DURATION, ease: "easeInOut" }}
+          animate={{ scale, backgroundColor: cycleColor, borderRadius: cycleRadius, opacity: 0.4 }}
+          transition={{
+            scale: { duration: PHASE_DURATION, ease: "easeInOut" },
+            backgroundColor: { duration: 1, ease: "easeInOut" },
+            borderRadius: { duration: 1, ease: "easeInOut" },
+            opacity: { duration: PHASE_DURATION, ease: "easeInOut" },
+          }}
         />
 
         {/* Layer 3: Core blob */}
         <motion.div
-          className="absolute rounded-[43%_57%_52%_48%/45%_55%_45%_55%] shadow-2xl"
+          className="absolute shadow-2xl"
           style={{ width: 150, height: 150 }}
-          animate={{ scale, backgroundColor: color }}
-          transition={{ duration: PHASE_DURATION, ease: "easeInOut" }}
+          animate={{ scale, backgroundColor: cycleColor, borderRadius: cycleRadius }}
+          transition={{
+            scale: { duration: PHASE_DURATION, ease: "easeInOut" },
+            backgroundColor: { duration: 1, ease: "easeInOut" },
+            borderRadius: { duration: 1, ease: "easeInOut" },
+          }}
         />
 
         {/* Layer 4: Inner highlight */}
@@ -246,6 +289,22 @@ function BreathingOverlay({ onClose }: { onClose: () => void }) {
         >
           {countdown}
         </motion.p>
+
+        {/* Cycle motivational text */}
+        <div className="mt-4 h-12 flex items-start justify-center px-8">
+          <AnimatePresence mode="wait">
+            <motion.p
+              key={`text-${textIndex}`}
+              initial={{ opacity: 0, y: 6, filter: "blur(3px)" }}
+              animate={{ opacity: 0.45, y: 0, filter: "blur(0px)" }}
+              exit={{ opacity: 0, y: -6, filter: "blur(3px)" }}
+              transition={{ duration: 0.6 }}
+              className="text-sm text-white text-center leading-relaxed max-w-[280px]"
+            >
+              {cycleText}
+            </motion.p>
+          </AnimatePresence>
+        </div>
       </div>
 
       {/* Phase indicator dots */}
@@ -256,7 +315,7 @@ function BreathingOverlay({ onClose }: { onClose: () => void }) {
             className="h-1.5 rounded-full"
             animate={{
               width: i === phaseIndex ? 20 : 6,
-              backgroundColor: i === phaseIndex ? color : "rgba(255,255,255,0.2)",
+              backgroundColor: i === phaseIndex ? cycleColor : "rgba(255,255,255,0.2)",
             }}
             transition={{ duration: 0.3 }}
           />

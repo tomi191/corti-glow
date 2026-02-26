@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
 import { UserButton } from "@clerk/nextjs";
 import {
   Home,
@@ -15,6 +16,7 @@ import BoxBreathingFAB from "@/components/pwa/BoxBreathingFAB";
 import IOSInstallBanner from "@/components/pwa/IOSInstallBanner";
 import PremiumBackground from "@/components/pwa/PremiumBackground";
 import { registerServiceWorker } from "@/lib/push-notifications";
+import { haptic } from "@/lib/haptics";
 
 const navItems = [
   { href: "/app", label: "Начало", icon: Home },
@@ -58,10 +60,19 @@ export default function PWALayout({
         />
       </header>
 
-      {/* Main content */}
-      <main className="flex-1 pt-16 pb-28 px-5">
-        {children}
-      </main>
+      {/* Main content with page transitions */}
+      <AnimatePresence mode="wait">
+        <motion.main
+          key={pathname}
+          className="flex-1 pt-16 pb-28 px-5"
+          initial={{ opacity: 0, y: 8, filter: "blur(4px)" }}
+          animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+          exit={{ opacity: 0, y: -8, filter: "blur(4px)" }}
+          transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+        >
+          {children}
+        </motion.main>
+      </AnimatePresence>
 
       {/* Breathing FAB */}
       <BoxBreathingFAB />
@@ -85,6 +96,7 @@ export default function PWALayout({
               <Link
                 key={item.href}
                 href={item.href}
+                onClick={() => haptic.light()}
                 className={`flex flex-col items-center gap-0.5 px-2 py-1 rounded-xl transition-colors ${
                   isActive
                     ? "text-brand-forest"
