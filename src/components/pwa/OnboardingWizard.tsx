@@ -136,18 +136,18 @@ function StepWelcome() {
       </div>
       <div className="space-y-3">
         <h2 className="text-2xl font-display font-bold text-brand-forest">
-          Добре дошла в Glow Tracker
+          Добре дошла в LURA
         </h2>
         <p className="text-stone-500 leading-relaxed">
-          Проследявай цикъла си, записвай как се чувстваш всеки ден
-          и получавай персонализирани съвети за храна, движение и добавки.
+          Ще ти показваме в коя фаза от цикъла си, какво е нормално за теб
+          и конкретни стъпки за деня — без обещания, с данни.
         </p>
       </div>
       <div className="grid grid-cols-3 gap-3 pt-2">
         {[
           { label: "Чек-ин", desc: "Сън, стрес, симптоми" },
           { label: "Календар", desc: "Фази на цикъла" },
-          { label: "Анализ", desc: "Тенденции и score" },
+          { label: "Анализ", desc: "Тенденции и данни" },
         ].map((item) => (
           <div key={item.label} className="glass p-3 rounded-2xl text-center">
             <p className="text-xs font-bold text-brand-forest">{item.label}</p>
@@ -185,7 +185,7 @@ function StepCycleSetup({
           <Calendar className="w-7 h-7 text-pink-500" />
         </div>
         <h2 className="text-xl font-bold text-brand-forest">Настрой цикъла си</h2>
-        <p className="text-sm text-stone-500">Това помага за точни прогнози</p>
+        <p className="text-sm text-stone-500">Не е перфектно — но помага да разбереш в коя фаза си</p>
       </div>
 
       <div className="space-y-5">
@@ -258,11 +258,11 @@ function StepReady() {
       </div>
       <div className="space-y-3">
         <h2 className="text-2xl font-display font-bold text-brand-forest">
-          Готова си!
+          Готово
         </h2>
         <p className="text-stone-500 leading-relaxed">
-          Цикълът ти е настроен. Сега можеш да направиш
-          първия си дневен чек-ин и да видиш персонализирани препоръки.
+          Цикълът ти е настроен. Направи първия чек-ин
+          и ще видиш какво е нормално за теб днес.
         </p>
       </div>
     </div>

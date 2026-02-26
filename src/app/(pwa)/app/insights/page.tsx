@@ -277,7 +277,7 @@ export default function InsightsPage() {
               </div>
               <p className="text-2xl font-bold text-brand-forest">{avgSleep ?? "\u2014"}<span className="text-sm font-normal text-stone-400">/10</span></p>
               <p className="text-[11px] text-stone-400 mt-1">
-                {avgSleep !== null && avgSleep >= 7 ? "Добро ниво" : avgSleep !== null && avgSleep >= 5 ? "Може да е по-добре" : avgSleep !== null ? "Нужна е повече грижа" : ""}
+                {avgSleep !== null && avgSleep >= 7 ? "Добро ниво" : avgSleep !== null && avgSleep >= 5 ? "Може да е по-добре" : avgSleep !== null ? "Виж съветите за сън" : ""}
               </p>
             </div>
             <div className="glass p-4 rounded-2xl">
@@ -287,7 +287,7 @@ export default function InsightsPage() {
               </div>
               <p className="text-2xl font-bold text-brand-forest">{avgStress ?? "\u2014"}<span className="text-sm font-normal text-stone-400">/10</span></p>
               <p className="text-[11px] text-stone-400 mt-1">
-                {avgStress !== null && avgStress <= 3 ? "Спокойна си" : avgStress !== null && avgStress <= 6 ? "Умерен стрес" : avgStress !== null ? "Висок — внимавай" : ""}
+                {avgStress !== null && avgStress <= 3 ? "Нисък — добре си" : avgStress !== null && avgStress <= 6 ? "Умерен стрес" : avgStress !== null ? "Висок — виж дихателното" : ""}
               </p>
             </div>
           </motion.section>
@@ -342,7 +342,7 @@ export default function InsightsPage() {
                   {streak} {streak === 1 ? "ден" : "дни"} подред
                 </span>
                 <span className="text-xs text-stone-400">
-                  {streak >= 7 ? "Невероятен стрийк!" : streak >= 3 ? "Добър ритъм, продължавай!" : "Страхотно начало!"}
+                  {streak >= 7 ? "Вече е навик." : streak >= 3 ? "Добър ритъм, продължавай." : "Добро начало."}
                 </span>
               </div>
               <Flame className={`w-5 h-5 ${streak >= 7 ? "text-orange-500" : "text-stone-300"}`} />
@@ -370,19 +370,19 @@ function EmptyState() {
             <Sparkles className="w-7 h-7 text-brand-forest" />
           </div>
           <h2 className="text-lg font-display font-bold text-brand-forest">
-            Тук ще видиш как се чувстваш
+            Тук ще виждаш какво е нормално за теб
           </h2>
           <p className="text-sm text-stone-500 leading-relaxed">
-            След няколко чек-ина ще получиш персонализиран анализ — тенденции в съня,
-            стреса и симптомите ти, свързани с фазите на цикъла.
+            След няколко чек-ина ще видиш тенденции в съня и стреса,
+            свързани с фазите на цикъла ти. Без гадаене — с данни.
           </p>
         </div>
 
         {/* What you'll see preview */}
         <div className="space-y-2">
           {[
-            "Седмичен Glow Score с тренд",
-            "Персонализирани съвети за теб",
+            "Седмичен обзор с тренд",
+            "Практични съвети за твоята фаза",
             "Кои симптоми се повтарят и кога",
           ].map((item) => (
             <div key={item} className="flex items-center gap-2.5 text-sm text-stone-600">
@@ -419,10 +419,10 @@ function NotEnoughState({ count, target }: { count: number; target: number }) {
             <TrendingUp className="w-7 h-7 text-brand-forest" />
           </div>
           <h2 className="text-lg font-display font-bold text-brand-forest">
-            Почти сме там!
+            Още малко данни
           </h2>
           <p className="text-sm text-stone-500">
-            Още {target - count} {target - count === 1 ? "чек-ин" : "чек-ина"} и ще отключиш пълния анализ.
+            Още {target - count} {target - count === 1 ? "чек-ин" : "чек-ина"} и ще видиш пълния анализ.
           </p>
         </div>
 
@@ -448,9 +448,9 @@ function NotEnoughState({ count, target }: { count: number; target: number }) {
             Какво ще отключиш
           </p>
           {[
-            "Тренд на Glow Score с ↑/↓ сравнение",
-            "Персонализирани препоръки за теб",
-            "Анализ на най-честите ти симптоми",
+            "Тренд с ↑/↓ сравнение по седмици",
+            "Практични препоръки за твоята фаза",
+            "Анализ на повтарящите се симптоми",
           ].map((item) => (
             <div key={item} className="flex items-center gap-2.5 text-sm text-stone-500">
               <div className="w-1.5 h-1.5 rounded-full bg-brand-sage flex-shrink-0" />

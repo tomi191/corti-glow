@@ -28,7 +28,7 @@ const TOUR_STEPS: TourStep[] = [
     iconColor: "text-brand-forest",
     title: "Дневен чек-ин",
     description:
-      "Натисни Glow Ring-а на началния екран, за да запишеш как се чувстваш — сън, стрес и симптоми. Получаваш Glow Score от 0 до 100.",
+      "Натисни кръга на началния екран — записваш сън, стрес и симптоми за 10 секунди. Виждаш Score за деня.",
   },
   {
     icon: CalendarDays,
@@ -36,23 +36,23 @@ const TOUR_STEPS: TourStep[] = [
     iconColor: "text-pink-500",
     title: "Календар на цикъла",
     description:
-      "Виж фазите на цикъла си с цветна карта. Натисни върху минал ден, за да прегледаш чек-ина си. Днешният ден отваря нов чек-ин.",
+      "Виж фазите на цикъла си. Натисни минал ден, за да видиш чек-ина. Днешният ден отваря нов.",
   },
   {
     icon: BarChart3,
     iconBg: "bg-brand-cream/40",
     iconColor: "text-amber-600",
-    title: "Анализ и тенденции",
+    title: "Анализ с данни",
     description:
-      "След 3+ чек-ина ще видиш графики за Glow Score, среден сън, стрес и най-честите ти симптоми.",
+      "След 3+ чек-ина виждаш тенденции в съня и стреса, свързани с фазите ти. Без гадаене.",
   },
   {
     icon: ShoppingBag,
     iconBg: "bg-purple-100",
     iconColor: "text-purple-500",
-    title: "Персонализиран магазин",
+    title: "Препоръки по фаза",
     description:
-      "Препоръки за добавки, базирани на текущата ти фаза. Всеки цикъл — различен съвет.",
+      "Съставки с клинични доказателства за текущата ти фаза — не продукти, а информация.",
   },
   {
     icon: Wind,
@@ -60,7 +60,7 @@ const TOUR_STEPS: TourStep[] = [
     iconColor: "text-blue-500",
     title: "Дихателно упражнение",
     description:
-      "Натисни бутона долу вдясно за 4-секундно box breathing. Помага при стрес и тревожност.",
+      "Бутонът долу вдясно — 4-секундно box breathing. Звучи просто, но кортизолът реално спада.",
   },
 ];
 
@@ -178,7 +178,7 @@ export default function AppTourModal({ onClose }: AppTourModalProps) {
             onClick={handleNext}
             className="flex-1 py-3 rounded-full bg-brand-forest text-white font-semibold shadow-lg transition-all active:scale-[0.98]"
           >
-            {isLast ? "Започни!" : "Напред"}
+            {isLast ? "Започни" : "Напред"}
           </button>
         </div>
       </motion.div>

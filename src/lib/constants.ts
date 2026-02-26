@@ -1,6 +1,13 @@
 // Pre-launch Mode
 export const IS_PRELAUNCH = process.env.NEXT_PUBLIC_PRELAUNCH === "true";
 
+export const STATS = {
+  rating: 4.9,
+  clients: 500,
+  results: 92,
+  cortisol: 27,
+};
+
 // Brand Colors
 export const COLORS = {
   forest: "#2D4A3E",
@@ -57,6 +64,7 @@ export const FOOTER_LINKS = {
     { href: "/dostavka-i-vrashtane", label: "Доставка & Връщане" },
     { href: "/prosledi-porachka", label: "Проследи Поръчка" },
     { href: "/akount", label: "Моят Акаунт" },
+    { href: "/app", label: "LURA Навигатор" },
   ],
   legal: [
     { href: "/obshti-usloviya", label: "Общи условия" },

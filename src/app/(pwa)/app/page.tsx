@@ -256,7 +256,7 @@ export default function AppDashboard() {
           className="glass p-6 rounded-[2rem] text-center space-y-3"
         >
           <p className="text-sm text-stone-600">
-            Настрой цикъла си за персонализирана информация
+            Въведи данни за цикъла си, за да виждаш какво е нормално за теб днес
           </p>
           <button
             onClick={() => setShowOnboarding(true)}
@@ -319,7 +319,7 @@ export default function AppDashboard() {
         >
           <div className="flex items-center gap-2 mb-2">
             <Sparkles className="w-5 h-5" />
-            <span className="text-sm font-semibold uppercase tracking-wide">Glow Insight</span>
+            <span className="text-sm font-semibold uppercase tracking-wide">Съвет за деня</span>
           </div>
           <p className="text-sm opacity-90 leading-relaxed">
             {getDailyTip(phase, checkIn.stress)}
