@@ -173,7 +173,7 @@ function BreathingOverlay({ onClose }: { onClose: () => void }) {
         {/* Layer 1: Outer aura (largest, most blurred) */}
         <motion.div
           className="absolute rounded-[43%_57%_52%_48%/45%_55%_45%_55%]"
-          style={{ width: 280, height: 280, filter: "blur(60px)" }}
+          style={{ width: 280, height: 280, filter: "blur(60px)", willChange: "transform, filter" }}
           animate={{ scale, backgroundColor: color, opacity: 0.25 }}
           transition={{ duration: PHASE_DURATION, ease: "easeInOut" }}
         />
@@ -181,7 +181,7 @@ function BreathingOverlay({ onClose }: { onClose: () => void }) {
         {/* Layer 2: Middle glow */}
         <motion.div
           className="absolute rounded-[45%_55%_50%_50%/48%_52%_48%_52%]"
-          style={{ width: 200, height: 200, filter: "blur(30px)" }}
+          style={{ width: 200, height: 200, filter: "blur(30px)", willChange: "transform, filter" }}
           animate={{ scale, backgroundColor: color, opacity: 0.4 }}
           transition={{ duration: PHASE_DURATION, ease: "easeInOut" }}
         />
