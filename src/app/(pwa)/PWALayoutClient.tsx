@@ -6,6 +6,7 @@ import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { useUserSafe } from "@/hooks/use-clerk-safe";
+import { usePwaStore } from "@/stores/pwa-store";
 
 const HAS_CLERK = !!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
 
@@ -52,7 +53,8 @@ export default function PWALayout({
   const pathname = usePathname();
   const todayDate = useTodayDate();
   const { user, isLoaded: clerkLoaded } = useUserSafe();
-  const firstName = clerkLoaded ? user?.firstName : null;
+  const userName = usePwaStore((s) => s.userName);
+  const firstName = userName || (clerkLoaded ? user?.firstName : null);
 
   useEffect(() => {
     registerServiceWorker();

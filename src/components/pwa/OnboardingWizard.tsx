@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { useUserSafe as useUser } from "@/hooks/use-clerk-safe";
 import { motion, AnimatePresence } from "framer-motion";
 import { usePwaStore } from "@/stores/pwa-store";
 import { CONCERN_OPTIONS, type ConcernOption } from "@/lib/pwa-logic";
@@ -42,16 +41,17 @@ interface OnboardingWizardProps {
 }
 
 export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
-  const { user, isLoaded } = useUser();
-  const firstName = isLoaded && user?.firstName ? user.firstName : "прекрасна";
-
   const setLastPeriodDate = usePwaStore((s) => s.setLastPeriodDate);
   const setCycleLength = usePwaStore((s) => s.setCycleLength);
   const setPeriodDuration = usePwaStore((s) => s.setPeriodDuration);
+  const setUserName = usePwaStore((s) => s.setUserName);
   const setAgeRange = usePwaStore((s) => s.setAgeRange);
   const setConcerns = usePwaStore((s) => s.setConcerns);
 
   const [step, setStep] = useState(0);
+
+  // Name state (step 0)
+  const [name, setName] = useState("");
 
   // Personal info state (step 2)
   const [selectedAge, setSelectedAge] = useState("");
@@ -73,15 +73,18 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
     );
   }, []);
 
+  const displayName = name.trim() || "прекрасна";
+
   const finish = useCallback(() => {
     haptic.success();
+    if (name.trim()) setUserName(name.trim());
     if (selectedAge) setAgeRange(selectedAge);
     if (selectedConcerns.length > 0) setConcerns(selectedConcerns);
     if (periodDate) setLastPeriodDate(periodDate);
     setCycleLength(cycleLen);
     setPeriodDuration(periodDur);
     onComplete();
-  }, [selectedAge, selectedConcerns, periodDate, cycleLen, periodDur, setAgeRange, setConcerns, setLastPeriodDate, setCycleLength, setPeriodDuration, onComplete]);
+  }, [name, selectedAge, selectedConcerns, periodDate, cycleLen, periodDur, setUserName, setAgeRange, setConcerns, setLastPeriodDate, setCycleLength, setPeriodDuration, onComplete]);
 
   return (
     <div className="relative w-full min-h-[55vh] flex flex-col items-center justify-center">
@@ -132,15 +135,30 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
               </div>
             </motion.div>
             <motion.h1 variants={itemVariants} className="font-display text-3xl font-bold text-brand-forest mb-3">
-              Здравей, {firstName}.
+              Здравей, прекрасна.
             </motion.h1>
-            <motion.p variants={itemVariants} className="text-stone-600 mb-8 leading-relaxed">
+            <motion.p variants={itemVariants} className="text-stone-600 mb-6 leading-relaxed">
               Добре дошла в твоето пространство за баланс. Нека настроим твоя дневник.
             </motion.p>
+            <motion.div variants={itemVariants} className="mb-6">
+              <label htmlFor="user-name" className="block text-sm font-semibold text-stone-700 mb-2">
+                Как да те наричам?
+              </label>
+              <input
+                id="user-name"
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Твоето име"
+                autoComplete="given-name"
+                className="w-full py-3 px-4 border border-white/60 rounded-xl text-stone-700 bg-white/70 backdrop-blur-sm focus:ring-2 focus:ring-brand-forest/30 focus:border-brand-forest outline-none transition-all text-center text-lg"
+              />
+            </motion.div>
             <motion.button
               variants={itemVariants}
               onClick={next}
-              className="w-full py-4 rounded-2xl bg-brand-forest text-white font-semibold text-lg shadow-lg shadow-brand-forest/20 active:scale-[0.98] transition-all relative overflow-hidden group"
+              disabled={!name.trim()}
+              className="w-full py-4 rounded-2xl bg-brand-forest text-white font-semibold text-lg shadow-lg shadow-brand-forest/20 active:scale-[0.98] transition-all relative overflow-hidden group disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <div className="absolute inset-0 bg-white/20 w-full h-full transform -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
               Започни
@@ -411,7 +429,7 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
             </motion.div>
 
             <motion.h2 variants={itemVariants} className="font-display text-2xl font-bold text-brand-forest mb-3 relative z-10">
-              Всичко е готово, {firstName}.
+              Всичко е готово, {displayName}.
             </motion.h2>
 
             <motion.p variants={itemVariants} className="text-stone-600 mb-8 leading-relaxed text-sm relative z-10">

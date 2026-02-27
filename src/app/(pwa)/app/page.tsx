@@ -98,7 +98,8 @@ export default function AppDashboard() {
     );
   }
 
-  const firstName = clerkLoaded ? (user?.firstName || "там") : null;
+  const userName = usePwaStore((s) => s.userName);
+  const firstName = userName || (clerkLoaded ? (user?.firstName || "там") : null);
   const checkIn = getTodayCheckIn();
   const glowScore = getTodayGlowScore();
   const cycleDay = getCurrentCycleDay();

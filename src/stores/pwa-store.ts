@@ -30,6 +30,7 @@ interface PwaState {
   hasSeenTour: boolean;
   pushEnabled: boolean;
   iosInstallDismissed: boolean;
+  userName: string | null;
   ageRange: string | null;
   concerns: ConcernOption[];
   // Transient (not persisted)
@@ -46,6 +47,7 @@ interface PwaActions {
   setLastPeriodDate: (date: string) => void;
   setCycleLength: (length: number) => void;
   setPeriodDuration: (days: number) => void;
+  setUserName: (name: string) => void;
   setAgeRange: (range: string) => void;
   setConcerns: (concerns: ConcernOption[]) => void;
   markTourSeen: () => void;
@@ -77,6 +79,7 @@ export const usePwaStore = create<PwaStore>()(
       hasSeenTour: false,
       pushEnabled: false,
       iosInstallDismissed: false,
+      userName: null,
       ageRange: null,
       concerns: [],
       isBreathingOpen: false,
@@ -127,6 +130,7 @@ export const usePwaStore = create<PwaStore>()(
       setLastPeriodDate: (date) => set({ lastPeriodDate: date }),
       setCycleLength: (length) => set({ cycleLength: length }),
       setPeriodDuration: (days) => set({ periodDuration: days }),
+      setUserName: (name) => set({ userName: name }),
       setAgeRange: (range) => set({ ageRange: range }),
       setConcerns: (concerns) => set({ concerns }),
       openBreathing: () => set({ isBreathingOpen: true }),
@@ -171,6 +175,7 @@ export const usePwaStore = create<PwaStore>()(
         hasSeenTour: state.hasSeenTour,
         pushEnabled: state.pushEnabled,
         iosInstallDismissed: state.iosInstallDismissed,
+        userName: state.userName,
         ageRange: state.ageRange,
         concerns: state.concerns,
         // isBreathingOpen intentionally excluded
