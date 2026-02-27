@@ -7,7 +7,7 @@ import { usePwaStore } from "@/stores/pwa-store";
 import { SYMPTOM_OPTIONS, type SymptomOption } from "@/lib/pwa-logic";
 import { trackPwaEvent } from "@/lib/pwa-analytics";
 import {
-  Check, X, Plus,
+  Check, X, Plus, Droplets,
   CloudMoon, Moon, Meh, Smile, Sparkles,
   AlertCircle,
 } from "lucide-react";
@@ -144,7 +144,7 @@ export default function CheckInPage() {
           </h2>
           <div className="glass p-4 rounded-2xl text-left space-y-1.5 text-sm">
             <p className="text-stone-600">
-              <span className="font-semibold">Score:</span> {existingCheckIn.glowScore}
+              <span className="font-semibold">Резултат:</span> {existingCheckIn.glowScore}
             </p>
             <p className="text-stone-600">
               <span className="font-semibold">Сън:</span> {existingCheckIn.sleep}/10
@@ -322,7 +322,7 @@ export default function CheckInPage() {
                     : "glass border border-stone-200/60"
                 }`}
               >
-                <span className="text-lg">🩸</span>
+                <Droplets className="w-5 h-5 text-pink-400" />
                 <span className="text-sm font-semibold text-brand-forest flex-1 text-left">
                   Цикълът ми започна днес
                 </span>

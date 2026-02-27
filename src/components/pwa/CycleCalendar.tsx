@@ -597,7 +597,7 @@ export default function CycleCalendar() {
         </motion.div>
       </div>
 
-      {/* ── Glow Insight Card ── */}
+      {/* ── Дневен съвет Card ── */}
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
@@ -606,7 +606,7 @@ export default function CycleCalendar() {
       >
         <div className="flex items-center gap-2 mb-2">
           <Sparkles className="w-5 h-5" />
-          <span className="text-sm font-semibold uppercase tracking-wide">Glow Insight</span>
+          <span className="text-sm font-semibold uppercase tracking-wide">Дневен съвет</span>
         </div>
         {todayScore !== null ? (
           <>

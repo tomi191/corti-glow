@@ -52,7 +52,7 @@ export default function GlowRing({ score, hasCheckIn }: GlowRingProps) {
         viewBox={`0 0 ${SIZE} ${SIZE}`}
         role="img"
         aria-label={
-          hasCheckIn ? `Glow Score: ${score}` : "Натисни за запис"
+          hasCheckIn ? `Резултат: ${score}` : "Натисни за запис"
         }
       >
         <defs>
@@ -166,7 +166,7 @@ export default function GlowRing({ score, hasCheckIn }: GlowRingProps) {
               {displayed}
             </motion.span>
             <span className="text-xs font-medium uppercase tracking-widest text-brand-forest/60">
-              Glow Score
+              Сияние
             </span>
           </div>
         ) : (

@@ -44,7 +44,7 @@ export default function IOSInstallBanner() {
             <Share className="w-4 h-4 text-brand-forest" />
           </div>
           <p className="text-xs text-stone-600">
-            Натисни <span className="font-semibold">Share</span> в Safari
+            Натисни <span className="font-semibold">Сподели</span> в Safari
           </p>
         </div>
 

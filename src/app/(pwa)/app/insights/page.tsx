@@ -425,7 +425,7 @@ export default function InsightsPage() {
               <div className="flex items-start justify-between mb-3">
                 <div>
                   <p className="text-[10px] font-bold uppercase tracking-widest opacity-50 mb-1">
-                    Glow Score - 7 дни
+                    Сияние — 7 дни
                   </p>
                   <div className="flex items-baseline gap-2">
                     <span className="text-4xl font-display font-bold">

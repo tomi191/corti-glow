@@ -274,14 +274,14 @@ export default function ProfilePage() {
       iconColor: "text-brand-forest",
     },
     {
-      label: "Текущ стрийк",
+      label: "Поредни дни",
       value: `${stats.streak} дни`,
       icon: Flame,
       iconBg: "bg-orange-50",
       iconColor: "text-orange-500",
     },
     {
-      label: "Среден Glow",
+      label: "Среден резултат",
       value: stats.avgGlow > 0 ? stats.avgGlow : "—",
       icon: TrendingUp,
       iconBg: "bg-brand-blush/30",
@@ -343,7 +343,7 @@ export default function ProfilePage() {
             <div className="flex items-center gap-1 mt-1">
               <Flame className="w-3.5 h-3.5 text-orange-500" />
               <span className="text-xs font-semibold text-orange-600">
-                {stats.streak} дни стрийк
+                {stats.streak} поредни дни
               </span>
             </div>
           )}

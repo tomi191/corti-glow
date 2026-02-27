@@ -120,7 +120,7 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
               Здравей, {firstName}.
             </motion.h1>
             <motion.p variants={itemVariants} className="text-stone-600 mb-8 leading-relaxed">
-              Добре дошла в твоето пространство за баланс. Нека настроим твоя Glow тракер.
+              Добре дошла в твоето пространство за баланс. Нека настроим твоя дневник.
             </motion.p>
             <motion.button
               variants={itemVariants}
@@ -182,15 +182,16 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
                 <Calendar className="w-7 h-7 text-pink-500" />
               </div>
               <h2 className="font-display text-2xl font-bold text-brand-forest">Твоят вътрешен часовник</h2>
-              <p className="text-sm text-stone-500 mt-1">Не е перфектно — но помага да разбереш в коя фаза си</p>
+              <p className="text-sm text-stone-500 mt-1">За да знаеш в коя фаза си и какво е нормално за теб</p>
             </motion.div>
 
             <motion.div variants={itemVariants} className="space-y-5">
               {/* Last period date */}
               <div className="space-y-2">
                 <label htmlFor="period-date" className="block text-sm font-semibold text-stone-700">
-                  Кога започна последният ти период?
+                  Кога последно ти дойде?
                 </label>
+                <p className="text-xs text-stone-400">Първият ден — не е нужно да е точно</p>
                 <input
                   id="period-date"
                   type="date"
@@ -204,8 +205,9 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
               {/* Cycle length */}
               <div className="space-y-2">
                 <label htmlFor="cycle-length" className="block text-sm font-semibold text-stone-700">
-                  Дължина на цикъла: <span className="text-brand-forest">{cycleLen} дни</span>
+                  На колко дни ти идва: <span className="text-brand-forest">{cycleLen} дни</span>
                 </label>
+                <p className="text-xs text-stone-400">От първия ден до следващия път</p>
                 <input
                   id="cycle-length"
                   type="range"
@@ -225,7 +227,7 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
               {/* Period duration */}
               <div className="space-y-2">
                 <label htmlFor="period-duration" className="block text-sm font-semibold text-stone-700">
-                  Продължителност: <span className="text-brand-forest">{periodDur} дни</span>
+                  Колко време продължава: <span className="text-brand-forest">{periodDur} дни</span>
                 </label>
                 <input
                   id="period-duration"
@@ -268,9 +270,54 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
             <div className="absolute inset-0 bg-gradient-to-tr from-brand-forest/5 to-transparent pointer-events-none" />
 
             <motion.div variants={itemVariants} className="flex justify-center mb-6">
-              <div className="w-16 h-16 rounded-full bg-brand-forest/10 flex items-center justify-center text-brand-forest relative">
-                <div className="absolute inset-0 rounded-full border border-brand-forest/20 animate-ping" />
-                <Sparkles className="w-8 h-8" />
+              <div className="w-24 h-24 relative">
+                <svg viewBox="0 0 96 96" fill="none" className="w-full h-full">
+                  {/* Sage glow behind */}
+                  <motion.circle
+                    cx="48" cy="48" r="44"
+                    fill="#B2D8C6"
+                    initial={{ opacity: 0, scale: 0.6 }}
+                    animate={{ opacity: 0.2, scale: 1 }}
+                    transition={{ duration: 0.5 }}
+                  />
+                  {/* Ring draws itself */}
+                  <motion.circle
+                    cx="48" cy="48" r="44"
+                    stroke="#2D4A3E"
+                    strokeWidth="2.5"
+                    fill="none"
+                    strokeLinecap="round"
+                    initial={{ pathLength: 0 }}
+                    animate={{ pathLength: 1 }}
+                    transition={{ duration: 0.8, ease: "easeInOut", delay: 0.2 }}
+                  />
+                  {/* Checkmark draws after ring */}
+                  <motion.path
+                    d="M30 48 L42 60 L66 36"
+                    stroke="#2D4A3E"
+                    strokeWidth="3.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    fill="none"
+                    initial={{ pathLength: 0 }}
+                    animate={{ pathLength: 1 }}
+                    transition={{ duration: 0.4, delay: 0.9, ease: "easeOut" }}
+                  />
+                </svg>
+                {/* Celebration dots */}
+                {[0, 60, 120, 180, 240, 300].map((angle, i) => (
+                  <motion.div
+                    key={angle}
+                    className="absolute w-1.5 h-1.5 rounded-full bg-brand-sage"
+                    style={{
+                      top: `${50 - 56 * Math.cos((angle * Math.PI) / 180)}%`,
+                      left: `${50 + 56 * Math.sin((angle * Math.PI) / 180)}%`,
+                    }}
+                    initial={{ scale: 0, opacity: 0 }}
+                    animate={{ scale: [0, 1.5, 0], opacity: [0, 1, 0] }}
+                    transition={{ duration: 0.6, delay: 1.2 + i * 0.06 }}
+                  />
+                ))}
               </div>
             </motion.div>
 
@@ -279,7 +326,7 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
             </motion.h2>
 
             <motion.p variants={itemVariants} className="text-stone-600 mb-8 leading-relaxed text-sm relative z-10">
-              Твоят дигитален ритуал започва. Направи първия си запис и ще видиш какво е нормално за теб днес.
+              Направи първия си запис и ще видиш какво е нормално за теб днес.
             </motion.p>
 
             <motion.button
