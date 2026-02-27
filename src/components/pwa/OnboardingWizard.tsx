@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { useUser } from "@clerk/nextjs";
+import { useUserSafe as useUser } from "@/hooks/use-clerk-safe";
 import { motion, AnimatePresence } from "framer-motion";
 import { usePwaStore } from "@/stores/pwa-store";
 import { haptic } from "@/lib/haptics";
