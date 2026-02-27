@@ -1,15 +1,28 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { usePwaStore } from "@/stores/pwa-store";
 import { CONCERN_OPTIONS, type ConcernOption } from "@/lib/pwa-logic";
 import { haptic } from "@/lib/haptics";
-import { Sparkles, Moon, Leaf, Calendar, ArrowRight, User } from "lucide-react";
+import { Sparkles, Moon, Leaf, Calendar, ArrowRight, User, Check } from "lucide-react";
 
 const TOTAL_STEPS = 5;
 
 const AGE_RANGES = ["18–24", "25–30", "31–35", "36–40", "41+"];
+
+// ─── Chip style tokens ───────────────────────────
+// Selected: brand-sage wash with forest text — on-brand, soft, no red clash
+const CHIP_SELECTED =
+  "bg-brand-sage/40 text-brand-forest border border-brand-sage/60 shadow-sm";
+const CHIP_DEFAULT =
+  "bg-white/70 text-stone-500 border border-stone-200/60 hover:border-brand-sage/40 active:scale-[0.97]";
+
+// CTA active: solid forest with sage glow — grounded, elegant
+const CTA_ACTIVE =
+  "bg-brand-forest text-white shadow-lg shadow-brand-forest/25";
+const CTA_INACTIVE =
+  "bg-stone-100 text-stone-300 border border-stone-200";
 
 // ─── Framer Motion Variants ───
 const containerVariants = {
@@ -161,10 +174,24 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
               variants={itemVariants}
               onClick={next}
               disabled={!name.trim()}
-              className="w-full py-4 rounded-2xl bg-brand-forest text-white font-semibold text-lg shadow-lg shadow-brand-forest/20 active:scale-[0.98] transition-all relative overflow-hidden group disabled:opacity-50 disabled:cursor-not-allowed"
+              initial={false}
+              animate={name.trim() ? { scale: [0.96, 1] } : {}}
+              transition={{ type: "spring", stiffness: 400, damping: 15 }}
+              className={`w-full py-4 rounded-2xl font-semibold text-lg active:scale-[0.98] transition-all duration-500 relative overflow-hidden ${
+                name.trim()
+                  ? CTA_ACTIVE
+                  : CTA_INACTIVE
+              }`}
             >
-              <div className="absolute inset-0 bg-white/20 w-full h-full transform -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
-              Започни
+              {name.trim() && (
+                <motion.div
+                  className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
+                  initial={{ x: "-100%" }}
+                  animate={{ x: "200%" }}
+                  transition={{ duration: 1, delay: 0.2, ease: "easeInOut" }}
+                />
+              )}
+              <span className="relative z-10">Започни</span>
             </motion.button>
           </motion.div>
         )}
@@ -232,8 +259,8 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
                       onClick={() => { setSelectedAge(range); haptic.light(); }}
                       className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-all ${
                         selectedAge === range
-                          ? "bg-brand-forest text-white shadow-md"
-                          : "bg-white/70 text-stone-600 border border-stone-200/60 active:scale-95"
+                          ? CHIP_SELECTED
+                          : CHIP_DEFAULT
                       }`}
                     >
                       {range}
@@ -255,8 +282,8 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
                       onClick={() => { toggleConcern(key); haptic.light(); }}
                       className={`px-3.5 py-2 rounded-xl text-sm font-medium transition-all ${
                         selectedConcerns.includes(key)
-                          ? "bg-brand-forest text-white shadow-md"
-                          : "bg-white/70 text-stone-600 border border-stone-200/60 active:scale-95"
+                          ? CHIP_SELECTED
+                          : CHIP_DEFAULT
                       }`}
                     >
                       {label}
@@ -270,7 +297,7 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
                 <label className="block text-sm font-semibold text-stone-700">
                   Използваш ли хормонална контрацепция?
                 </label>
-                <p className="text-xs text-stone-400">Хапчета, спирала, пластир — влияе на фазите</p>
+                <p className="text-xs text-stone-400">Влияе на хормоните и фазите — съветите ще са по-точни</p>
                 <div className="flex gap-2">
                   {([
                     { value: "no", label: "Не" },
@@ -282,8 +309,8 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
                       onClick={() => { setSelectedContraception(value); haptic.light(); }}
                       className={`flex-1 py-2.5 rounded-xl text-sm font-medium transition-all ${
                         selectedContraception === value
-                          ? "bg-brand-forest text-white shadow-md"
-                          : "bg-white/70 text-stone-600 border border-stone-200/60 active:scale-95"
+                          ? CHIP_SELECTED
+                          : CHIP_DEFAULT
                       }`}
                     >
                       {label}
@@ -293,14 +320,43 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
               </div>
             </motion.div>
 
-            <motion.button
-              variants={itemVariants}
-              onClick={next}
-              disabled={!selectedAge}
-              className="w-full mt-6 py-4 rounded-2xl bg-brand-forest text-white font-semibold text-lg shadow-lg shadow-brand-forest/20 active:scale-[0.98] transition-all flex justify-center items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Продължи <ArrowRight className="w-5 h-5" />
-            </motion.button>
+            {/* Liquid-fill CTA — fills as questions are answered */}
+            {(() => {
+              const answered = [!!selectedAge, selectedConcerns.length > 0, !!selectedContraception].filter(Boolean).length;
+              const fillPct = Math.round((answered / 3) * 100);
+              const isFull = fillPct === 100;
+              return (
+                <motion.button
+                  variants={itemVariants}
+                  onClick={next}
+                  disabled={!selectedAge}
+                  className="w-full mt-6 py-4 rounded-2xl font-semibold text-lg active:scale-[0.98] relative overflow-hidden bg-stone-100 border border-stone-200 transition-shadow duration-500"
+                  style={{ boxShadow: isFull ? "0 10px 25px -5px rgba(45,74,62,0.3)" : "none" }}
+                >
+                  {/* Liquid fill background */}
+                  <motion.div
+                    className="absolute inset-y-0 left-0 bg-gradient-to-r from-brand-sage/60 via-brand-sage to-brand-forest rounded-2xl"
+                    initial={{ width: "0%" }}
+                    animate={{ width: `${fillPct}%` }}
+                    transition={{ type: "spring", stiffness: 80, damping: 18 }}
+                  />
+                  {/* Shimmer on full */}
+                  {isFull && (
+                    <motion.div
+                      className="absolute inset-0 bg-gradient-to-r from-transparent via-white/25 to-transparent"
+                      initial={{ x: "-100%" }}
+                      animate={{ x: "200%" }}
+                      transition={{ duration: 0.8, delay: 0.3, ease: "easeInOut" }}
+                    />
+                  )}
+                  <span className={`relative z-10 flex items-center justify-center gap-2 transition-colors duration-300 ${
+                    isFull ? "text-white" : fillPct > 0 ? "text-brand-forest" : "text-stone-300"
+                  }`}>
+                    Продължи <ArrowRight className="w-5 h-5" />
+                  </span>
+                </motion.button>
+              );
+            })()}
           </motion.div>
         )}
 
@@ -387,9 +443,26 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
               variants={itemVariants}
               onClick={next}
               disabled={!periodDate}
-              className="w-full mt-6 py-4 rounded-2xl bg-brand-forest text-white font-semibold text-lg shadow-lg shadow-brand-forest/20 active:scale-[0.98] transition-all flex justify-center items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              initial={false}
+              animate={periodDate ? { scale: [0.96, 1] } : {}}
+              transition={{ type: "spring", stiffness: 400, damping: 15 }}
+              className={`w-full mt-6 py-4 rounded-2xl font-semibold text-lg active:scale-[0.98] transition-all duration-500 flex justify-center items-center gap-2 relative overflow-hidden ${
+                periodDate
+                  ? CTA_ACTIVE
+                  : CTA_INACTIVE
+              }`}
             >
-              Продължи <ArrowRight className="w-5 h-5" />
+              {periodDate && (
+                <motion.div
+                  className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
+                  initial={{ x: "-100%" }}
+                  animate={{ x: "200%" }}
+                  transition={{ duration: 1, delay: 0.2, ease: "easeInOut" }}
+                />
+              )}
+              <span className="relative z-10 flex items-center gap-2">
+                Продължи <ArrowRight className="w-5 h-5" />
+              </span>
             </motion.button>
           </motion.div>
         )}
@@ -469,9 +542,15 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
             <motion.button
               variants={itemVariants}
               onClick={finish}
-              className="w-full py-4 rounded-2xl bg-brand-forest text-white font-semibold text-lg shadow-lg shadow-brand-forest/20 active:scale-[0.98] transition-all relative z-10"
+              className={`w-full py-4 rounded-2xl font-semibold text-lg active:scale-[0.98] transition-all relative z-10 overflow-hidden ${CTA_ACTIVE}`}
             >
-              Влез в дневника си
+              <motion.div
+                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
+                initial={{ x: "-100%" }}
+                animate={{ x: "200%" }}
+                transition={{ duration: 1, delay: 0.5, ease: "easeInOut" }}
+              />
+              <span className="relative z-10">Влез в дневника си</span>
             </motion.button>
           </motion.div>
         )}
