@@ -40,9 +40,9 @@ const ACTION_ICONS: Record<DailyAction["type"], { icon: LucideIcon; bg: string; 
 
 const PHASE_LABELS: Record<string, string> = {
   menstrual: "Период",
-  follicular: "След период",
+  follicular: "Подем",
   ovulation: "Овулация",
-  luteal: "Преди период",
+  luteal: "Спад",
 };
 
 export default function AppDashboard() {
@@ -169,9 +169,11 @@ export default function AppDashboard() {
             <Heart className="w-5 h-5" />
           </div>
           <div>
-            <span className="block text-sm font-semibold">
-              {checkIn ? `${checkIn.sleep}/10` : "\u2014"}
-            </span>
+            {checkIn ? (
+              <span className="block text-sm font-semibold">{checkIn.sleep}/10</span>
+            ) : (
+              <span className="block text-xs text-stone-400">Попълни днес</span>
+            )}
             <span className="text-[10px] uppercase text-stone-400 font-bold">Сън</span>
           </div>
         </div>
@@ -180,9 +182,11 @@ export default function AppDashboard() {
             <Leaf className="w-5 h-5" />
           </div>
           <div>
-            <span className="block text-sm font-semibold">
-              {checkIn ? `${Math.max(0, 100 - checkIn.stress * 10)}%` : "\u2014"}
-            </span>
+            {checkIn ? (
+              <span className="block text-sm font-semibold">{Math.max(0, 100 - checkIn.stress * 10)}%</span>
+            ) : (
+              <span className="block text-xs text-stone-400">Попълни днес</span>
+            )}
             <span className="text-[10px] uppercase text-stone-400 font-bold">Баланс</span>
           </div>
         </div>

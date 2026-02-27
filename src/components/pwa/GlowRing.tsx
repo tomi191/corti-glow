@@ -170,19 +170,17 @@ export default function GlowRing({ score, hasCheckIn }: GlowRingProps) {
             </span>
           </div>
         ) : (
-          <motion.div
-            className="text-center"
-            animate={{ scale: [1, 1.03, 1] }}
-            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+          <div
+            className="flex flex-col items-center justify-center w-[150px] h-[150px] rounded-full bg-white/60 border-2 border-brand-sage/30 shadow-sm"
           >
-            <Sparkles className="w-7 h-7 text-brand-sage mx-auto mb-1" />
-            <span className="block text-base font-bold text-brand-forest">
+            <Sparkles className="w-8 h-8 text-brand-sage mb-2" />
+            <span className="block text-lg font-bold text-brand-forest">
               Как си?
             </span>
-            <span className="text-[10px] text-brand-forest/50">
+            <span className="text-xs text-brand-forest/50">
               Натисни тук
             </span>
-          </motion.div>
+          </div>
         )}
       </div>
     </div>
