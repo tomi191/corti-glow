@@ -217,7 +217,7 @@ export const emailTemplates = {
             <td style="padding: 40px 40px 0;">
               <h2 style="color: #2D4A3E; font-size: 24px; margin: 0 0 16px;">Ти си в списъка! 🌿</h2>
               <p style="color: #666; margin: 0 0 24px;">
-                Радваме се, че си една от първите, които ще опитат Corty GLOW.
+                Радваме се, че си една от първите, които ще опитат Corti-Glow.
                 Докато подготвяме първата партида, имаме нещо специално за теб:
               </p>
             </td>
@@ -248,7 +248,7 @@ export const emailTemplates = {
                   <td style="padding: 0 0 0 20px;">
                     <p style="color: #2D4A3E; font-weight: 600; margin: 0 0 8px; font-size: 16px;">Защо кортизолът те &ldquo;подува&rdquo;?</p>
                     <p style="color: #666; margin: 0; font-size: 14px;">
-                      Когато стресът е постоянен, кортизолът казва на тялото ти да трупа мазнини в корема и да задържа вода. Corty GLOW е създаден точно за това &mdash; с Ashwagandha, Myo-Inositol и Магнезий, които връщат баланса.
+                      Когато стресът е постоянен, кортизолът казва на тялото ти да трупа мазнини в корема и да задържа вода. Corti-Glow е създаден точно за това &mdash; с Ashwagandha, Myo-Inositol и Магнезий, които връщат баланса.
                     </p>
                   </td>
                 </tr>

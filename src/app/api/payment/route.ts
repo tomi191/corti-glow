@@ -6,6 +6,7 @@ import { z } from "zod";
 import type { CartItem } from "@/types";
 import { createRateLimiter, getClientIp } from "@/lib/rate-limit";
 import { sendOrderConfirmationEmail } from "@/lib/email";
+import { SHIPPING_THRESHOLD, IS_PRELAUNCH } from "@/lib/constants";
 
 // 10 attempts per 5 minutes
 const limiter = createRateLimiter(10, 5 * 60 * 1000);
@@ -32,15 +33,23 @@ const paymentSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
+    // Block orders during prelaunch
+    if (IS_PRELAUNCH) {
+      return NextResponse.json(
+        { error: "Магазинът все още не е отворен. Запиши се за ранен достъп!" },
+        { status: 403 }
+      );
+    }
+
     // Rate limiting
     const ip = getClientIp(request);
+    limiter.recordAttempt(ip);
     if (limiter.isLimited(ip)) {
       return NextResponse.json(
         { error: "Твърде много опити. Опитайте отново по-късно." },
         { status: 429 }
       );
     }
-    limiter.recordAttempt(ip);
 
     const body = await request.json();
 
@@ -77,7 +86,7 @@ export async function POST(request: NextRequest) {
       const { data } = await supabase
         .from("products")
         .select("*")
-        .eq("id", item.productId)
+        .eq("slug", item.productId)
         .single();
 
       if (!data) {
@@ -130,7 +139,7 @@ export async function POST(request: NextRequest) {
     }
 
     // 3. Shipping Validation (Simple Rule: >= 80 EUR = Free)
-    const SHIPPING_THRESHOLD = 80;
+    // SHIPPING_THRESHOLD imported from @/lib/constants
     const isFreeShipping = calculatedSubtotal >= SHIPPING_THRESHOLD;
     const verifiedShippingPrice = isFreeShipping ? 0 : Number(clientShippingPrice);
 

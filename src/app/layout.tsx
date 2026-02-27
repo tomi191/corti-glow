@@ -121,30 +121,38 @@ const websiteJsonLd = {
   },
 };
 
+const clerkAppearance = {
+  cssLayerName: "clerk" as const,
+  variables: {
+    colorPrimary: "#2D4A3E",
+    colorTextOnPrimaryBackground: "#fff",
+    colorBackground: "#fff",
+    colorInputBackground: "#fafaf9",
+    borderRadius: "0.75rem",
+    fontFamily: "var(--font-plus-jakarta), sans-serif",
+  },
+};
+
+function ClerkWrapper({ children }: { children: React.ReactNode }) {
+  // Skip ClerkProvider when publishable key is missing (e.g. during static build)
+  if (!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY) {
+    return <>{children}</>;
+  }
+  return <ClerkProvider appearance={clerkAppearance}>{children}</ClerkProvider>;
+}
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider
-      appearance={{
-        cssLayerName: "clerk",
-        variables: {
-          colorPrimary: "#2D4A3E",
-          colorTextOnPrimaryBackground: "#fff",
-          colorBackground: "#fff",
-          colorInputBackground: "#fafaf9",
-          borderRadius: "0.75rem",
-          fontFamily: "var(--font-plus-jakarta), sans-serif",
-        },
-      }}
-    >
+    <ClerkWrapper>
       <html lang="bg">
         <head>
           <link rel="manifest" href="/manifest.json" />
           <meta name="theme-color" content="#2D4A3E" />
-          <meta name="apple-mobile-web-app-capable" content="yes" />
+          <meta name="mobile-web-app-capable" content="yes" />
           <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
           <script
             type="application/ld+json"
@@ -163,6 +171,6 @@ export default function RootLayout({
           <CookieConsent />
         </body>
       </html>
-    </ClerkProvider>
+    </ClerkWrapper>
   );
 }

@@ -264,7 +264,7 @@ const PHASE_RECOMMENDATIONS: Record<CyclePhase, PhaseRecommendation> = {
   },
   ovulation: {
     benefit: "Мио-инозитолът помага за хормоналния баланс, Бромелаинът — за възпалението",
-    ingredients: ["Мио-инозитол (2000mg)", "Бромелаин (500mg)"],
+    ingredients: ["Мио-инозитол (2000mg)", "Бромелаин (100mg)"],
   },
   luteal: {
     benefit: "KSM-66 Ашваганда е клинично доказана за намаляване на кортизола при стрес",

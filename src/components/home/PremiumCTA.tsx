@@ -158,6 +158,7 @@ export function PremiumCTA() {
               src="/images/lifestyle-sofa-mocktail.webp"
               alt="Woman enjoying Corti-Glow"
               fill
+              sizes="256px"
               className="object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-[#2D4A3E] via-transparent to-transparent" />
@@ -187,6 +188,7 @@ export function PremiumCTA() {
               src="/images/lifestyle-morning-stretch.webp"
               alt="Morning wellness routine"
               fill
+              sizes="256px"
               className="object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-[#2D4A3E] via-transparent to-transparent" />

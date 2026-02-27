@@ -16,13 +16,13 @@ export async function POST(request: NextRequest) {
   try {
     // Rate limiting
     const ip = getClientIp(request);
+    limiter.recordAttempt(ip);
     if (limiter.isLimited(ip)) {
       return NextResponse.json(
         { error: "Твърде много опити. Опитайте отново по-късно." },
         { status: 429 }
       );
     }
-    limiter.recordAttempt(ip);
 
     const body = await request.json();
 

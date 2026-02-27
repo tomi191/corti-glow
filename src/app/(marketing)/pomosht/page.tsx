@@ -27,7 +27,7 @@ const contactMethods = [
   {
     icon: Phone,
     title: "Телефон",
-    value: "+359 888 123 456",
+    value: COMPANY.phone,
     description: "Пон-Пет, 9:00 - 18:00",
   },
 ];

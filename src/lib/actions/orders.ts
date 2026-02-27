@@ -321,7 +321,7 @@ export async function checkStock(
     const { data: product, error } = await supabase
       .from("products")
       .select("stock, track_inventory")
-      .eq("id", productId)
+      .eq("slug", productId)
       .single() as { data: { stock: number; track_inventory: boolean } | null; error: any };
 
     if (error || !product) {
@@ -373,9 +373,9 @@ export async function deductStock(
     // First get current stock
     const { data: product, error: fetchError } = await supabase
       .from("products")
-      .select("stock, track_inventory")
-      .eq("id", productId)
-      .single() as { data: { stock: number; track_inventory: boolean } | null; error: any };
+      .select("id, stock, track_inventory")
+      .eq("slug", productId)
+      .single() as { data: { id: string; stock: number; track_inventory: boolean } | null; error: any };
 
     if (fetchError || !product) {
       console.error(`Failed to fetch product ${productId}:`, fetchError);
@@ -392,7 +392,7 @@ export async function deductStock(
     const { error: updateError } = await (supabase
       .from("products") as any)
       .update({ stock: newStock })
-      .eq("id", productId);
+      .eq("id", product.id);
 
     if (updateError) {
       console.error(`Failed to update stock for ${productId}:`, updateError);
@@ -422,9 +422,9 @@ export async function restoreStock(
   for (const [productId, quantity] of productQuantities) {
     const { data: product, error: fetchError } = await supabase
       .from("products")
-      .select("stock, track_inventory")
-      .eq("id", productId)
-      .single() as { data: { stock: number; track_inventory: boolean } | null; error: any };
+      .select("id, stock, track_inventory")
+      .eq("slug", productId)
+      .single() as { data: { id: string; stock: number; track_inventory: boolean } | null; error: any };
 
     if (fetchError || !product) {
       console.error(`Failed to fetch product ${productId}:`, fetchError);
@@ -440,7 +440,7 @@ export async function restoreStock(
     const { error: updateError } = await (supabase
       .from("products") as any)
       .update({ stock: newStock })
-      .eq("id", productId);
+      .eq("id", product.id);
 
     if (updateError) {
       console.error(`Failed to restore stock for ${productId}:`, updateError);

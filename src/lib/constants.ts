@@ -27,7 +27,8 @@ export const COMPANY = {
   name: '"Лура Лаб" ЕООД',
   address: 'гр. София, бул. "Витоша" 10',
   email: "contact@luralab.eu",
-  eik: "207712345",
+  phone: "+359 88 XXX XXXX", // TODO: Replace with real phone number
+  eik: "207712345", // TODO: Replace with real ЕИК
 } as const;
 
 // Social Links

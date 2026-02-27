@@ -202,9 +202,9 @@ export function CheckoutForm() {
   };
 
   const handlePaymentSuccess = () => {
+    const { orderNumber } = useCheckoutStore.getState();
     clearCart();
     resetCheckout();
-    const { orderNumber } = useCheckoutStore.getState();
     router.push(`/uspeh?orderNumber=${orderNumber}`);
   };
 

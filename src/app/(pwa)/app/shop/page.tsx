@@ -325,7 +325,7 @@ export default function ShopPage() {
         className="glass rounded-[2rem] p-5 text-center space-y-2"
       >
         <p className="text-sm font-semibold text-brand-forest">
-          Corty GLOW се произвежда в момента
+          Corti-Glow се произвежда в момента
         </p>
         <p className="text-xs text-stone-500 leading-relaxed">
           Запиши се в списъка и бъди първата с <span className="font-bold text-brand-forest">20% отстъпка</span> при старта.

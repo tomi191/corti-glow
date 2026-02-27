@@ -78,7 +78,7 @@ export async function sendWaitlistWelcomeEmail(
     to: email,
     subject: template.subject,
     html: template.html,
-    text: `Ти си в списъка! Радваме се, че си една от първите, които ще опитат Corty GLOW.\n\nИзтегли PDF гайда: ${appUrl}/pdf/3-sutreshni-navika.pdf\n\nКато VIP ще получиш 20% отстъпка при старта.\n\nОпитай LURA App: ${appUrl}/app\n\nС грижа, Екипът на LURA`,
+    text: `Ти си в списъка! Радваме се, че си една от първите, които ще опитат Corti-Glow.\n\nИзтегли PDF гайда: ${appUrl}/pdf/3-sutreshni-navika.pdf\n\nКато VIP ще получиш 20% отстъпка при старта.\n\nОпитай LURA App: ${appUrl}/app\n\nС грижа, Екипът на LURA`,
   });
 }
 

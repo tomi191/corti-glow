@@ -128,6 +128,7 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
                 src={img}
                 alt={`Thumbnail ${idx + 1}`}
                 fill
+                sizes="80px"
                 className="object-cover"
               />
             </button>
@@ -166,6 +167,7 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
                 src={images[currentIndex]}
                 alt={productName}
                 fill
+                sizes="(max-width: 768px) 100vw, 896px"
                 className="object-contain"
               />
             </motion.div>

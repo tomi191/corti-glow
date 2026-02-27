@@ -61,7 +61,7 @@ export function Footer() {
               Влез в Lura Club
             </h4>
             <p className="text-xs text-stone-200 mb-4">
-              Вземи 10% отстъпка за първа поръчка + уелнес съвети.
+              Вземи 20% отстъпка за първа поръчка + уелнес съвети.
             </p>
             <NewsletterForm />
           </div>

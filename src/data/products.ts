@@ -227,7 +227,7 @@ export const demoProducts = [
       {
         symbol: "Br",
         name: "Бромелаин",
-        dosage: "500mg",
+        dosage: "100mg",
         description:
           "Ензим от ананас. Премахва задържаната вода и подпомага храносмилането.",
         color: "#FFD4A3",

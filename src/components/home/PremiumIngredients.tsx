@@ -21,7 +21,7 @@ const ingredients: {
     {
       id: "ashwagandha",
       name: "KSM-66® Ашваганда",
-      dose: "600mg",
+      dose: "300mg",
       icon: Leaf,
       color: "#B2D8C6",
       description: "Златният стандарт в адаптогените. Клинично доказано намалява кортизола с до 27%.",
@@ -65,7 +65,7 @@ const ingredients: {
     {
       id: "bromelain",
       name: "Бромелаин",
-      dose: "500mg",
+      dose: "100mg",
       icon: Cherry,
       color: "#B2D8C6",
       description: "Естествен ензим от ананас. Премахва подуването и подпомага храносмилането.",
