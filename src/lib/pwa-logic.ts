@@ -5,6 +5,7 @@ export type CyclePhase = "menstrual" | "follicular" | "ovulation" | "luteal";
 export interface PhaseInfo {
   name: string; // BG name
   description: string;
+  explanation: string; // plain-language explanation of what this phase IS
   season: string; // metaphor
   iconName: "Snowflake" | "Sprout" | "Sun" | "Leaf";
   colorClass: string; // Tailwind class
@@ -89,6 +90,7 @@ const PHASE_INFO: Record<CyclePhase, PhaseInfo> = {
   menstrual: {
     name: "Менструална фаза",
     description: "Тялото ти обикновено иска повече почивка тези дни",
+    explanation: "Период — тялото ти се нуждае от повече почивка",
     season: "Зима",
     iconName: "Snowflake",
     colorClass: "text-red-400 bg-red-50",
@@ -96,6 +98,7 @@ const PHASE_INFO: Record<CyclePhase, PhaseInfo> = {
   follicular: {
     name: "Фоликуларна фаза",
     description: "Повечето жени усещат повече енергия в тази фаза",
+    explanation: "След период — енергията постепенно се връща",
     season: "Пролет",
     iconName: "Sprout",
     colorClass: "text-emerald-600 bg-emerald-50",
@@ -103,6 +106,7 @@ const PHASE_INFO: Record<CyclePhase, PhaseInfo> = {
   ovulation: {
     name: "Овулация",
     description: "Енергията обикновено е най-висока около тези дни",
+    explanation: "Среда на цикъла — най-енергичните ти дни",
     season: "Лято",
     iconName: "Sun",
     colorClass: "text-amber-500 bg-amber-50",
@@ -110,6 +114,7 @@ const PHASE_INFO: Record<CyclePhase, PhaseInfo> = {
   luteal: {
     name: "Лутеална фаза",
     description: "Нормално е да нямаш толкова сили — не е лентяйство",
+    explanation: "Преди период — тялото забавя темпо",
     season: "Есен",
     iconName: "Leaf",
     colorClass: "text-orange-500 bg-orange-50",
@@ -195,6 +200,23 @@ const TIPS: Record<CyclePhase, [string, string]> = {
 export function getDailyTip(phase: CyclePhase, stressLevel: number): string {
   const [lowStress, highStress] = TIPS[phase];
   return stressLevel >= 6 ? highStress : lowStress;
+}
+
+// ─── Always-visible phase tip (no check-in needed) ───
+
+const DAILY_PHASE_TIPS: Record<CyclePhase, string> = {
+  menstrual:
+    "Не се натоварвай допълнително. Топла храна, почивка и магнезий — тялото ти знае какво иска.",
+  follicular:
+    "Тялото ти обикновено е по-енергично сега. Добър момент за неща, които си отлагала.",
+  ovulation:
+    "Енергията обикновено е на максимум. Ако имаш нещо важно или разговор, който отлагаш — сега е моментът.",
+  luteal:
+    "Ако се чувстваш по-уморена или раздразнителна — не е нещо нередно с теб. Забави темпото и не се обвинявай.",
+};
+
+export function getDailyPhaseTip(phase: CyclePhase): string {
+  return DAILY_PHASE_TIPS[phase];
 }
 
 // ─── Daily Actions ───

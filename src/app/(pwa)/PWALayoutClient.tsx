@@ -31,7 +31,7 @@ function useTodayDate() {
   const [dateStr, setDateStr] = useState("");
   useEffect(() => {
     setDateStr(
-      new Date().toLocaleDateString("bg-BG", { day: "numeric", month: "short" })
+      new Date().toLocaleDateString("bg-BG", { day: "numeric", month: "short", year: "numeric" })
     );
   }, []);
   return dateStr;

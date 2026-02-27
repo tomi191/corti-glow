@@ -1,13 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useUserSafe as useUser } from "@/hooks/use-clerk-safe";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { usePwaStore } from "@/stores/pwa-store";
 import {
-  getGreeting,
   getDailyTip,
+  getDailyPhaseTip,
   getDailyActions,
   type PhaseInfo,
   type DailyAction,
@@ -16,6 +15,7 @@ import {
   Sparkles,
   Heart,
   Leaf,
+  Lightbulb,
   Plus,
   Eye,
   UtensilsCrossed,
@@ -39,14 +39,13 @@ const ACTION_ICONS: Record<DailyAction["type"], { icon: LucideIcon; bg: string; 
 };
 
 const PHASE_LABELS: Record<string, string> = {
-  menstrual: "Менструална",
-  follicular: "Фоликуларна",
+  menstrual: "Период",
+  follicular: "След период",
   ovulation: "Овулация",
-  luteal: "Лутеална",
+  luteal: "Преди период",
 };
 
 export default function AppDashboard() {
-  const { user, isLoaded: clerkLoaded } = useUser();
   const [mounted, setMounted] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [showTour, setShowTour] = useState(false);
@@ -59,7 +58,6 @@ export default function AppDashboard() {
   const lastPeriodDate = usePwaStore((s) => s.lastPeriodDate);
   const cycleLength = usePwaStore((s) => s.cycleLength);
   const hasSeenTour = usePwaStore((s) => s.hasSeenTour);
-  const userName = usePwaStore((s) => s.userName);
 
   useEffect(() => setMounted(true), []);
 
@@ -99,7 +97,6 @@ export default function AppDashboard() {
     );
   }
 
-  const firstName = userName || (clerkLoaded ? (user?.firstName || "там") : null);
   const checkIn = getTodayCheckIn();
   const glowScore = getTodayGlowScore();
   const cycleDay = getCurrentCycleDay();
@@ -116,19 +113,25 @@ export default function AppDashboard() {
         {showTour && <AppTourModal onClose={() => setShowTour(false)} />}
       </AnimatePresence>
 
-      {/* Greeting Header */}
+      {/* Phase Header */}
       <motion.div
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         className="px-1"
       >
-        <h1 className="text-xl font-display font-bold text-brand-forest">
-          {getGreeting()}{firstName ? `, ${firstName}` : ""}!
-        </h1>
-        {hasSetup && (
-          <p className="text-sm text-stone-500 mt-0.5">
-            {PHASE_LABELS[phase]} фаза &middot; Ден {cycleDay}
-          </p>
+        {hasSetup ? (
+          <>
+            <h1 className="text-xl font-display font-bold text-brand-forest">
+              {phaseInfo.name} &middot; Ден {cycleDay}
+            </h1>
+            <p className="text-sm text-stone-500 mt-0.5">
+              {phaseInfo.explanation}
+            </p>
+          </>
+        ) : (
+          <h1 className="text-xl font-display font-bold text-brand-forest">
+            Твоят дневник
+          </h1>
         )}
       </motion.div>
 
@@ -144,13 +147,13 @@ export default function AppDashboard() {
           <GlowRing score={glowScore} hasCheckIn={!!checkIn} />
         </div>
 
-        <div className="space-y-1">
-          <h2 className="text-lg font-semibold text-brand-forest font-display">
-            {phaseInfo.name}
-          </h2>
-          <p className="text-sm text-stone-500">
-            {phaseInfo.description}
-          </p>
+        <div className="w-full max-w-xs bg-brand-forest/5 rounded-2xl p-4">
+          <div className="flex items-start gap-2.5">
+            <Lightbulb className="w-4 h-4 text-brand-forest mt-0.5 flex-shrink-0" />
+            <p className="text-sm text-stone-600 leading-relaxed">
+              {getDailyPhaseTip(phase)}
+            </p>
+          </div>
         </div>
       </motion.section>
 
