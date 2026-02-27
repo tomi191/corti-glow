@@ -2,9 +2,16 @@
 
 import { useEffect } from "react";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { UserButton } from "@clerk/nextjs";
+
+const HAS_CLERK = !!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
+
+// Only load UserButton when Clerk is configured
+const UserButton = HAS_CLERK
+  ? dynamic(() => import("@clerk/nextjs").then((m) => m.UserButton), { ssr: false })
+  : null;
 import {
   Home,
   CalendarDays,
@@ -50,7 +57,7 @@ export default function PWALayout({
         >
           Lura
         </Link>
-        {process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY ? (
+        {UserButton ? (
           <UserButton
             afterSignOutUrl="/"
             appearance={{
@@ -60,9 +67,9 @@ export default function PWALayout({
             }}
           />
         ) : (
-          <div className="w-9 h-9 rounded-full border-2 border-white bg-brand-sage/30 flex items-center justify-center">
+          <Link href="/app/profile" className="w-9 h-9 rounded-full border-2 border-white bg-brand-sage/30 flex items-center justify-center">
             <User className="w-5 h-5 text-brand-forest" />
-          </div>
+          </Link>
         )}
       </header>
 

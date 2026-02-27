@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import { useUser, useClerk } from "@clerk/nextjs";
+import { useUserSafe as useUser, useClerkSafe as useClerk } from "@/hooks/use-clerk-safe";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { usePwaStore } from "@/stores/pwa-store";
@@ -192,7 +192,9 @@ export default function ProfilePage() {
     );
   }
 
-  if (!user) return null;
+  const userName = user?.fullName || "Потребител";
+  const userEmail = user?.primaryEmailAddress?.emailAddress || null;
+  const userImage = user?.imageUrl || null;
 
   function handleSave() {
     if (date) setLastPeriodDate(date);
@@ -313,10 +315,10 @@ export default function ProfilePage() {
         <div className="absolute -bottom-4 -left-4 w-16 h-16 rounded-full bg-brand-blush/10 blur-sm" />
 
         <div className="relative">
-          {user.imageUrl ? (
+          {userImage ? (
             <Image
-              src={user.imageUrl}
-              alt={user.fullName || "Аватар"}
+              src={userImage}
+              alt={userName}
               width={64}
               height={64}
               className="rounded-2xl border-2 border-white shadow-md"
@@ -332,10 +334,10 @@ export default function ProfilePage() {
 
         <div className="min-w-0 relative">
           <p className="font-display text-lg font-bold text-brand-forest truncate">
-            {user.fullName || "Потребител"}
+            {userName}
           </p>
           <p className="text-sm text-stone-500 truncate">
-            {user.primaryEmailAddress?.emailAddress}
+            {userEmail}
           </p>
           {stats.streak > 0 && (
             <div className="flex items-center gap-1 mt-1">
