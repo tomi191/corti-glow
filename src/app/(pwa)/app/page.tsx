@@ -59,6 +59,7 @@ export default function AppDashboard() {
   const lastPeriodDate = usePwaStore((s) => s.lastPeriodDate);
   const cycleLength = usePwaStore((s) => s.cycleLength);
   const hasSeenTour = usePwaStore((s) => s.hasSeenTour);
+  const userName = usePwaStore((s) => s.userName);
 
   useEffect(() => setMounted(true), []);
 
@@ -98,7 +99,6 @@ export default function AppDashboard() {
     );
   }
 
-  const userName = usePwaStore((s) => s.userName);
   const firstName = userName || (clerkLoaded ? (user?.firstName || "там") : null);
   const checkIn = getTodayCheckIn();
   const glowScore = getTodayGlowScore();
