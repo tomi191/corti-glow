@@ -7,6 +7,7 @@ import {
   type CyclePhase,
   type PhaseInfo,
   type SymptomOption,
+  type ConcernOption,
   getCycleDay,
   getCyclePhase,
   getPhaseInfo,
@@ -29,6 +30,8 @@ interface PwaState {
   hasSeenTour: boolean;
   pushEnabled: boolean;
   iosInstallDismissed: boolean;
+  ageRange: string | null;
+  concerns: ConcernOption[];
   // Transient (not persisted)
   isBreathingOpen: boolean;
 }
@@ -43,6 +46,8 @@ interface PwaActions {
   setLastPeriodDate: (date: string) => void;
   setCycleLength: (length: number) => void;
   setPeriodDuration: (days: number) => void;
+  setAgeRange: (range: string) => void;
+  setConcerns: (concerns: ConcernOption[]) => void;
   markTourSeen: () => void;
   setPushEnabled: (enabled: boolean) => void;
   dismissIOSInstall: () => void;
@@ -72,6 +77,8 @@ export const usePwaStore = create<PwaStore>()(
       hasSeenTour: false,
       pushEnabled: false,
       iosInstallDismissed: false,
+      ageRange: null,
+      concerns: [],
       isBreathingOpen: false,
 
       // Actions
@@ -120,6 +127,8 @@ export const usePwaStore = create<PwaStore>()(
       setLastPeriodDate: (date) => set({ lastPeriodDate: date }),
       setCycleLength: (length) => set({ cycleLength: length }),
       setPeriodDuration: (days) => set({ periodDuration: days }),
+      setAgeRange: (range) => set({ ageRange: range }),
+      setConcerns: (concerns) => set({ concerns }),
       openBreathing: () => set({ isBreathingOpen: true }),
       closeBreathing: () => set({ isBreathingOpen: false }),
 
@@ -162,6 +171,8 @@ export const usePwaStore = create<PwaStore>()(
         hasSeenTour: state.hasSeenTour,
         pushEnabled: state.pushEnabled,
         iosInstallDismissed: state.iosInstallDismissed,
+        ageRange: state.ageRange,
+        concerns: state.concerns,
         // isBreathingOpen intentionally excluded
       }),
       onRehydrateStorage: () => (state, error) => {

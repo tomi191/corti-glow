@@ -29,6 +29,21 @@ export const SYMPTOM_OPTIONS = [
 
 export type SymptomOption = (typeof SYMPTOM_OPTIONS)[number];
 
+// ─── Concern Options (Onboarding) ───
+
+export const CONCERN_OPTIONS = [
+  { key: "stress", label: "Стрес" },
+  { key: "sleep", label: "Лош сън" },
+  { key: "skin", label: "Кожа и акне" },
+  { key: "pms", label: "ПМС и раздразнителност" },
+  { key: "bloating", label: "Подуване" },
+  { key: "fatigue", label: "Умора" },
+  { key: "anxiety", label: "Тревожност" },
+  { key: "irregular", label: "Нередовен цикъл" },
+] as const;
+
+export type ConcernOption = (typeof CONCERN_OPTIONS)[number]["key"];
+
 export interface DailyCheckIn {
   date: string; // YYYY-MM-DD
   periodStarted: boolean;

@@ -123,7 +123,7 @@ export default function PWALayout({
       <IOSInstallBanner />
 
       {/* 5-tab glass navigation */}
-      <nav className="fixed bottom-0 w-full z-40 glass px-4 py-3 pb-safe border-t border-stone-200/50 rounded-t-[2rem]">
+      <nav className="fixed bottom-0 w-full z-40 px-4 py-3 pb-safe border-t border-stone-200/50 rounded-t-[2rem] bg-white/90 backdrop-blur-xl">
         <div className="flex items-center justify-around max-w-lg mx-auto">
           {navItems.map((item) => {
             const isActive =

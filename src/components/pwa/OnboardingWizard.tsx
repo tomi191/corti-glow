@@ -4,10 +4,13 @@ import { useState, useCallback } from "react";
 import { useUserSafe as useUser } from "@/hooks/use-clerk-safe";
 import { motion, AnimatePresence } from "framer-motion";
 import { usePwaStore } from "@/stores/pwa-store";
+import { CONCERN_OPTIONS, type ConcernOption } from "@/lib/pwa-logic";
 import { haptic } from "@/lib/haptics";
-import { Sparkles, Moon, Leaf, Calendar, ArrowRight } from "lucide-react";
+import { Sparkles, Moon, Leaf, Calendar, ArrowRight, User } from "lucide-react";
 
-const TOTAL_STEPS = 4;
+const TOTAL_STEPS = 5;
+
+const AGE_RANGES = ["18–24", "25–30", "31–35", "36–40", "41+"];
 
 // ─── Framer Motion Variants ───
 const containerVariants = {
@@ -45,10 +48,16 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
   const setLastPeriodDate = usePwaStore((s) => s.setLastPeriodDate);
   const setCycleLength = usePwaStore((s) => s.setCycleLength);
   const setPeriodDuration = usePwaStore((s) => s.setPeriodDuration);
+  const setAgeRange = usePwaStore((s) => s.setAgeRange);
+  const setConcerns = usePwaStore((s) => s.setConcerns);
 
   const [step, setStep] = useState(0);
 
-  // Cycle setup state
+  // Personal info state (step 2)
+  const [selectedAge, setSelectedAge] = useState("");
+  const [selectedConcerns, setSelectedConcerns] = useState<ConcernOption[]>([]);
+
+  // Cycle setup state (step 3)
   const [periodDate, setPeriodDate] = useState("");
   const [cycleLen, setCycleLen] = useState(28);
   const [periodDur, setPeriodDur] = useState(5);
@@ -58,15 +67,21 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
     setStep((s) => Math.min(s + 1, TOTAL_STEPS - 1));
   }, []);
 
+  const toggleConcern = useCallback((key: ConcernOption) => {
+    setSelectedConcerns((prev) =>
+      prev.includes(key) ? prev.filter((c) => c !== key) : [...prev, key]
+    );
+  }, []);
+
   const finish = useCallback(() => {
     haptic.success();
-    if (periodDate) {
-      setLastPeriodDate(periodDate);
-    }
+    if (selectedAge) setAgeRange(selectedAge);
+    if (selectedConcerns.length > 0) setConcerns(selectedConcerns);
+    if (periodDate) setLastPeriodDate(periodDate);
     setCycleLength(cycleLen);
     setPeriodDuration(periodDur);
     onComplete();
-  }, [periodDate, cycleLen, periodDur, setLastPeriodDate, setCycleLength, setPeriodDuration, onComplete]);
+  }, [selectedAge, selectedConcerns, periodDate, cycleLen, periodDur, setAgeRange, setConcerns, setLastPeriodDate, setCycleLength, setPeriodDuration, onComplete]);
 
   return (
     <div className="relative w-full min-h-[55vh] flex flex-col items-center justify-center">
@@ -101,7 +116,7 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
       </div>
 
       <AnimatePresence mode="wait">
-        {/* ─── Step 1: Personal Welcome ─── */}
+        {/* ─── Step 0: Personal Welcome ─── */}
         {step === 0 && (
           <motion.div
             key="step0"
@@ -133,7 +148,7 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
           </motion.div>
         )}
 
-        {/* ─── Step 2: Value Prop ─── */}
+        {/* ─── Step 1: Value Prop ─── */}
         {step === 1 && (
           <motion.div
             key="step1"
@@ -167,10 +182,84 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
           </motion.div>
         )}
 
-        {/* ─── Step 3: Cycle Setup ─── */}
+        {/* ─── Step 2: Personal Info (NEW) ─── */}
         {step === 2 && (
           <motion.div
             key="step2"
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            className="glass w-full max-w-sm p-8 rounded-[2rem] shadow-2xl backdrop-blur-xl bg-white/40 border border-white/50"
+          >
+            <motion.div variants={itemVariants} className="text-center mb-6">
+              <div className="w-14 h-14 rounded-full bg-brand-sage/30 flex items-center justify-center mx-auto mb-3">
+                <User className="w-7 h-7 text-brand-forest" />
+              </div>
+              <h2 className="font-display text-2xl font-bold text-brand-forest">Разкажи ни за себе си</h2>
+              <p className="text-sm text-stone-500 mt-1">За да пасват съветите точно на теб</p>
+            </motion.div>
+
+            <motion.div variants={itemVariants} className="space-y-5">
+              {/* Age range */}
+              <div className="space-y-2">
+                <label className="block text-sm font-semibold text-stone-700">На колко си?</label>
+                <div className="flex flex-wrap gap-2">
+                  {AGE_RANGES.map((range) => (
+                    <button
+                      key={range}
+                      onClick={() => { setSelectedAge(range); haptic.light(); }}
+                      className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-all ${
+                        selectedAge === range
+                          ? "bg-brand-forest text-white shadow-md"
+                          : "bg-white/70 text-stone-600 border border-stone-200/60 active:scale-95"
+                      }`}
+                    >
+                      {range}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Concerns */}
+              <div className="space-y-2">
+                <label className="block text-sm font-semibold text-stone-700">
+                  Какво те притеснява най-много?
+                </label>
+                <p className="text-xs text-stone-400">Избери всичко, което ти звучи познато</p>
+                <div className="flex flex-wrap gap-2">
+                  {CONCERN_OPTIONS.map(({ key, label }) => (
+                    <button
+                      key={key}
+                      onClick={() => { toggleConcern(key); haptic.light(); }}
+                      className={`px-3.5 py-2 rounded-xl text-sm font-medium transition-all ${
+                        selectedConcerns.includes(key)
+                          ? "bg-brand-forest text-white shadow-md"
+                          : "bg-white/70 text-stone-600 border border-stone-200/60 active:scale-95"
+                      }`}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </motion.div>
+
+            <motion.button
+              variants={itemVariants}
+              onClick={next}
+              disabled={!selectedAge}
+              className="w-full mt-6 py-4 rounded-2xl bg-brand-forest text-white font-semibold text-lg shadow-lg shadow-brand-forest/20 active:scale-[0.98] transition-all flex justify-center items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Продължи <ArrowRight className="w-5 h-5" />
+            </motion.button>
+          </motion.div>
+        )}
+
+        {/* ─── Step 3: Cycle Setup ─── */}
+        {step === 3 && (
+          <motion.div
+            key="step3"
             variants={containerVariants}
             initial="hidden"
             animate="visible"
@@ -258,9 +347,9 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
         )}
 
         {/* ─── Step 4: Ready ─── */}
-        {step === 3 && (
+        {step === 4 && (
           <motion.div
-            key="step3"
+            key="step4"
             variants={containerVariants}
             initial="hidden"
             animate="visible"
