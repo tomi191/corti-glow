@@ -47,6 +47,7 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
   const setUserName = usePwaStore((s) => s.setUserName);
   const setAgeRange = usePwaStore((s) => s.setAgeRange);
   const setConcerns = usePwaStore((s) => s.setConcerns);
+  const setContraception = usePwaStore((s) => s.setContraception);
 
   const [step, setStep] = useState(0);
 
@@ -56,6 +57,7 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
   // Personal info state (step 2)
   const [selectedAge, setSelectedAge] = useState("");
   const [selectedConcerns, setSelectedConcerns] = useState<ConcernOption[]>([]);
+  const [selectedContraception, setSelectedContraception] = useState<"yes" | "no" | "unsure" | "">("");
 
   // Cycle setup state (step 3)
   const [periodDate, setPeriodDate] = useState("");
@@ -80,11 +82,12 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
     if (name.trim()) setUserName(name.trim());
     if (selectedAge) setAgeRange(selectedAge);
     if (selectedConcerns.length > 0) setConcerns(selectedConcerns);
+    if (selectedContraception) setContraception(selectedContraception);
     if (periodDate) setLastPeriodDate(periodDate);
     setCycleLength(cycleLen);
     setPeriodDuration(periodDur);
     onComplete();
-  }, [name, selectedAge, selectedConcerns, periodDate, cycleLen, periodDur, setUserName, setAgeRange, setConcerns, setLastPeriodDate, setCycleLength, setPeriodDuration, onComplete]);
+  }, [name, selectedAge, selectedConcerns, selectedContraception, periodDate, cycleLen, periodDur, setUserName, setAgeRange, setConcerns, setContraception, setLastPeriodDate, setCycleLength, setPeriodDuration, onComplete]);
 
   return (
     <div className="relative w-full min-h-[55vh] flex flex-col items-center justify-center">
@@ -252,6 +255,33 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
                       onClick={() => { toggleConcern(key); haptic.light(); }}
                       className={`px-3.5 py-2 rounded-xl text-sm font-medium transition-all ${
                         selectedConcerns.includes(key)
+                          ? "bg-brand-forest text-white shadow-md"
+                          : "bg-white/70 text-stone-600 border border-stone-200/60 active:scale-95"
+                      }`}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Contraception */}
+              <div className="space-y-2">
+                <label className="block text-sm font-semibold text-stone-700">
+                  Използваш ли хормонална контрацепция?
+                </label>
+                <p className="text-xs text-stone-400">Хапчета, спирала, пластир — влияе на фазите</p>
+                <div className="flex gap-2">
+                  {([
+                    { value: "no", label: "Не" },
+                    { value: "yes", label: "Да" },
+                    { value: "unsure", label: "Не съм сигурна" },
+                  ] as const).map(({ value, label }) => (
+                    <button
+                      key={value}
+                      onClick={() => { setSelectedContraception(value); haptic.light(); }}
+                      className={`flex-1 py-2.5 rounded-xl text-sm font-medium transition-all ${
+                        selectedContraception === value
                           ? "bg-brand-forest text-white shadow-md"
                           : "bg-white/70 text-stone-600 border border-stone-200/60 active:scale-95"
                       }`}

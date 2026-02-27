@@ -33,6 +33,7 @@ interface PwaState {
   userName: string | null;
   ageRange: string | null;
   concerns: ConcernOption[];
+  contraception: "yes" | "no" | "unsure" | null;
   // Transient (not persisted)
   isBreathingOpen: boolean;
 }
@@ -50,6 +51,7 @@ interface PwaActions {
   setUserName: (name: string) => void;
   setAgeRange: (range: string) => void;
   setConcerns: (concerns: ConcernOption[]) => void;
+  setContraception: (value: "yes" | "no" | "unsure") => void;
   markTourSeen: () => void;
   setPushEnabled: (enabled: boolean) => void;
   dismissIOSInstall: () => void;
@@ -82,6 +84,7 @@ export const usePwaStore = create<PwaStore>()(
       userName: null,
       ageRange: null,
       concerns: [],
+      contraception: null,
       isBreathingOpen: false,
 
       // Actions
@@ -133,6 +136,7 @@ export const usePwaStore = create<PwaStore>()(
       setUserName: (name) => set({ userName: name }),
       setAgeRange: (range) => set({ ageRange: range }),
       setConcerns: (concerns) => set({ concerns }),
+      setContraception: (value) => set({ contraception: value }),
       openBreathing: () => set({ isBreathingOpen: true }),
       closeBreathing: () => set({ isBreathingOpen: false }),
 
@@ -178,6 +182,7 @@ export const usePwaStore = create<PwaStore>()(
         userName: state.userName,
         ageRange: state.ageRange,
         concerns: state.concerns,
+        contraception: state.contraception,
         // isBreathingOpen intentionally excluded
       }),
       onRehydrateStorage: () => (state, error) => {
