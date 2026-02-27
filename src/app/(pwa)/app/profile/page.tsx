@@ -267,7 +267,7 @@ export default function ProfilePage() {
     iconColor: string;
   }[] = [
     {
-      label: "Чек-инове",
+      label: "Записи",
       value: stats.totalCheckIns,
       icon: Activity,
       iconBg: "bg-brand-sage/30",
@@ -490,7 +490,7 @@ export default function ProfilePage() {
                 <Bell className="w-4 h-4 text-brand-forest" />
               </div>
               <span className="text-sm font-medium text-stone-700">
-                Напомняния за чек-ин
+                Напомняния за запис
               </span>
             </div>
             <PremiumToggle

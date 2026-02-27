@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans, Outfit, Cormorant_Garamond } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
+import { bgBG } from "@clerk/localizations";
 import { SmoothScrollProvider } from "@/components/providers/SmoothScroll";
 import { WaitlistProvider } from "@/components/providers/WaitlistProvider";
 import { CookieConsent } from "@/components/ui/CookieConsent";
@@ -131,6 +132,10 @@ const clerkAppearance = {
     borderRadius: "0.75rem",
     fontFamily: "var(--font-plus-jakarta), sans-serif",
   },
+  elements: {
+    footerAction: { display: "none" as const },
+    footer: { display: "none" as const },
+  },
 };
 
 function ClerkWrapper({ children }: { children: React.ReactNode }) {
@@ -138,7 +143,7 @@ function ClerkWrapper({ children }: { children: React.ReactNode }) {
   if (!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY) {
     return <>{children}</>;
   }
-  return <ClerkProvider appearance={clerkAppearance}>{children}</ClerkProvider>;
+  return <ClerkProvider appearance={clerkAppearance} localization={bgBG}>{children}</ClerkProvider>;
 }
 
 export default function RootLayout({

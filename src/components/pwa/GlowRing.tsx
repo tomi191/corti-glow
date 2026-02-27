@@ -52,7 +52,7 @@ export default function GlowRing({ score, hasCheckIn }: GlowRingProps) {
         viewBox={`0 0 ${SIZE} ${SIZE}`}
         role="img"
         aria-label={
-          hasCheckIn ? `Glow Score: ${score}` : "Натисни за чек-ін"
+          hasCheckIn ? `Glow Score: ${score}` : "Натисни за запис"
         }
       >
         <defs>
@@ -177,7 +177,7 @@ export default function GlowRing({ score, hasCheckIn }: GlowRingProps) {
           >
             <Sparkles className="w-7 h-7 text-brand-sage mx-auto mb-1" />
             <span className="block text-base font-bold text-brand-forest">
-              Чек-Ін
+              Как си?
             </span>
             <span className="text-[10px] text-brand-forest/50">
               Натисни тук

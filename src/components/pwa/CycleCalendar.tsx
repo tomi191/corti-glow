@@ -454,7 +454,7 @@ export default function CycleCalendar() {
                   onClick={() => router.push("/app/checkin")}
                   className="w-full py-3 bg-brand-forest text-white text-sm font-semibold rounded-xl active:scale-[0.98] transition-transform"
                 >
-                  Направи чек-ин
+                  Запиши деня
                 </button>
               ) : (
                 <p className="text-sm text-stone-400 text-center py-2">
@@ -544,7 +544,7 @@ export default function CycleCalendar() {
                     `}
                     aria-label={
                       isToday
-                        ? "Днес — отвори чек-ин"
+                        ? "Днес — запиши деня"
                         : cell.isCurrentMonth
                           ? `${cell.dayNum} ${MONTH_NAMES[viewMonth]}`
                           : undefined
@@ -617,7 +617,7 @@ export default function CycleCalendar() {
           </>
         ) : (
           <>
-            <p className="text-lg font-semibold mb-1">Все още нямаш чек-ин днес</p>
+            <p className="text-lg font-semibold mb-1">Все още нямаш запис за днес</p>
             <p className="text-sm opacity-80">
               {getDailyTip(currentPhase, 3)}
             </p>

@@ -140,7 +140,7 @@ export default function CheckInPage() {
             <AlertCircle className="w-7 h-7 text-amber-500" />
           </div>
           <h2 className="text-lg font-bold text-brand-forest">
-            Вече имаш чек-ин днес
+            Вече имаш запис за днес
           </h2>
           <div className="glass p-4 rounded-2xl text-left space-y-1.5 text-sm">
             <p className="text-stone-600">
@@ -193,7 +193,7 @@ export default function CheckInPage() {
           <Check className="w-10 h-10 text-brand-forest" />
         </motion.div>
         <p className="text-lg font-semibold text-brand-forest">Готово</p>
-        <p className="text-sm text-stone-500 mt-1">Чек-инът ти е записан</p>
+        <p className="text-sm text-stone-500 mt-1">Денят ти е записан</p>
       </div>
     );
   }

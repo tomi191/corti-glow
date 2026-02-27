@@ -275,7 +275,7 @@ export const emailTemplates = {
           <tr>
             <td style="padding: 0 40px 40px; text-align: center;">
               <p style="color: #666; margin: 0 0 16px; font-size: 14px;">
-                Докато чакаш, опитай нашето приложение &mdash; дневен чек-ин за стрес и сън, дихателно упражнение и персонализирани препоръки.
+                Докато чакаш, опитай нашето приложение &mdash; дневен запис за стрес и сън, дихателно упражнение и персонализирани препоръки.
               </p>
               <a href="{{PWA_URL}}" style="display: inline-block; background-color: #ffffff; color: #2D4A3E; padding: 12px 28px; border-radius: 50px; text-decoration: none; font-weight: 600; font-size: 14px; border: 2px solid #2D4A3E;">
                 Опитай LURA App →

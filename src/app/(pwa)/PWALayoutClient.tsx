@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
+import { useUserSafe } from "@/hooks/use-clerk-safe";
 
 const HAS_CLERK = !!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
 
@@ -25,6 +26,16 @@ import PremiumBackground from "@/components/pwa/PremiumBackground";
 import { registerServiceWorker } from "@/lib/push-notifications";
 import { haptic } from "@/lib/haptics";
 
+function useTodayDate() {
+  const [dateStr, setDateStr] = useState("");
+  useEffect(() => {
+    setDateStr(
+      new Date().toLocaleDateString("bg-BG", { day: "numeric", month: "short" })
+    );
+  }, []);
+  return dateStr;
+}
+
 const navItems = [
   { href: "/app", label: "Начало", icon: Home },
   { href: "/app/calendar", label: "Календар", icon: CalendarDays },
@@ -39,6 +50,9 @@ export default function PWALayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const todayDate = useTodayDate();
+  const { user, isLoaded: clerkLoaded } = useUserSafe();
+  const firstName = clerkLoaded ? user?.firstName : null;
 
   useEffect(() => {
     registerServiceWorker();
@@ -51,26 +65,41 @@ export default function PWALayout({
 
       {/* Glass header */}
       <header className="fixed top-0 w-full z-50 px-5 py-3 flex items-center justify-between glass">
+        {/* Left: LURA + date */}
         <Link
           href="/app"
-          className="font-display text-xl font-bold tracking-tight text-brand-forest uppercase"
+          className="flex items-baseline gap-2"
         >
-          Lura
+          <span className="font-display text-xl font-bold tracking-tight text-brand-forest uppercase">
+            Lura
+          </span>
+          {todayDate && (
+            <span className="text-xs text-stone-400 font-medium">
+              {todayDate}
+            </span>
+          )}
         </Link>
-        {UserButton ? (
-          <UserButton
-            afterSignOutUrl="/"
-            appearance={{
-              elements: {
-                avatarBox: "w-9 h-9 rounded-full border-2 border-white",
-              },
-            }}
-          />
-        ) : (
-          <Link href="/app/profile" className="w-9 h-9 rounded-full border-2 border-white bg-brand-sage/30 flex items-center justify-center">
-            <User className="w-5 h-5 text-brand-forest" />
-          </Link>
-        )}
+
+        {/* Right: avatar + greeting */}
+        <div className="flex items-center gap-2.5">
+          <span className="text-sm text-stone-600 font-medium hidden min-[360px]:block">
+            {firstName ? `Здравей, ${firstName}` : "Здравей!"}
+          </span>
+          {UserButton ? (
+            <UserButton
+              afterSignOutUrl="/"
+              appearance={{
+                elements: {
+                  avatarBox: "w-9 h-9 rounded-full border-2 border-white",
+                },
+              }}
+            />
+          ) : (
+            <Link href="/app/profile" className="w-9 h-9 rounded-full border-2 border-white bg-brand-sage/30 flex items-center justify-center">
+              <User className="w-5 h-5 text-brand-forest" />
+            </Link>
+          )}
+        </div>
       </header>
 
       {/* Main content with page transitions */}

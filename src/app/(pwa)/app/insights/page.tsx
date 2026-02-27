@@ -734,7 +734,7 @@ function EmptyState() {
             Тук ще виждаш какво е нормално за теб
           </h2>
           <p className="text-sm text-stone-500 leading-relaxed">
-            След няколко чек-ина ще видиш тенденции в съня и стреса,
+            След няколко записа ще видиш тенденции в съня и стреса,
             свързани с фазите на цикъла ти. Без гадаене — с данни.
           </p>
         </div>
@@ -759,7 +759,7 @@ function EmptyState() {
           href="/app/checkin"
           className="w-full py-3.5 bg-brand-forest text-white font-semibold rounded-2xl flex items-center justify-center gap-2 shadow-lg shadow-brand-forest/20 active:scale-[0.98] transition-transform"
         >
-          Направи първи чек-ин
+          Направи първи запис
           <ArrowRight className="w-4 h-4" />
         </Link>
       </div>
@@ -785,7 +785,7 @@ function NotEnoughState({ count, target }: { count: number; target: number }) {
             Още малко данни
           </h2>
           <p className="text-sm text-stone-500">
-            Още {target - count} {target - count === 1 ? "чек-ин" : "чек-ина"} и ще видиш пълния анализ.
+            Още {target - count} {target - count === 1 ? "запис" : "записа"} и ще видиш пълния анализ.
           </p>
         </div>
 
@@ -826,7 +826,7 @@ function NotEnoughState({ count, target }: { count: number; target: number }) {
           href="/app/checkin"
           className="w-full py-3.5 bg-brand-forest text-white font-semibold rounded-2xl flex items-center justify-center gap-2 shadow-lg shadow-brand-forest/20 active:scale-[0.98] transition-transform"
         >
-          Направи чек-ин
+          Запиши деня
           <ArrowRight className="w-4 h-4" />
         </Link>
       </div>
