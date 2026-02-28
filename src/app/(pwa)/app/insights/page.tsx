@@ -24,22 +24,17 @@ import {
   Lightbulb,
   Calendar,
 } from "lucide-react";
+import { formatDateStr } from "@/lib/date-utils";
+import { staggerContainer, staggerItem } from "@/lib/framer-variants";
 
 // ─── Helpers ───
-
-function getToday(): string {
-  const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-}
 
 function getLast7Days(): string[] {
   const days: string[] = [];
   const now = new Date();
   for (let i = 6; i >= 0; i--) {
     const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() - i);
-    days.push(
-      `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`
-    );
+    days.push(formatDateStr(d));
   }
   return days;
 }
@@ -56,7 +51,7 @@ function getCheckInStreak(checkIns: DailyCheckIn[]): number {
   let streak = 0;
   for (let i = 0; i < 90; i++) {
     const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() - i);
-    const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+    const dateStr = formatDateStr(d);
     if (sorted.find((c) => c.date === dateStr)) {
       streak++;
     } else {
@@ -163,10 +158,10 @@ function GlowChart({ data, labels, maxValue, color, glowColor }: GlowChartProps)
   const chartW = width - padX * 2;
   const chartH = height - padTop - padBottom;
 
-  // Build points only for non-null data
+  // Build points only for valid numeric data (skip null and NaN)
   const points: { x: number; y: number; index: number }[] = [];
   data.forEach((val, i) => {
-    if (val !== null) {
+    if (val !== null && isFinite(val)) {
       const x = padX + (i / (data.length - 1)) * chartW;
       const yNorm = Math.max(0, Math.min(val / maxValue, 1));
       const y = padTop + chartH * (1 - yNorm);
@@ -297,21 +292,6 @@ function GlowChart({ data, labels, maxValue, color, glowColor }: GlowChartProps)
   );
 }
 
-// ─── Stagger Animation Container ───
-
-const staggerContainer = {
-  hidden: { opacity: 0 },
-  show: {
-    opacity: 1,
-    transition: { staggerChildren: 0.08, delayChildren: 0.05 },
-  },
-};
-
-const staggerItem = {
-  hidden: { opacity: 0, y: 16 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] } },
-};
-
 // ─── Component ───
 
 export default function InsightsPage() {
@@ -392,7 +372,7 @@ export default function InsightsPage() {
       <motion.h1
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="font-display text-2xl font-bold text-brand-forest"
+        className="font-display text-xl font-bold text-brand-forest"
       >
         Твоят обзор
       </motion.h1>
@@ -472,7 +452,7 @@ export default function InsightsPage() {
           {/* ─── Summary Stat Pills ─── */}
           <motion.section
             variants={staggerItem}
-            className="grid grid-cols-4 gap-2"
+            className="grid grid-cols-2 min-[400px]:grid-cols-4 gap-2"
           >
             <StatPill
               icon={<Moon className="w-3.5 h-3.5 text-indigo-400" />}

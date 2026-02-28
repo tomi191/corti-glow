@@ -128,7 +128,7 @@ export default function CheckInPage() {
         <div className="flex justify-end mb-4">
           <button
             onClick={handleClose}
-            className="p-2 rounded-full hover:bg-stone-100 transition-colors"
+            className="p-2.5 rounded-full hover:bg-stone-100 transition-colors"
             aria-label="Затвори"
           >
             <X className="w-5 h-5 text-stone-500" />
@@ -165,13 +165,13 @@ export default function CheckInPage() {
           <div className="flex gap-3">
             <button
               onClick={handleClose}
-              className="flex-1 py-3 rounded-full border border-stone-200 text-stone-600 font-semibold transition-all active:scale-[0.98]"
+              className="flex-1 py-3.5 rounded-2xl border border-stone-200 text-stone-600 text-base font-semibold transition-all active:scale-[0.98]"
             >
               Не, върни ме
             </button>
             <button
               onClick={() => setShowReCheckinWarning(false)}
-              className="flex-1 py-3 rounded-full bg-brand-forest text-white font-semibold shadow-lg transition-all active:scale-[0.98]"
+              className="flex-1 py-3.5 rounded-2xl bg-brand-forest text-white text-base font-semibold shadow-lg transition-all active:scale-[0.98]"
             >
               Да, промени
             </button>
@@ -274,7 +274,7 @@ export default function CheckInPage() {
       {/* Save Button */}
       <button
         onClick={finish}
-        className="w-full py-4 rounded-full bg-brand-forest text-white font-semibold text-base shadow-lg shadow-brand-forest/20 active:scale-[0.98] transition-transform"
+        className="w-full py-3.5 rounded-2xl bg-brand-forest text-white font-semibold text-base shadow-lg shadow-brand-forest/20 active:scale-[0.98] transition-transform"
       >
         {expanded ? "Запази всичко" : "Запази деня"}
       </button>
@@ -354,7 +354,7 @@ export default function CheckInPage() {
                     <button
                       key={symptom}
                       onClick={() => toggleSymptom(symptom)}
-                      className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all ${
+                      className={`px-3.5 py-2.5 rounded-full text-xs font-medium transition-all ${
                         symptoms.includes(symptom)
                           ? "bg-brand-forest text-white shadow-md"
                           : "bg-white text-stone-600 border border-stone-200"

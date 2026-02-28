@@ -11,6 +11,7 @@ import {
   type PhaseInfo,
   type DailyAction,
 } from "@/lib/pwa-logic";
+import { isValidDateString } from "@/lib/date-utils";
 import {
   Sparkles,
   Heart,
@@ -61,9 +62,9 @@ export default function AppDashboard() {
 
   useEffect(() => setMounted(true), []);
 
-  // Show onboarding for first-time users, tour after onboarding
+  // Show onboarding for first-time users (or invalid data), tour after onboarding
   useEffect(() => {
-    if (mounted && !lastPeriodDate) {
+    if (mounted && (!lastPeriodDate || !isValidDateString(lastPeriodDate))) {
       setShowOnboarding(true);
     } else if (mounted && !hasSeenTour) {
       setShowTour(true);
@@ -241,7 +242,7 @@ export default function AppDashboard() {
           {checkIn ? (
             <Link
               href="/app/checkin"
-              className="w-full py-4 bg-white border border-stone-200 text-stone-600 font-semibold rounded-2xl flex items-center justify-center space-x-2 active:scale-[0.98] transition-transform"
+              className="w-full py-3.5 bg-white border border-stone-200 text-stone-600 text-base font-semibold rounded-2xl flex items-center justify-center space-x-2 active:scale-[0.98] transition-transform"
             >
               <Eye className="w-5 h-5" />
               <span>Виж / промени записа</span>
@@ -249,7 +250,7 @@ export default function AppDashboard() {
           ) : (
             <Link
               href="/app/checkin"
-              className="w-full py-4 bg-brand-forest text-white font-semibold rounded-2xl flex items-center justify-center space-x-2 shadow-lg shadow-brand-forest/20 active:scale-[0.98] transition-transform"
+              className="w-full py-3.5 bg-brand-forest text-white text-base font-semibold rounded-2xl flex items-center justify-center space-x-2 shadow-lg shadow-brand-forest/20 active:scale-[0.98] transition-transform"
             >
               <Plus className="w-5 h-5" />
               <span>Запиши симптоми</span>
@@ -283,7 +284,7 @@ export default function AppDashboard() {
         className="space-y-4"
       >
         <div className="flex justify-between items-end px-1">
-          <h3 className="font-display text-xl font-bold text-brand-forest">
+          <h3 className="font-display text-base font-bold text-brand-forest">
             Действия за деня
           </h3>
         </div>

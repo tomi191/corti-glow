@@ -19,6 +19,7 @@ import {
   getDailyTip,
 } from "@/lib/pwa-logic";
 import { haptic } from "@/lib/haptics";
+import { getToday, formatDateStr, formatYMD } from "@/lib/date-utils";
 
 // ─── Constants ───
 
@@ -76,15 +77,6 @@ const DAY_NAMES_SHORT = ["Нд", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб"]
 
 // ─── Helpers ───
 
-function getToday(): string {
-  const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-}
-
-function formatDateStr(year: number, month: number, day: number): string {
-  return `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
-}
-
 interface DayInfo {
   date: string;
   dayNum: number;
@@ -111,7 +103,7 @@ function buildMonthGrid(
     const day = daysInPrevMonth - i;
     const m = month === 0 ? 11 : month - 1;
     const y = month === 0 ? year - 1 : year;
-    const date = formatDateStr(y, m, day);
+    const date = formatYMD(y, m, day);
     cells.push({
       date,
       dayNum: day,
@@ -122,7 +114,7 @@ function buildMonthGrid(
 
   // Current month
   for (let day = 1; day <= daysInMonth; day++) {
-    const date = formatDateStr(year, month, day);
+    const date = formatYMD(year, month, day);
     cells.push({
       date,
       dayNum: day,
@@ -138,7 +130,7 @@ function buildMonthGrid(
     const nm = month === 11 ? 0 : month + 1;
     const ny = month === 11 ? year + 1 : year;
     for (let day = 1; day <= fill; day++) {
-      const date = formatDateStr(ny, nm, day);
+      const date = formatYMD(ny, nm, day);
       cells.push({
         date,
         dayNum: day,
@@ -178,7 +170,7 @@ function buildTimeline(
   for (let offset = -7; offset <= 6; offset++) {
     const d = new Date(today);
     d.setDate(d.getDate() + offset);
-    const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+    const dateStr = formatDateStr(d);
 
     days.push({
       date: dateStr,
@@ -452,7 +444,7 @@ export default function CycleCalendar() {
               ) : selectedDay === today ? (
                 <button
                   onClick={() => router.push("/app/checkin")}
-                  className="w-full py-3 bg-brand-forest text-white text-sm font-semibold rounded-xl active:scale-[0.98] transition-transform"
+                  className="w-full py-3.5 bg-brand-forest text-white text-base font-semibold rounded-2xl active:scale-[0.98] transition-transform"
                 >
                   Запиши деня
                 </button>
@@ -495,7 +487,7 @@ export default function CycleCalendar() {
         <div className="flex items-center justify-between mb-4">
           <button
             onClick={prevMonth}
-            className="p-2 rounded-full hover:bg-stone-100/60 transition-colors active:scale-95"
+            className="p-2.5 rounded-full hover:bg-stone-100/60 transition-colors active:scale-95"
             aria-label="Предишен месец"
           >
             <ChevronLeft className="w-5 h-5 text-stone-600" />
@@ -505,7 +497,7 @@ export default function CycleCalendar() {
           </h2>
           <button
             onClick={nextMonth}
-            className="p-2 rounded-full hover:bg-stone-100/60 transition-colors active:scale-95"
+            className="p-2.5 rounded-full hover:bg-stone-100/60 transition-colors active:scale-95"
             aria-label="Следващ месец"
           >
             <ChevronRight className="w-5 h-5 text-stone-600" />

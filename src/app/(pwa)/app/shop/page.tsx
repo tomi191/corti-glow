@@ -8,6 +8,7 @@ import { trackPwaEvent } from "@/lib/pwa-analytics";
 import { WaitlistModal } from "@/components/ui/WaitlistModal";
 import { getPhaseRecommendation, type CyclePhase } from "@/lib/pwa-logic";
 import { haptic } from "@/lib/haptics";
+import { staggerContainer, staggerItem } from "@/lib/framer-variants";
 import {
   Sparkles,
   Check,
@@ -66,18 +67,6 @@ function ShimmerSkeleton({ className }: { className?: string }) {
   );
 }
 
-// --- Stagger animation variants ---
-const containerVariants = {
-  hidden: {},
-  show: {
-    transition: { staggerChildren: 0.1 },
-  },
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 16, scale: 0.97 },
-  show: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] as const } },
-};
 
 export default function ShopPage() {
   const [mounted, setMounted] = useState(false);
@@ -118,15 +107,15 @@ export default function ShopPage() {
   return (
     <motion.div
       className="max-w-lg mx-auto space-y-5 py-6"
-      variants={containerVariants}
+      variants={staggerContainer}
       initial="hidden"
       animate="show"
     >
       <style>{`@keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }`}</style>
 
       {/* Header */}
-      <motion.div variants={itemVariants}>
-        <h1 className="font-display text-2xl font-bold text-brand-forest">
+      <motion.div variants={staggerItem}>
+        <h1 className="font-display text-xl font-bold text-brand-forest">
           Препоръки за теб
         </h1>
         {hasSetup && (
@@ -142,7 +131,7 @@ export default function ShopPage() {
       {/* Phase-based recommendation card */}
       {hasSetup && (
         <motion.div
-          variants={itemVariants}
+          variants={staggerItem}
           className="relative bg-brand-forest rounded-[2rem] p-6 text-white space-y-3 overflow-hidden"
         >
           {/* Organic decorative shape */}
@@ -170,7 +159,7 @@ export default function ShopPage() {
       )}
 
       {/* Premium Product Card with 3D Tilt */}
-      <motion.div variants={itemVariants}>
+      <motion.div variants={staggerItem}>
         <div
           ref={productTilt.ref}
           onPointerMove={productTilt.handlePointerMove}
@@ -236,7 +225,7 @@ export default function ShopPage() {
               </div>
               <button
                 onClick={handleWaitlist}
-                className="flex items-center gap-2 px-5 py-3 bg-brand-forest text-white rounded-2xl text-sm font-semibold shadow-lg shadow-brand-forest/20 active:scale-[0.96] transition-transform"
+                className="flex items-center gap-2 px-5 py-3.5 bg-brand-forest text-white rounded-2xl text-base font-semibold shadow-lg shadow-brand-forest/20 active:scale-[0.96] transition-transform"
               >
                 <Bell className="w-4 h-4" />
                 Запиши ме първа
@@ -247,7 +236,7 @@ export default function ShopPage() {
       </motion.div>
 
       {/* Bundle Offers */}
-      <motion.section variants={itemVariants} className="space-y-3">
+      <motion.section variants={staggerItem} className="space-y-3">
         <h3 className="text-xs font-bold uppercase tracking-widest text-brand-forest/60 px-1 flex items-center gap-2">
           <Package className="w-3.5 h-3.5" />
           Пакетни оферти
@@ -258,7 +247,7 @@ export default function ShopPage() {
           .map((variant, i) => (
             <motion.div
               key={variant.id}
-              variants={itemVariants}
+              variants={staggerItem}
               className="glass rounded-[2rem] p-4 flex items-center justify-between group shadow-md shadow-brand-forest/5 hover:shadow-lg hover:shadow-brand-forest/10 transition-shadow"
             >
               <div className="flex items-center gap-3 min-w-0">
@@ -321,7 +310,7 @@ export default function ShopPage() {
 
       {/* Pre-launch info */}
       <motion.div
-        variants={itemVariants}
+        variants={staggerItem}
         className="glass rounded-[2rem] p-5 text-center space-y-2"
       >
         <p className="text-sm font-semibold text-brand-forest">

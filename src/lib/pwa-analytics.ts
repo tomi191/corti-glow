@@ -170,17 +170,24 @@ export function flushPwaEvents(): void {
 
 // --- Auto-initialization ---
 // This runs when the module is first imported in a browser context.
+// Guard against HMR re-registration by storing interval ID on window.
 
 if (typeof window !== "undefined") {
   try {
+    // Clear any previous interval from HMR
+    const win = window as unknown as Record<string, unknown>;
+    const prevInterval = win.__lura_analytics_interval as ReturnType<typeof setInterval> | undefined;
+    if (prevInterval) clearInterval(prevInterval);
+
     // Periodic flush every 30 seconds
-    setInterval(() => {
+    const intervalId = setInterval(() => {
       try {
         flushQueue();
       } catch {
         // Silently ignore
       }
     }, FLUSH_INTERVAL_MS);
+    win.__lura_analytics_interval = intervalId;
 
     // Flush when coming back online
     window.addEventListener("online", () => {

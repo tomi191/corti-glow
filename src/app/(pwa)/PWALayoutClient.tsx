@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { useUserSafe } from "@/hooks/use-clerk-safe";
 import { usePwaStore } from "@/stores/pwa-store";
 
@@ -52,6 +52,7 @@ export default function PWALayout({
 }) {
   const pathname = usePathname();
   const todayDate = useTodayDate();
+  const prefersReducedMotion = useReducedMotion();
   const { user, isLoaded: clerkLoaded } = useUserSafe();
   const userName = usePwaStore((s) => s.userName);
   const firstName = userName || (clerkLoaded ? user?.firstName : null);
@@ -109,10 +110,10 @@ export default function PWALayout({
         <motion.main
           key={pathname}
           className="flex-1 pt-16 pb-28 px-5"
-          initial={{ opacity: 0, y: 8, filter: "blur(4px)" }}
+          initial={prefersReducedMotion ? false : { opacity: 0, y: 8, filter: "blur(4px)" }}
           animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-          exit={{ opacity: 0, y: -8, filter: "blur(4px)" }}
-          transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+          exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: -8, filter: "blur(4px)" }}
+          transition={{ duration: prefersReducedMotion ? 0 : 0.25, ease: [0.22, 1, 0.36, 1] }}
         >
           {children}
         </motion.main>
@@ -141,7 +142,7 @@ export default function PWALayout({
                 key={item.href}
                 href={item.href}
                 onClick={() => haptic.light()}
-                className={`flex flex-col items-center gap-0.5 px-2 py-1 rounded-xl transition-colors ${
+                className={`flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-xl transition-colors ${
                   isActive
                     ? "text-brand-forest"
                     : "text-stone-400 hover:text-stone-600"

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { usePwaStore } from "@/stores/pwa-store";
 import {
@@ -72,6 +72,14 @@ export default function AppTourModal({ onClose }: AppTourModalProps) {
   const markTourSeen = usePwaStore((s) => s.markTourSeen);
   const [step, setStep] = useState(0);
 
+  // Lock body scroll while tour is open
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, []);
+
   const isLast = step === TOUR_STEPS.length - 1;
   const current = TOUR_STEPS[step];
   const Icon = current.icon;
@@ -95,11 +103,11 @@ export default function AppTourModal({ onClose }: AppTourModalProps) {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center"
+      className="fixed inset-0 z-[100] flex items-center justify-center px-4 pb-28"
     >
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+        className="absolute inset-0 bg-white/80 backdrop-blur-xl"
         onClick={handleSkip}
       />
 
@@ -109,21 +117,21 @@ export default function AppTourModal({ onClose }: AppTourModalProps) {
         animate={{ y: 0, opacity: 1 }}
         exit={{ y: 100, opacity: 0 }}
         transition={{ type: "spring", damping: 25, stiffness: 300 }}
-        className="relative w-full max-w-md mx-4 mb-4 sm:mb-0 bg-white rounded-[2rem] shadow-2xl overflow-hidden"
+        className="relative w-full max-w-md mx-4 bg-white rounded-[2rem] shadow-2xl overflow-hidden"
       >
         {/* Close button */}
         <button
           onClick={handleSkip}
-          className="absolute top-4 right-4 p-1.5 rounded-full hover:bg-stone-100 transition-colors z-10"
+          className="absolute top-4 right-4 p-2.5 rounded-full hover:bg-stone-100 transition-colors z-10"
           aria-label="Затвори"
         >
           <X className="w-5 h-5 text-stone-400" />
         </button>
 
         {/* Content */}
-        <div className="p-6 pt-8">
+        <div className="p-5 pt-6">
           {/* Progress dots */}
-          <div className="flex items-center justify-center gap-1.5 mb-6">
+          <div className="flex items-center justify-center gap-1.5 mb-4">
             {TOUR_STEPS.map((_, i) => (
               <div
                 key={i}
@@ -145,19 +153,19 @@ export default function AppTourModal({ onClose }: AppTourModalProps) {
               animate={{ x: 0, opacity: 1 }}
               exit={{ x: -60, opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="text-center space-y-4"
+              className="text-center space-y-3"
             >
               <div
-                className={`w-16 h-16 rounded-2xl ${current.iconBg} flex items-center justify-center mx-auto`}
+                className={`w-12 h-12 rounded-2xl ${current.iconBg} flex items-center justify-center mx-auto`}
               >
-                <Icon className={`w-8 h-8 ${current.iconColor}`} />
+                <Icon className={`w-6 h-6 ${current.iconColor}`} />
               </div>
 
-              <h3 className="text-lg font-display font-bold text-brand-forest">
+              <h3 className="text-base font-display font-bold text-brand-forest">
                 {current.title}
               </h3>
 
-              <p className="text-sm text-stone-500 leading-relaxed px-2">
+              <p className="text-sm text-stone-500 leading-relaxed px-1">
                 {current.description}
               </p>
             </motion.div>
@@ -165,7 +173,7 @@ export default function AppTourModal({ onClose }: AppTourModalProps) {
         </div>
 
         {/* Footer */}
-        <div className="px-6 pb-6 pt-2 flex items-center gap-3">
+        <div className="px-5 pb-5 pt-1 flex items-center gap-3">
           {!isLast && (
             <button
               onClick={handleSkip}
@@ -176,7 +184,7 @@ export default function AppTourModal({ onClose }: AppTourModalProps) {
           )}
           <button
             onClick={handleNext}
-            className="flex-1 py-3 rounded-full bg-brand-forest text-white font-semibold shadow-lg transition-all active:scale-[0.98]"
+            className="flex-1 py-3.5 rounded-2xl bg-brand-forest text-white text-base font-semibold shadow-lg transition-all active:scale-[0.98]"
           >
             {isLast ? "Започни" : "Напред"}
           </button>

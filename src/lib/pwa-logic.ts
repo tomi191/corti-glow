@@ -1,4 +1,5 @@
 // Pure TypeScript - no React. Types + functions for the LURA PWA (Nervous System Navigator).
+import { isValidDateString, getDiffDays } from "@/lib/date-utils";
 
 export type CyclePhase = "menstrual" | "follicular" | "ovulation" | "luteal";
 
@@ -60,16 +61,12 @@ export function getCycleDay(
   lastPeriodDate: string | null,
   cycleLength = 28
 ): number {
-  if (!lastPeriodDate) return 0;
-  // Parse as local midnight to avoid UTC timezone offset
-  const [y, m, d] = lastPeriodDate.split("-").map(Number);
-  const start = new Date(y, m - 1, d);
+  if (!lastPeriodDate || !isValidDateString(lastPeriodDate)) return 0;
   const now = new Date();
-  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const diffMs = today.getTime() - start.getTime();
-  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-  // Mod to keep within cycle, add 1 for 1-based day
-  return (diffDays % cycleLength) + 1;
+  const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+  const diffDays = getDiffDays(lastPeriodDate, todayStr);
+  // Normalize to positive cycle day (handles dates before lastPeriodDate)
+  return ((diffDays % cycleLength) + cycleLength) % cycleLength + 1;
 }
 
 export function getCyclePhase(
@@ -133,14 +130,8 @@ export function getPhaseForDate(
   cycleLength = 28,
   periodDuration = 5
 ): CyclePhase | null {
-  if (!lastPeriodDate) return null;
-  const [y1, m1, d1] = lastPeriodDate.split("-").map(Number);
-  const start = new Date(y1, m1 - 1, d1);
-  const [y2, m2, d2] = dateStr.split("-").map(Number);
-  const target = new Date(y2, m2 - 1, d2);
-  const diffMs = target.getTime() - start.getTime();
-  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-  // Normalize to positive cycle day (works for dates before lastPeriodDate too)
+  if (!lastPeriodDate || !isValidDateString(lastPeriodDate) || !isValidDateString(dateStr)) return null;
+  const diffDays = getDiffDays(lastPeriodDate, dateStr);
   const cycleDay = ((diffDays % cycleLength) + cycleLength) % cycleLength + 1;
   return getCyclePhase(cycleDay, periodDuration, cycleLength);
 }
@@ -151,13 +142,8 @@ export function isPeriodDay(
   cycleLength = 28,
   periodDuration = 5
 ): boolean {
-  if (!lastPeriodDate) return false;
-  const [y1, m1, d1] = lastPeriodDate.split("-").map(Number);
-  const start = new Date(y1, m1 - 1, d1);
-  const [y2, m2, d2] = dateStr.split("-").map(Number);
-  const target = new Date(y2, m2 - 1, d2);
-  const diffMs = target.getTime() - start.getTime();
-  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+  if (!lastPeriodDate || !isValidDateString(lastPeriodDate) || !isValidDateString(dateStr)) return false;
+  const diffDays = getDiffDays(lastPeriodDate, dateStr);
   const cycleDay = ((diffDays % cycleLength) + cycleLength) % cycleLength + 1;
   return cycleDay <= periodDuration;
 }

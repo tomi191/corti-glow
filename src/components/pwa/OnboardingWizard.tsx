@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { usePwaStore } from "@/stores/pwa-store";
 import { CONCERN_OPTIONS, type ConcernOption } from "@/lib/pwa-logic";
@@ -90,7 +90,10 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
 
   const displayName = name.trim() || "прекрасна";
 
+  const isSubmitting = useRef(false);
   const finish = useCallback(() => {
+    if (isSubmitting.current) return;
+    isSubmitting.current = true;
     haptic.success();
     if (name.trim()) setUserName(name.trim());
     if (selectedAge) setAgeRange(selectedAge);
@@ -238,26 +241,28 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
             initial="hidden"
             animate="visible"
             exit="exit"
-            className="glass w-full max-w-sm p-8 rounded-[2rem] shadow-2xl backdrop-blur-xl bg-white/40 border border-white/50"
+            className="glass w-full max-w-sm px-5 py-5 rounded-[2rem] shadow-2xl backdrop-blur-xl bg-white/40 border border-white/50"
           >
-            <motion.div variants={itemVariants} className="text-center mb-6">
-              <div className="w-14 h-14 rounded-full bg-brand-sage/30 flex items-center justify-center mx-auto mb-3">
-                <User className="w-7 h-7 text-brand-forest" />
+            <motion.div variants={itemVariants} className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-full bg-brand-sage/30 flex items-center justify-center flex-shrink-0">
+                <User className="w-5 h-5 text-brand-forest" />
               </div>
-              <h2 className="font-display text-2xl font-bold text-brand-forest">Разкажи ни за себе си</h2>
-              <p className="text-sm text-stone-500 mt-1">За да пасват съветите точно на теб</p>
+              <div>
+                <h2 className="font-display text-lg font-bold text-brand-forest leading-tight">Разкажи ни за себе си</h2>
+                <p className="text-xs text-stone-500">За да пасват съветите точно на теб</p>
+              </div>
             </motion.div>
 
-            <motion.div variants={itemVariants} className="space-y-5">
+            <motion.div variants={itemVariants} className="space-y-3.5">
               {/* Age range */}
-              <div className="space-y-2">
-                <label className="block text-sm font-semibold text-stone-700">На колко си?</label>
-                <div className="flex flex-wrap gap-2">
+              <div className="space-y-1.5">
+                <label className="block text-xs font-semibold text-stone-700">На колко си?</label>
+                <div className="flex flex-wrap gap-1.5">
                   {AGE_RANGES.map((range) => (
                     <button
                       key={range}
                       onClick={() => { setSelectedAge(range); haptic.light(); }}
-                      className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-all ${
+                      className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
                         selectedAge === range
                           ? CHIP_SELECTED
                           : CHIP_DEFAULT
@@ -270,17 +275,17 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
               </div>
 
               {/* Concerns */}
-              <div className="space-y-2">
-                <label className="block text-sm font-semibold text-stone-700">
+              <div className="space-y-1.5">
+                <label className="block text-xs font-semibold text-stone-700">
                   Какво те притеснява най-много?
                 </label>
-                <p className="text-xs text-stone-400">Избери всичко, което ти звучи познато</p>
-                <div className="flex flex-wrap gap-2">
+                <p className="text-[11px] text-stone-400 -mt-0.5">Избери всичко познато</p>
+                <div className="flex flex-wrap gap-1.5">
                   {CONCERN_OPTIONS.map(({ key, label }) => (
                     <button
                       key={key}
                       onClick={() => { toggleConcern(key); haptic.light(); }}
-                      className={`px-3.5 py-2 rounded-xl text-sm font-medium transition-all ${
+                      className={`px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all ${
                         selectedConcerns.includes(key)
                           ? CHIP_SELECTED
                           : CHIP_DEFAULT
@@ -293,12 +298,12 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
               </div>
 
               {/* Contraception */}
-              <div className="space-y-2">
-                <label className="block text-sm font-semibold text-stone-700">
-                  Използваш ли хормонална контрацепция?
+              <div className="space-y-1.5">
+                <label className="block text-xs font-semibold text-stone-700">
+                  Хормонална контрацепция?
                 </label>
-                <p className="text-xs text-stone-400">Влияе на хормоните и фазите — съветите ще са по-точни</p>
-                <div className="flex gap-2">
+                <p className="text-[11px] text-stone-400 -mt-0.5">Влияе на фазите — съветите ще са по-точни</p>
+                <div className="flex gap-1.5">
                   {([
                     { value: "no", label: "Не" },
                     { value: "yes", label: "Да" },
@@ -307,7 +312,7 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
                     <button
                       key={value}
                       onClick={() => { setSelectedContraception(value); haptic.light(); }}
-                      className={`flex-1 py-2.5 rounded-xl text-sm font-medium transition-all ${
+                      className={`flex-1 py-1.5 rounded-lg text-xs font-medium transition-all ${
                         selectedContraception === value
                           ? CHIP_SELECTED
                           : CHIP_DEFAULT
@@ -330,7 +335,7 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
                   variants={itemVariants}
                   onClick={next}
                   disabled={!selectedAge}
-                  className="w-full mt-6 py-4 rounded-2xl font-semibold text-lg active:scale-[0.98] relative overflow-hidden bg-stone-100 border border-stone-200 transition-shadow duration-500"
+                  className="w-full mt-4 py-3.5 rounded-2xl font-semibold text-base active:scale-[0.98] relative overflow-hidden bg-stone-100 border border-stone-200 transition-shadow duration-500"
                   style={{ boxShadow: isFull ? "0 10px 25px -5px rgba(45,74,62,0.3)" : "none" }}
                 >
                   {/* Liquid fill background */}
@@ -368,39 +373,41 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
             initial="hidden"
             animate="visible"
             exit="exit"
-            className="glass w-full max-w-sm p-8 rounded-[2rem] shadow-2xl backdrop-blur-xl bg-white/40 border border-white/50"
+            className="glass w-full max-w-sm px-5 py-5 rounded-[2rem] shadow-2xl backdrop-blur-xl bg-white/40 border border-white/50"
           >
-            <motion.div variants={itemVariants} className="text-center mb-6">
-              <div className="w-14 h-14 rounded-full bg-brand-blush/30 flex items-center justify-center mx-auto mb-3">
-                <Calendar className="w-7 h-7 text-pink-500" />
+            <motion.div variants={itemVariants} className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-full bg-brand-blush/30 flex items-center justify-center flex-shrink-0">
+                <Calendar className="w-5 h-5 text-pink-500" />
               </div>
-              <h2 className="font-display text-2xl font-bold text-brand-forest">Твоят вътрешен часовник</h2>
-              <p className="text-sm text-stone-500 mt-1">За да знаеш в коя фаза си и какво е нормално за теб</p>
+              <div>
+                <h2 className="font-display text-lg font-bold text-brand-forest leading-tight">Твоят вътрешен часовник</h2>
+                <p className="text-xs text-stone-500">За да знаеш в коя фаза си</p>
+              </div>
             </motion.div>
 
-            <motion.div variants={itemVariants} className="space-y-5">
+            <motion.div variants={itemVariants} className="space-y-3.5">
               {/* Last period date */}
-              <div className="space-y-2">
-                <label htmlFor="period-date" className="block text-sm font-semibold text-stone-700">
+              <div className="space-y-1.5">
+                <label htmlFor="period-date" className="block text-xs font-semibold text-stone-700">
                   Кога последно ти дойде?
                 </label>
-                <p className="text-xs text-stone-400">Първият ден — не е нужно да е точно</p>
+                <p className="text-[11px] text-stone-400 -mt-0.5">Първият ден — не е нужно да е точно</p>
                 <input
                   id="period-date"
                   type="date"
                   value={periodDate}
                   max={new Date().toISOString().split("T")[0]}
                   onChange={(e) => setPeriodDate(e.target.value)}
-                  className="w-full py-3 px-4 border border-white/60 rounded-xl text-stone-700 bg-white/70 backdrop-blur-sm focus:ring-2 focus:ring-brand-forest/30 focus:border-brand-forest outline-none transition-all"
+                  className="w-full py-2.5 px-3 border border-white/60 rounded-xl text-sm text-stone-700 bg-white/70 backdrop-blur-sm focus:ring-2 focus:ring-brand-forest/30 focus:border-brand-forest outline-none transition-all"
                 />
               </div>
 
               {/* Cycle length */}
-              <div className="space-y-2">
-                <label htmlFor="cycle-length" className="block text-sm font-semibold text-stone-700">
+              <div className="space-y-1">
+                <label htmlFor="cycle-length" className="block text-xs font-semibold text-stone-700">
                   На колко дни ти идва: <span className="text-brand-forest">{cycleLen} дни</span>
                 </label>
-                <p className="text-xs text-stone-400">От първия ден до следващия път</p>
+                <p className="text-[11px] text-stone-400">От първия ден до следващия път</p>
                 <input
                   id="cycle-length"
                   type="range"
@@ -410,7 +417,7 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
                   onChange={(e) => setCycleLen(Number(e.target.value))}
                   className="w-full accent-brand-forest"
                 />
-                <div className="flex justify-between text-xs text-stone-400">
+                <div className="flex justify-between text-[10px] text-stone-400 -mt-1">
                   <span>21</span>
                   <span>28 (средно)</span>
                   <span>40</span>
@@ -418,8 +425,8 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
               </div>
 
               {/* Period duration */}
-              <div className="space-y-2">
-                <label htmlFor="period-duration" className="block text-sm font-semibold text-stone-700">
+              <div className="space-y-1">
+                <label htmlFor="period-duration" className="block text-xs font-semibold text-stone-700">
                   Колко време продължава: <span className="text-brand-forest">{periodDur} дни</span>
                 </label>
                 <input
@@ -431,7 +438,7 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
                   onChange={(e) => setPeriodDur(Number(e.target.value))}
                   className="w-full accent-brand-forest"
                 />
-                <div className="flex justify-between text-xs text-stone-400">
+                <div className="flex justify-between text-[10px] text-stone-400 -mt-1">
                   <span>2</span>
                   <span>5 (средно)</span>
                   <span>8</span>
@@ -446,7 +453,7 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
               initial={false}
               animate={periodDate ? { scale: [0.96, 1] } : {}}
               transition={{ type: "spring", stiffness: 400, damping: 15 }}
-              className={`w-full mt-6 py-4 rounded-2xl font-semibold text-lg active:scale-[0.98] transition-all duration-500 flex justify-center items-center gap-2 relative overflow-hidden ${
+              className={`w-full mt-4 py-3.5 rounded-2xl font-semibold text-base active:scale-[0.98] transition-all duration-500 flex justify-center items-center gap-2 relative overflow-hidden ${
                 periodDate
                   ? CTA_ACTIVE
                   : CTA_INACTIVE

@@ -6,6 +6,8 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { usePwaStore } from "@/stores/pwa-store";
 import { haptic } from "@/lib/haptics";
+import { getToday, formatDateStr } from "@/lib/date-utils";
+import { staggerContainer, staggerItem } from "@/lib/framer-variants";
 import {
   LogOut,
   Shield,
@@ -45,23 +47,6 @@ function ShimmerSkeleton({ className }: { className?: string }) {
   );
 }
 
-// --- Stagger animation variants ---
-const containerVariants = {
-  hidden: {},
-  show: {
-    transition: { staggerChildren: 0.08 },
-  },
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 16, scale: 0.97 },
-  show: {
-    opacity: 1,
-    y: 0,
-    scale: 1,
-    transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] as const },
-  },
-};
 
 // --- Premium Toggle ---
 function PremiumToggle({
@@ -108,22 +93,22 @@ function computeStreak(checkIns: { date: string }[]): number {
     .sort()
     .reverse();
 
-  const today = new Date();
-  const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
-  const yesterday = new Date(today);
-  yesterday.setDate(yesterday.getDate() - 1);
-  const yesterdayStr = `${yesterday.getFullYear()}-${String(yesterday.getMonth() + 1).padStart(2, "0")}-${String(yesterday.getDate()).padStart(2, "0")}`;
+  const todayStr = getToday();
+  const yd = new Date();
+  yd.setDate(yd.getDate() - 1);
+  const yesterdayStr = formatDateStr(yd);
 
   // Streak must start from today or yesterday
   if (sorted[0] !== todayStr && sorted[0] !== yesterdayStr) return 0;
 
   let streak = 1;
   for (let i = 1; i < sorted.length; i++) {
-    const prev = new Date(sorted[i - 1]);
-    const curr = new Date(sorted[i]);
-    const diffMs = prev.getTime() - curr.getTime();
-    const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24));
-    if (diffDays === 1) {
+    // Compare consecutive dates using string comparison (YYYY-MM-DD sorts correctly)
+    const [py, pm, pd] = sorted[i - 1].split("-").map(Number);
+    const prevDate = new Date(py, pm - 1, pd);
+    prevDate.setDate(prevDate.getDate() - 1);
+    const expectedPrev = formatDateStr(prevDate);
+    if (sorted[i] === expectedPrev) {
       streak++;
     } else {
       break;
@@ -154,7 +139,6 @@ export default function ProfilePage() {
   const [duration, setDuration] = useState(5);
   const [saved, setSaved] = useState(false);
   const [pushLoading, setPushLoading] = useState(false);
-  const [cycleReminder, setCycleReminder] = useState(true);
 
   useEffect(() => {
     setMounted(true);
@@ -197,7 +181,12 @@ export default function ProfilePage() {
   const userImage = user?.imageUrl || null;
 
   function handleSave() {
-    if (date) setLastPeriodDate(date);
+    // Validate date is not in the future
+    if (date) {
+      const today = getToday();
+      if (date > today) return;
+      setLastPeriodDate(date);
+    }
     setCycleLength(length);
     setPeriodDuration(duration);
     setSaved(true);
@@ -299,7 +288,7 @@ export default function ProfilePage() {
   return (
     <motion.div
       className="max-w-lg mx-auto space-y-5 py-6"
-      variants={containerVariants}
+      variants={staggerContainer}
       initial="hidden"
       animate="show"
     >
@@ -307,7 +296,7 @@ export default function ProfilePage() {
 
       {/* Avatar / User Section */}
       <motion.div
-        variants={itemVariants}
+        variants={staggerItem}
         className="glass rounded-[2rem] p-5 flex items-center gap-4 shadow-lg shadow-brand-forest/5 relative overflow-hidden"
       >
         {/* Decorative organic shapes */}
@@ -351,7 +340,7 @@ export default function ProfilePage() {
       </motion.div>
 
       {/* Stats Grid */}
-      <motion.div variants={itemVariants} className="grid grid-cols-2 gap-3">
+      <motion.div variants={staggerItem} className="grid grid-cols-2 gap-3">
         {statCards.map((stat) => {
           const Icon = stat.icon;
           return (
@@ -362,7 +351,7 @@ export default function ProfilePage() {
               <div
                 className={`w-9 h-9 rounded-xl ${stat.iconBg} flex items-center justify-center`}
               >
-                <Icon className={`w-4.5 h-4.5 ${stat.iconColor}`} />
+                <Icon className={`w-5 h-5 ${stat.iconColor}`} />
               </div>
               <div>
                 <p className="text-xl font-bold text-brand-forest">
@@ -379,7 +368,7 @@ export default function ProfilePage() {
 
       {/* Cycle Settings */}
       <motion.section
-        variants={itemVariants}
+        variants={staggerItem}
         className="glass rounded-[2rem] p-5 space-y-5 shadow-md shadow-brand-forest/5"
       >
         <h3 className="text-xs font-bold uppercase tracking-widest text-brand-forest/60 flex items-center gap-2">
@@ -397,7 +386,7 @@ export default function ProfilePage() {
             type="date"
             value={date}
             onChange={(e) => setDate(e.target.value)}
-            max={new Date().toISOString().split("T")[0]}
+            max={getToday()}
             className="w-full py-3 px-4 border border-stone-200 rounded-xl text-stone-800 bg-white/60 focus:outline-none focus:ring-2 focus:ring-brand-sage/50 focus:border-brand-sage transition-shadow"
           />
         </label>
@@ -454,7 +443,7 @@ export default function ProfilePage() {
         <button
           onClick={handleSave}
           disabled={!date}
-          className="w-full py-3 px-6 rounded-2xl bg-brand-forest text-white font-semibold shadow-lg shadow-brand-forest/20 disabled:opacity-50 disabled:cursor-not-allowed transition-all active:scale-[0.98] flex items-center justify-center gap-2"
+          className="w-full py-3.5 px-6 rounded-2xl bg-brand-forest text-white text-base font-semibold shadow-lg shadow-brand-forest/20 disabled:opacity-50 disabled:cursor-not-allowed transition-all active:scale-[0.98] flex items-center justify-center gap-2"
         >
           {saved ? (
             <>
@@ -469,7 +458,7 @@ export default function ProfilePage() {
 
       {/* Quick Settings / Notifications */}
       <motion.section
-        variants={itemVariants}
+        variants={staggerItem}
         className="glass rounded-[2rem] p-5 space-y-4 shadow-md shadow-brand-forest/5"
       >
         <h3 className="text-xs font-bold uppercase tracking-widest text-brand-forest/60 flex items-center gap-2">
@@ -508,31 +497,11 @@ export default function ProfilePage() {
           </p>
         )}
 
-        {/* Cycle reminder toggle (UI-only) */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-brand-blush/30 flex items-center justify-center">
-              <Calendar className="w-4 h-4 text-pink-500" />
-            </div>
-            <span className="text-sm font-medium text-stone-700">
-              Напомняне за цикъл
-            </span>
-          </div>
-          <PremiumToggle
-            enabled={cycleReminder}
-            onToggle={() => setCycleReminder(!cycleReminder)}
-            label={
-              cycleReminder
-                ? "Изключи напомняне за цикъл"
-                : "Включи напомняне за цикъл"
-            }
-          />
-        </div>
       </motion.section>
 
       {/* Account actions */}
       <motion.section
-        variants={itemVariants}
+        variants={staggerItem}
         className="glass rounded-[2rem] divide-y divide-stone-200/50 shadow-md shadow-brand-forest/5 overflow-hidden"
       >
         <button
@@ -570,7 +539,7 @@ export default function ProfilePage() {
 
       {/* App info */}
       <motion.p
-        variants={itemVariants}
+        variants={staggerItem}
         className="text-center text-xs text-stone-400"
       >
         LURA App v2.0

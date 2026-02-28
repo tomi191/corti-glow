@@ -225,3 +225,31 @@ details > summary::-webkit-details-marker {
   font-style: italic;
   color: #57534e;
 }
+
+/* ============ Reduced Motion ============ */
+@media (prefers-reduced-motion: reduce) {
+  /* Disable CSS animations */
+  .animate-pulse-slow,
+  .animate-gentle-float,
+  .animate-fade-in-up,
+  .animate-pulse,
+  .animate-spin {
+    animation: none !important;
+  }
+
+  /* Disable SVG SMIL animations */
+  animate,
+  animateTransform,
+  animateMotion,
+  set {
+    display: none;
+  }
+
+  /* Disable CSS transitions on interactive elements */
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
