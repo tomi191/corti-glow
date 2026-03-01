@@ -76,7 +76,9 @@ export function getCyclePhase(
 ): CyclePhase {
   if (cycleDay <= 0) return "follicular";
   // Luteal phase is ~14 days; ovulation adapts to cycle length
-  const ovulationDay = cycleLength - 14;
+  // Ensure ovulationDay leaves at least 1 day for follicular phase
+  const rawOvulationDay = cycleLength - 14;
+  const ovulationDay = Math.max(rawOvulationDay, periodDuration + 3);
   if (cycleDay <= periodDuration) return "menstrual";
   if (cycleDay <= ovulationDay - 2) return "follicular";
   if (cycleDay <= ovulationDay + 1) return "ovulation";

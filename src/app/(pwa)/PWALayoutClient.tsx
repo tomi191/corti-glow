@@ -21,6 +21,9 @@ import {
   BarChart3,
   ShoppingBag,
   User,
+  Cloud,
+  CloudOff,
+  Loader2,
 } from "lucide-react";
 import BoxBreathingFAB from "@/components/pwa/BoxBreathingFAB";
 import IOSInstallBanner from "@/components/pwa/IOSInstallBanner";
@@ -56,7 +59,21 @@ export default function PWALayout({
   const prefersReducedMotion = useReducedMotion();
   const { user, isLoaded: clerkLoaded } = useUserSafe();
   const userName = usePwaStore((s) => s.userName);
+  const isSyncing = usePwaStore((s) => s.isSyncing);
   const firstName = userName || (clerkLoaded ? user?.firstName : null);
+  const [isOnline, setIsOnline] = useState(true);
+
+  useEffect(() => {
+    setIsOnline(navigator.onLine);
+    const goOnline = () => setIsOnline(true);
+    const goOffline = () => setIsOnline(false);
+    window.addEventListener("online", goOnline);
+    window.addEventListener("offline", goOffline);
+    return () => {
+      window.removeEventListener("online", goOnline);
+      window.removeEventListener("offline", goOffline);
+    };
+  }, []);
 
   // Sync local data with server when user is logged in
   usePwaSync();
@@ -81,8 +98,13 @@ export default function PWALayout({
             Lura
           </span>
           {todayDate && (
-            <span className="text-xs text-stone-400 font-medium">
+            <span className="text-xs text-stone-400 font-medium flex items-center gap-1">
               {todayDate}
+              {!isOnline ? (
+                <CloudOff className="w-3 h-3 text-stone-400" />
+              ) : isSyncing ? (
+                <Loader2 className="w-3 h-3 text-brand-sage animate-spin" />
+              ) : null}
             </span>
           )}
         </Link>

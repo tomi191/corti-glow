@@ -285,7 +285,7 @@ export default function CheckInPage() {
             transition={{ delay: 0.8 }}
           >
             <Link
-              href="/app/shop"
+              href="/app/shop?src=checkin_stress"
               onClick={() => trackPwaEvent("conversion_checkin_stress")}
               className="flex items-center gap-3 px-4 py-3 rounded-2xl bg-brand-forest/5 border border-brand-forest/10 w-full max-w-xs active:scale-[0.98] transition-transform"
             >

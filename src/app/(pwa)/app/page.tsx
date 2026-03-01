@@ -8,8 +8,11 @@ import {
   getDailyTip,
   getDailyPhaseTip,
   getDailyActions,
+  getPhaseForDate,
+  getPhaseInfo,
   type PhaseInfo,
   type DailyAction,
+  type CyclePhase,
 } from "@/lib/pwa-logic";
 import { isValidDateString, getToday, getDiffDays } from "@/lib/date-utils";
 import { trackPwaEvent } from "@/lib/pwa-analytics";
@@ -61,6 +64,7 @@ export default function AppDashboard() {
   const getCurrentPhase = usePwaStore((s) => s.getCurrentPhase);
   const lastPeriodDate = usePwaStore((s) => s.lastPeriodDate);
   const cycleLength = usePwaStore((s) => s.cycleLength);
+  const periodDuration = usePwaStore((s) => s.periodDuration);
   const checkIns = usePwaStore((s) => s.checkIns);
   const hasSeenTour = usePwaStore((s) => s.hasSeenTour);
   const getStreak = usePwaStore((s) => s.getStreak);
@@ -123,6 +127,21 @@ export default function AppDashboard() {
     : null;
   const daysSinceLastCheckIn = lastCheckInDate ? getDiffDays(lastCheckInDate, getToday()) : null;
 
+  // Phase transition: detect if phase changed since last check-in
+  const PHASE_TRANSITION_MESSAGES: Record<CyclePhase, string> = {
+    menstrual: "Менструалната фаза започва — по-спокойно днес, тялото се нуждае от почивка.",
+    follicular: "Фоликуларната фаза е тук — енергията постепенно се връща!",
+    ovulation: "Овулация — обикновено най-енергичните ти дни!",
+    luteal: "Лутеална фаза — нормално е да забавиш темпо.",
+  };
+  let phaseTransitionMsg: string | null = null;
+  if (hasSetup && lastCheckInDate && daysSinceLastCheckIn && daysSinceLastCheckIn >= 1) {
+    const lastPhase = getPhaseForDate(lastCheckInDate, lastPeriodDate, cycleLength, periodDuration);
+    if (lastPhase && lastPhase !== phase) {
+      phaseTransitionMsg = PHASE_TRANSITION_MESSAGES[phase];
+    }
+  }
+
   return (
     <div className="max-w-lg mx-auto space-y-6 py-6">
       {/* App Tour Modal */}
@@ -151,6 +170,22 @@ export default function AppDashboard() {
           </h1>
         )}
       </motion.div>
+
+      {/* Phase transition banner */}
+      {phaseTransitionMsg && (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="bg-gradient-to-r from-brand-sage/20 to-brand-cream/20 border border-brand-sage/30 rounded-2xl px-4 py-3 flex items-center gap-3"
+        >
+          <div className="w-8 h-8 rounded-full bg-brand-sage/30 flex items-center justify-center flex-shrink-0">
+            <Sparkles className="w-4 h-4 text-brand-forest" />
+          </div>
+          <p className="text-xs text-stone-700 leading-relaxed font-medium">
+            {phaseTransitionMsg}
+          </p>
+        </motion.div>
+      )}
 
       {/* Glow Ring Section */}
       <motion.section
@@ -410,7 +445,7 @@ export default function AppDashboard() {
           transition={{ delay: 0.5 }}
         >
           <Link
-            href="/app/shop"
+            href="/app/shop?src=dashboard_luteal"
             onClick={() => trackPwaEvent("conversion_dashboard_luteal")}
             className="block glass rounded-[2rem] p-5 space-y-2 border border-brand-sage/20 active:scale-[0.99] transition-transform"
           >

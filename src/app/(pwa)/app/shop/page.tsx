@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef, type PointerEvent } from "react";
+import { useState, useEffect, useCallback, useRef, type PointerEvent, useMemo } from "react";
+import { useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { usePwaStore } from "@/stores/pwa-store";
@@ -70,6 +71,7 @@ function ShimmerSkeleton({ className }: { className?: string }) {
 
 
 export default function ShopPage() {
+  const searchParams = useSearchParams();
   const [mounted, setMounted] = useState(false);
   const [waitlistOpen, setWaitlistOpen] = useState(false);
   const getCurrentPhase = usePwaStore((s) => s.getCurrentPhase);
@@ -78,10 +80,11 @@ export default function ShopPage() {
 
   const productTilt = useTilt(5);
 
+  const source = searchParams.get("src");
   useEffect(() => {
     setMounted(true);
-    trackPwaEvent("shop_viewed");
-  }, []);
+    trackPwaEvent("shop_viewed", { source: source ?? "direct" });
+  }, [source]);
 
   if (!mounted) {
     return (
@@ -104,7 +107,7 @@ export default function ShopPage() {
   function handleWaitlist() {
     haptic.medium();
     setWaitlistOpen(true);
-    trackPwaEvent("shop_waitlist_clicked");
+    trackPwaEvent("shop_waitlist_clicked", { source: source ?? "direct" });
   }
 
   return (

@@ -105,7 +105,7 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
     if (selectedContraception) setContraception(selectedContraception);
     if (periodDate) setLastPeriodDate(periodDate);
     setCycleLength(cycleLen);
-    setPeriodDuration(periodDur);
+    setPeriodDuration(Math.min(periodDur, cycleLen - 1));
     if (email.trim()) setStoreEmail(email.trim());
     onComplete();
   }, [name, selectedAge, selectedConcerns, selectedContraception, periodDate, cycleLen, periodDur, email, setUserName, setAgeRange, setConcerns, setContraception, setLastPeriodDate, setCycleLength, setPeriodDuration, setStoreEmail, onComplete]);

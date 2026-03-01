@@ -162,8 +162,10 @@ export default function ProfilePage() {
       if (date > today) return;
       setLastPeriodDate(date);
     }
+    // Ensure period duration doesn't exceed cycle length
+    const safeDuration = Math.min(duration, length - 1);
     setCycleLength(length);
-    setPeriodDuration(duration);
+    setPeriodDuration(safeDuration);
     setSaved(true);
     haptic.success();
     setTimeout(() => setSaved(false), 2000);
