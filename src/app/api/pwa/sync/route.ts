@@ -3,6 +3,7 @@ import type { NextRequest } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { z } from "zod";
 import { createServerClient } from "@/lib/supabase/server";
+import { computeAdaptiveCycleLength } from "@/lib/pwa-logic";
 
 // --- Validation ---
 
@@ -180,7 +181,26 @@ export async function POST(request: NextRequest) {
       .order("date", { ascending: false })
       .limit(90);
 
-    // --- 3. Build response ---
+    // --- 3. Adaptive cycle length ---
+    // Compute average cycle length from real period starts (needs 2+ periods)
+    const adaptiveCheckIns = (mergedCheckIns ?? []).map((ci: { date: string; period_started: boolean }) => ({
+      date: ci.date,
+      periodStarted: ci.period_started,
+    }));
+    const adaptiveCycleLength = computeAdaptiveCycleLength(adaptiveCheckIns);
+
+    if (adaptiveCycleLength !== null && adaptiveCycleLength !== serverProfile.cycle_length) {
+      const { error: cycleUpdateError } = await sb
+        .from("pwa_profiles")
+        .update({ cycle_length: adaptiveCycleLength, updated_at: now })
+        .eq("clerk_user_id", userId);
+
+      if (!cycleUpdateError) {
+        serverProfile.cycle_length = adaptiveCycleLength;
+      }
+    }
+
+    // --- 4. Build response ---
     const responseCheckIns = (mergedCheckIns ?? []).map((ci: {
       date: string;
       period_started: boolean;

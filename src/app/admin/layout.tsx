@@ -12,6 +12,7 @@ import {
   Users,
   UserPlus,
   BarChart3,
+  Smartphone,
   Settings,
   LogOut,
   Menu,
@@ -59,6 +60,11 @@ const navItems = [
     href: "/admin/analytics",
     label: "Аналитика",
     icon: BarChart3,
+  },
+  {
+    href: "/admin/pwa-users",
+    label: "PWA Потребители",
+    icon: Smartphone,
   },
   {
     href: "/admin/nastroyki",

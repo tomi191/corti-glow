@@ -1,19 +1,17 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef, type PointerEvent, useMemo } from "react";
+import { useState, useEffect, useCallback, useRef, type PointerEvent } from "react";
 import { useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { usePwaStore } from "@/stores/pwa-store";
 import { trackPwaEvent } from "@/lib/pwa-analytics";
-import { WaitlistModal } from "@/components/ui/WaitlistModal";
+import { AddToCartButton } from "@/components/cart/AddToCartButton";
 import { getPhaseRecommendation, getConcernRecommendations, type CyclePhase, type ConcernOption } from "@/lib/pwa-logic";
-import { haptic } from "@/lib/haptics";
 import { staggerContainer, staggerItem } from "@/lib/framer-variants";
 import {
   Sparkles,
   Check,
-  Bell,
   Star,
   Tag,
   Package,
@@ -73,7 +71,6 @@ function ShimmerSkeleton({ className }: { className?: string }) {
 export default function ShopPage() {
   const searchParams = useSearchParams();
   const [mounted, setMounted] = useState(false);
-  const [waitlistOpen, setWaitlistOpen] = useState(false);
   const getCurrentPhase = usePwaStore((s) => s.getCurrentPhase);
   const lastPeriodDate = usePwaStore((s) => s.lastPeriodDate);
   const concerns = usePwaStore((s) => s.concerns);
@@ -103,12 +100,6 @@ export default function ShopPage() {
   const hasSetup = !!lastPeriodDate;
   const recommendation = getPhaseRecommendation(phase);
   const concernRecs = getConcernRecommendations(concerns);
-
-  function handleWaitlist() {
-    haptic.medium();
-    setWaitlistOpen(true);
-    trackPwaEvent("shop_waitlist_clicked", { source: source ?? "direct" });
-  }
 
   return (
     <motion.div
@@ -271,13 +262,15 @@ export default function ShopPage() {
                   лв.
                 </span>
               </div>
-              <button
-                onClick={handleWaitlist}
-                className="flex items-center gap-2 px-5 py-3.5 bg-brand-forest text-white rounded-2xl text-base font-semibold shadow-lg shadow-brand-forest/20 active:scale-[0.96] transition-transform"
-              >
-                <Bell className="w-4 h-4" />
-                Запиши ме първа
-              </button>
+              <AddToCartButton
+                id="starter-box"
+                productId="corti-glow"
+                variantId="starter-box"
+                title="Corti-Glow Старт"
+                price={49.99}
+                image={productInfo.image}
+                className="flex items-center gap-2 px-5 py-3.5 rounded-2xl text-base font-semibold shadow-lg shadow-brand-forest/20"
+              />
             </div>
           </div>
         </div>
@@ -344,13 +337,15 @@ export default function ShopPage() {
                     {variant.compareAtPrice.toFixed(2)} лв.
                   </span>
                 )}
-                <button
-                  onClick={handleWaitlist}
-                  className="mt-1 flex items-center gap-1.5 px-3 py-1.5 bg-brand-forest text-white rounded-xl text-[11px] font-semibold active:scale-[0.96] transition-transform shadow-sm"
-                >
-                  <Bell className="w-3 h-3" />
-                  Запиши ме
-                </button>
+                <AddToCartButton
+                  id={variant.id}
+                  productId="corti-glow"
+                  variantId={variant.id}
+                  title={`Corti-Glow ${variant.name}`}
+                  price={variant.price}
+                  image={variant.image}
+                  className="mt-1 px-3 py-1.5 rounded-xl text-[11px] font-semibold shadow-sm"
+                />
               </div>
             </motion.div>
           ))}
@@ -381,25 +376,6 @@ export default function ShopPage() {
         </div>
       </motion.div>
 
-      {/* Pre-launch info */}
-      <motion.div
-        variants={staggerItem}
-        className="glass rounded-[2rem] p-5 text-center space-y-2"
-      >
-        <p className="text-sm font-semibold text-brand-forest">
-          Corti-Glow се произвежда в момента
-        </p>
-        <p className="text-xs text-stone-500 leading-relaxed">
-          Запиши се в списъка и бъди първата с <span className="font-bold text-brand-forest">20% отстъпка</span> при старта.
-        </p>
-      </motion.div>
-
-      {/* Waitlist Modal */}
-      <WaitlistModal
-        isOpen={waitlistOpen}
-        onClose={() => setWaitlistOpen(false)}
-        source="pwa-shop"
-      />
     </motion.div>
   );
 }

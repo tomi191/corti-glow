@@ -559,6 +559,34 @@ export function getGlowScoreTrend(checkIns: DailyCheckIn[]): {
   };
 }
 
+// ─── Adaptive Cycle Length (BL3) ───
+
+/**
+ * Computes average cycle length from real period starts in check-in history.
+ * Needs at least 2 period starts to calculate. Filters out outlier intervals (<18 or >45 days).
+ * Returns null if not enough data — caller should keep the manual cycleLength.
+ */
+export function computeAdaptiveCycleLength(
+  checkIns: { date: string; periodStarted: boolean }[]
+): number | null {
+  const periodDates = checkIns
+    .filter((c) => c.periodStarted)
+    .map((c) => c.date)
+    .sort();
+
+  if (periodDates.length < 2) return null;
+
+  const intervals: number[] = [];
+  for (let i = 1; i < periodDates.length; i++) {
+    const days = getDiffDays(periodDates[i - 1], periodDates[i]);
+    if (days >= 18 && days <= 45) intervals.push(days);
+  }
+
+  if (intervals.length === 0) return null;
+  const avg = intervals.reduce((a, b) => a + b, 0) / intervals.length;
+  return Math.round(clamp(avg, 18, 45));
+}
+
 // ─── Greeting ───
 
 export function getGreeting(): string {
