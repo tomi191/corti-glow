@@ -69,7 +69,7 @@ export async function POST(request: NextRequest) {
     let serverProfile;
 
     if (!existingProfile) {
-      // First sync: create server profile from client data
+      // First sync ever: create server profile from client data
       const { data, error } = await sb.from("pwa_profiles").insert({
         clerk_user_id: userId,
         last_period_date: profile.lastPeriodDate,
@@ -91,31 +91,43 @@ export async function POST(request: NextRequest) {
       }
       serverProfile = data;
     } else {
-      // Existing profile: client data overwrites (client is always "current")
-      const { data, error } = await sb
-        .from("pwa_profiles")
-        .update({
-          last_period_date: profile.lastPeriodDate,
-          cycle_length: profile.cycleLength,
-          period_duration: profile.periodDuration,
-          user_name: profile.userName,
-          age_range: profile.ageRange,
-          concerns: profile.concerns,
-          contraception: profile.contraception,
-          has_seen_tour: profile.hasSeenTour,
-          push_enabled: profile.pushEnabled,
-          ios_install_dismissed: profile.iosInstallDismissed,
-          updated_at: now,
-        })
-        .eq("clerk_user_id", userId)
-        .select()
-        .single();
+      // Determine who wins: client or server
+      // - New device (lastSyncedAt null) + server exists → server wins
+      // - Another device updated since our last sync → server wins
+      // - Otherwise → client wins (local changes are newer)
+      const serverUpdatedAt = existingProfile.updated_at;
+      const clientIsNewer = lastSyncedAt && serverUpdatedAt <= lastSyncedAt;
 
-      if (error) {
-        console.error("Profile update error:", error);
-        return NextResponse.json({ error: "Failed to update profile" }, { status: 500 });
+      if (clientIsNewer) {
+        // Client wins: update server with client data
+        const { data, error } = await sb
+          .from("pwa_profiles")
+          .update({
+            last_period_date: profile.lastPeriodDate,
+            cycle_length: profile.cycleLength,
+            period_duration: profile.periodDuration,
+            user_name: profile.userName,
+            age_range: profile.ageRange,
+            concerns: profile.concerns,
+            contraception: profile.contraception,
+            has_seen_tour: profile.hasSeenTour,
+            push_enabled: profile.pushEnabled,
+            ios_install_dismissed: profile.iosInstallDismissed,
+            updated_at: now,
+          })
+          .eq("clerk_user_id", userId)
+          .select()
+          .single();
+
+        if (error) {
+          console.error("Profile update error:", error);
+          return NextResponse.json({ error: "Failed to update profile" }, { status: 500 });
+        }
+        serverProfile = data;
+      } else {
+        // Server wins: return existing server data (don't overwrite)
+        serverProfile = existingProfile;
       }
-      serverProfile = data;
     }
 
     // --- 2. Sync Check-ins ---

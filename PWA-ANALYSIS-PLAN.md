@@ -1,10 +1,72 @@
 # LURA PWA — Пълен Анализ и План за Действие
 
-> Генериран: 2026-03-01 | Статус: В изпълнение
+> Генериран: 2026-03-01 | Обновен: 2026-03-01 | Статус: В изпълнение
 
 ---
 
-## I. БИЗНЕС ЛОГИКА — Намерени проблеми
+## I. ЗАВЪРШЕНИ СИСТЕМИ ✅
+
+| # | Система | Дата |
+|---|---------|------|
+| SYS1 | Server-side PWA профил (pwa_profiles + pwa_checkins) | 2026-03-01 |
+| SYS2 | GDPR Data Export endpoint (`GET /api/pwa/export`) | 2026-03-01 |
+| SYS3 | Account Deletion cascade (`DELETE /api/pwa/delete-account`) | 2026-03-01 |
+| SYS4 | Sync API endpoint (`POST /api/pwa/sync`) | 2026-03-01 |
+| SYS5 | Auto-sync on Clerk login (`usePwaSync` hook) | 2026-03-01 |
+
+---
+
+## II. КРИТИЧНИ FIX-ОВЕ (преди launch)
+
+| # | Проблем | Приоритет | Статус |
+|---|---------|-----------|--------|
+| CF1 | Multi-device sync презаписва данни (client always wins) | КРИТИЧЕН | ⬜ |
+| CF2 | Sync не се тригерва след check-in (само при app load) | КРИТИЧЕН | ⬜ |
+| CF3 | Analytics events записват user_id: null за logged-in users | КРИТИЧЕН | ⬜ |
+
+---
+
+## III. RETENTION ПРОПУСКИ
+
+| # | Проблем | Приоритет | Статус |
+|---|---------|-----------|--------|
+| R1 | Няма scheduled push reminders (инфраструктура има, sender липсва) | КРИТИЧЕН | ⬜ |
+| R2 | Streak скрит в Profile (не се вижда на dashboard) | ВИСОК | ⬜ |
+| R3 | Няма loss aversion trigger ("1 ден до 7-дневна серия!") | ВИСОК | ⬜ |
+| R4 | Няма micro-win след check-in ("Sleep +2 vs вчера!") | ВИСОК | ⬜ |
+| R5 | Няма re-engagement при 3+ дни отсъствие | ВИСОК | ⬜ |
+| R6 | Breathing не е свързано със stress (няма trigger при stress >= 7) | ВИСОК | ⬜ |
+| R7 | Няма phase transition celebration/notification | СРЕДЕН | ⬜ |
+
+---
+
+## IV. МОНЕТИЗАЦИЯ ПРОПУСКИ
+
+| # | Проблем | Revenue Impact | Статус |
+|---|---------|----------------|--------|
+| M1 | Concerns от onboarding НЕ се ползват за персонализация | HIGH | ⬜ |
+| M2 | Нула conversion triggers (stress >= 7, лутеална + PMS) | HIGH | ⬜ |
+| M3 | Shop е само waitlist (няма реален purchase flow) | HIGH | ⬜ |
+| M4 | Няма attribution tracking (PWA → shop → покупка) | HIGH | ⬜ |
+| M5 | Няма email capture при onboarding | HIGH | ⬜ |
+| M6 | Няма social proof (testimonials, "X жени ползват LURA") | MEDIUM | ⬜ |
+
+---
+
+## V. ТЕХНИЧЕСКИ ПРОПУСКИ
+
+| # | Система | Статус | Приоритет |
+|---|---------|--------|-----------|
+| T1 | Offline→online sync (navigator.online event) | ❌ Липсва | ВИСОК |
+| T2 | pwa_daily_stats aggregation | ⚠️ Таблица празна | СРЕДЕН |
+| T3 | PWA offline asset caching (SW кешира само push) | ❌ Липсва | СРЕДЕН |
+| T4 | Timezone поле в pwa_profiles | ❌ Липсва | СРЕДЕН |
+| T5 | Sync status indicator в UI | ❌ Липсва | СРЕДЕН |
+| T6 | Admin PWA user management | ❌ Липсва | НИСЪК |
+
+---
+
+## VI. БИЗНЕС ЛОГИКА
 
 | # | Проблем | Тежест | Статус |
 |---|---------|--------|--------|
@@ -14,53 +76,25 @@
 
 ---
 
-## II. ПОТРЕБИТЕЛСКИ FLOW — Критични пропуски
+## VII. ТОП 10 ДЕЙСТВИЯ ПО ПРИОРИТЕТ
 
-| # | Проблем | Приоритет | Статус |
-|---|---------|-----------|--------|
-| UX1 | Period toggle скрит в expanded view | ВИСОКО | ⬜ |
-| UX2 | Няма email collection при onboarding | ВИСОКО | ⬜ |
-| UX3 | Insights не водят до действие (няма CTA) | ВИСОКО | ⬜ |
-| UX4 | Check-in → Dead end (няма micro-win) | ВИСОКО | ⬜ |
-| UX5 | Лични данни от onboarding не се редактират | СРЕДНО | ⬜ |
-| UX6 | Няма фаза-промяна countdown | СРЕДНО | ⬜ |
-| UX7 | Дихателното упражнение изолирано от flow | СРЕДНО | ⬜ |
-| UX8 | PCOS/нередовни цикли не се обработват | СРЕДНО | ⬜ |
+### Блокиращи (сега)
+- [ ] **1. Fix multi-device sync** — timestamp comparison, server wins if newer
+- [ ] **2. Sync след check-in** — trigger syncWithServer() в saveCheckIn()
+- [ ] **3. Fix analytics user_id** — подавай Clerk userId при event logging
 
----
+### Retention (Седмица 1)
+- [ ] **4. Scheduled push reminders** — cron/Edge Function + timezone
+- [ ] **5. Streak на dashboard** — видим с loss aversion trigger
+- [ ] **6. Micro-win след check-in** — персонализиран feedback
 
-## III. ДАННИ И СИСТЕМИ — Липсващи компоненти
-
-| # | Система | Статус | Приоритет |
-|---|---------|--------|-----------|
-| SYS1 | Server-side PWA профил (pwa_profiles + pwa_checkins) | ❌ Липсва | БЛОКИРАЩ |
-| SYS2 | GDPR Data Export endpoint | ❌ Липсва | БЛОКИРАЩ |
-| SYS3 | Account Deletion cascade | ❌ Липсва | БЛОКИРАЩ |
-| SYS4 | Scheduled daily push reminders | ❌ Липсва | ВИСОКО |
-| SYS5 | Device sync при login | ❌ Липсва | ВИСОКО |
-| SYS6 | Admin PWA analytics dashboard | ❌ Липсва | СРЕДНО |
-| SYS7 | Notification time selection | ❌ Липсва | СРЕДНО |
-| SYS8 | pwa_daily_stats aggregation | ⚠️ Таблица има, не се попълва | НИСКО |
-
----
-
-## IV. ТОП 10 ДЕЙСТВИЯ ПО ПРИОРИТЕТ
-
-### Блокиращи (преди launch)
-- [ ] **1. Server-side PWA профил** — `pwa_profiles` + `pwa_checkins` таблици, sync API
-- [ ] **2. GDPR endpoints** — data export + account deletion cascade
-- [ ] **3. Period toggle на видно място** — преди expand
-
-### Retention (Седмица 1-2)
-- [ ] **4. Scheduled daily reminder** — cron + timezone push
-- [ ] **5. Micro-win след check-in** — "Sleep +2 vs вчера!"
-- [ ] **6. Insight → Action CTA** — "Висок стрес? Дихателно →"
-- [ ] **7. Email collection** — стъпка в onboarding
+### Монетизация (Седмица 2)
+- [ ] **7. Concern→ingredient mapping** — персонализирани product recs
+- [ ] **8. Conversion triggers** — модал при stress >= 7 с product link
+- [ ] **9. Email capture** — стъпка в onboarding
 
 ### Growth (Седмица 3-4)
-- [ ] **8. Phase countdown на dashboard** — "3 дни до овулация"
-- [ ] **9. Symptom-to-ingredient mapping** — персонализирани препоръки
-- [ ] **10. Device sync** — data merge при login на нов телефон
+- [ ] **10. Re-engagement flow** — welcome back при 3+ дни отсъствие
 
 ---
 

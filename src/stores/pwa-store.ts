@@ -123,6 +123,10 @@ export const usePwaStore = create<PwaStore>()(
 
           return updates;
         });
+
+        // Fire-and-forget: sync with server after check-in
+        // Small delay to let Zustand persist finish first
+        setTimeout(() => get().syncWithServer(), 500);
       },
 
       markTourSeen: () => set({ hasSeenTour: true }),

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { auth } from "@clerk/nextjs/server";
 import { createServerClient } from "@/lib/supabase/server";
 import { z } from "zod";
 import { createRateLimiter, getClientIp } from "@/lib/rate-limit";
@@ -43,12 +44,21 @@ export async function POST(request: NextRequest) {
 
     const { events } = validated.data;
 
+    // Try to extract Clerk userId from cookies (non-blocking, stays null for anon)
+    let userId: string | null = null;
+    try {
+      const { userId: clerkId } = await auth();
+      userId = clerkId;
+    } catch {
+      // Auth unavailable — events stay anonymous
+    }
+
     // Map events for Supabase insert
     const rows = events.map((event) => ({
       session_id: event.session_id,
       event_name: event.event_name,
       event_data: event.event_data,
-      user_id: null as string | null, // No auth on this route
+      user_id: userId,
       // Use client timestamp if provided, otherwise server will use DEFAULT NOW()
       ...(event.timestamp ? { created_at: event.timestamp } : {}),
     }));
