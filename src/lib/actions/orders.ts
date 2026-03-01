@@ -28,14 +28,31 @@ interface StockCheckResult {
   }>;
 }
 
-// Generate unique order number
-function generateOrderNumber(): string {
-  const date = new Date();
-  const year = date.getFullYear().toString().slice(-2);
-  const month = (date.getMonth() + 1).toString().padStart(2, "0");
-  const day = date.getDate().toString().padStart(2, "0");
-  const random = Math.random().toString(36).substring(2, 8).toUpperCase();
-  return `LL${year}${month}${day}-${random}`;
+// Generate sequential order number (LL-1001, LL-1002, ...)
+async function generateOrderNumber(): Promise<string> {
+  const supabase = createServerClient();
+
+  // Find the highest sequential number from existing orders
+  const { data } = await supabase
+    .from("orders")
+    .select("order_number")
+    .order("created_at", { ascending: false })
+    .limit(50);
+
+  let maxNum = 1000;
+  if (data) {
+    for (const row of data) {
+      const match = (row as { order_number: string }).order_number.match(
+        /^LL-(\d+)$/
+      );
+      if (match) {
+        const num = parseInt(match[1]);
+        if (num > maxNum) maxNum = num;
+      }
+    }
+  }
+
+  return `LL-${maxNum + 1}`;
 }
 
 // Create a new order
@@ -44,7 +61,7 @@ export async function createOrder(
 ): Promise<{ order: Order | null; error: string | null }> {
   try {
     const supabase = createServerClient();
-    const orderNumber = generateOrderNumber();
+    const orderNumber = await generateOrderNumber();
 
     const insertData: OrderInsert = {
       ...data,

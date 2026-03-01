@@ -6,10 +6,11 @@ import type {
   EcontTrackingResponse,
   EcontTrackingEvent,
 } from "./types";
+import type { Order } from "@/lib/supabase/types";
 
 // LuraLab sender info (update with real data)
 const SENDER_INFO = {
-  personName: process.env.ECONT_SENDER_PERSON || "Тодор Маринов",
+  personName: process.env.ECONT_SENDER_PERSON || "Служител",
   companyName: process.env.ECONT_SENDER_COMPANY || "\"Лура Лаб\" ЕООД",
   phone: process.env.ECONT_SENDER_PHONE || "+359888123456",
   email: process.env.ECONT_SENDER_EMAIL || "orders@luralab.eu",
@@ -190,21 +191,23 @@ export async function validateShipment(
   return { valid: true };
 }
 
+// Actual Econt API response structure for getShipmentStatuses
 interface TrackingResponse {
-  shipments: Array<{
-    shipmentNumber: string;
+  shipmentStatuses: Array<{
     status: {
-      status: string;
-      statusDescription: string;
+      shipmentNumber: string;
+      shortDeliveryStatus: string;
+      trackingEvents: Array<{
+        time: number; // millisecond timestamp
+        destinationDetails: string;
+        destinationType: string;
+        officeName: string | null;
+        cityName: string | null;
+      }>;
+      deliveryTime: number | null; // millisecond timestamp
+      expectedDeliveryDate: number | null; // millisecond timestamp
     };
-    trackingEvents: Array<{
-      eventTime: string;
-      eventDescription: string;
-      eventDetails?: string;
-      officeName?: string;
-    }>;
-    deliveryDate?: string;
-    expectedDeliveryDate?: string;
+    error: string | null;
   }>;
 }
 
@@ -218,28 +221,33 @@ export async function trackShipment(
     shipmentNumber,
   ]);
 
-  if (response.error || !response.data?.shipments?.[0]) {
+  const shipmentStatus = response.data?.shipmentStatuses?.[0];
+  if (response.error || !shipmentStatus?.status) {
     console.error("Failed to track shipment:", response.error);
     return null;
   }
 
-  const shipment = response.data.shipments[0];
+  const s = shipmentStatus.status;
 
-  const events: EcontTrackingEvent[] = (shipment.trackingEvents || []).map(
+  const events: EcontTrackingEvent[] = (s.trackingEvents || []).map(
     (event) => ({
-      time: event.eventTime,
-      event: event.eventDescription,
-      details: event.eventDetails || "",
-      office: event.officeName,
+      time: new Date(event.time).toISOString(),
+      event: event.destinationDetails,
+      details: event.destinationType || "",
+      office: event.officeName || event.cityName || undefined,
     })
   );
 
   return {
-    shipmentNumber: shipment.shipmentNumber,
-    status: shipment.status?.statusDescription || "Unknown",
+    shipmentNumber: s.shipmentNumber,
+    status: s.shortDeliveryStatus || "Unknown",
     events,
-    deliveredDate: shipment.deliveryDate,
-    expectedDeliveryDate: shipment.expectedDeliveryDate,
+    deliveredDate: s.deliveryTime
+      ? new Date(s.deliveryTime).toISOString()
+      : undefined,
+    expectedDeliveryDate: s.expectedDeliveryDate
+      ? new Date(s.expectedDeliveryDate).toISOString()
+      : undefined,
   };
 }
 
@@ -357,4 +365,29 @@ export async function syncOrderToDelivery(params: {
     console.error("[Econt Delivery] Sync error:", error);
     return false;
   }
+}
+
+// Build CreateShipmentParams from an Order object
+// Used for auto-creating shipments on order creation
+export function buildShipmentParamsFromOrder(order: Order): CreateShipmentParams {
+  const addr = order.shipping_address as Record<string, string>;
+  const isOffice = order.shipping_method === "econt_office";
+
+  return {
+    receiverName: `${order.customer_first_name} ${order.customer_last_name}`,
+    receiverPhone: order.customer_phone,
+    receiverEmail: order.customer_email,
+    deliveryMethod: isOffice ? "office" : "address",
+    officeCode: isOffice ? addr?.officeCode : undefined,
+    address: !isOffice
+      ? {
+          city: addr?.city || "",
+          postCode: addr?.postCode,
+          fullAddress: addr?.fullAddress || "",
+        }
+      : undefined,
+    orderNumber: order.order_number,
+    codAmount: order.payment_method === "cod" ? order.total : undefined,
+    declaredValue: order.total,
+  };
 }

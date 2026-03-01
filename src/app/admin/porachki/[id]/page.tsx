@@ -18,6 +18,7 @@ import {
   AlertCircle,
   Printer,
   RefreshCw,
+  ExternalLink,
 } from "lucide-react";
 import { formatPrice } from "@/lib/utils";
 import type { Order, OrderStatus } from "@/lib/supabase/types";
@@ -64,6 +65,19 @@ const paymentMethodLabels: Record<string, string> = {
   cod: "Наложен платеж",
 };
 
+interface EcontTracking {
+  shipmentNumber: string;
+  status: string;
+  events: Array<{
+    time: string;
+    event: string;
+    details: string;
+    office?: string;
+  }>;
+  deliveredDate?: string;
+  expectedDeliveryDate?: string;
+}
+
 export default function OrderDetailPage() {
   const params = useParams();
   const router = useRouter();
@@ -72,6 +86,8 @@ export default function OrderDetailPage() {
   const [isUpdating, setIsUpdating] = useState(false);
   const [isCreatingShipment, setIsCreatingShipment] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [tracking, setTracking] = useState<EcontTracking | null>(null);
+  const [isLoadingTracking, setIsLoadingTracking] = useState(false);
 
   const orderId = params.id as string;
 
@@ -91,11 +107,33 @@ export default function OrderDetailPage() {
     }
   };
 
+  const fetchTracking = async (trackingNumber: string) => {
+    setIsLoadingTracking(true);
+    try {
+      const res = await fetch(`/api/econt/track/${trackingNumber}`);
+      if (res.ok) {
+        const data = await res.json();
+        setTracking(data);
+      }
+    } catch {
+      // Silently fail — tracking is optional info
+    } finally {
+      setIsLoadingTracking(false);
+    }
+  };
+
   useEffect(() => {
     if (orderId) {
       fetchOrder();
     }
   }, [orderId]);
+
+  // Auto-fetch tracking when order has a tracking number
+  useEffect(() => {
+    if (order?.econt_tracking_number) {
+      fetchTracking(order.econt_tracking_number);
+    }
+  }, [order?.econt_tracking_number]);
 
   const handleStatusChange = async (newStatus: OrderStatus) => {
     if (!order) return;
@@ -376,14 +414,137 @@ export default function OrderDetailPage() {
               </div>
 
               {order.econt_tracking_number && (
-                <div className="mt-4 p-4 bg-green-50 border border-green-200 rounded-xl">
-                  <div className="flex items-center gap-2 text-green-700">
-                    <CheckCircle className="w-5 h-5" />
-                    <span className="font-medium">Товарителница създадена</span>
+                <div className="mt-4 space-y-3">
+                  {/* Shipment number + status */}
+                  <div className="p-4 bg-green-50 border border-green-200 rounded-xl">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2 text-green-700">
+                        <CheckCircle className="w-5 h-5" />
+                        <span className="font-medium">
+                          Товарителница: {order.econt_tracking_number}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() =>
+                            fetchTracking(order.econt_tracking_number!)
+                          }
+                          disabled={isLoadingTracking}
+                          className="p-1.5 hover:bg-green-100 rounded-lg transition"
+                          title="Обнови статус"
+                        >
+                          <RefreshCw
+                            className={`w-4 h-4 text-green-600 ${
+                              isLoadingTracking ? "animate-spin" : ""
+                            }`}
+                          />
+                        </button>
+                        <a
+                          href={`https://www.econt.com/services/track-shipment/${order.econt_tracking_number}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="p-1.5 hover:bg-green-100 rounded-lg transition"
+                          title="Виж в Еконт"
+                        >
+                          <ExternalLink className="w-4 h-4 text-green-600" />
+                        </a>
+                      </div>
+                    </div>
+
+                    {/* Econt delivery status */}
+                    {tracking && (
+                      <div className="mt-3 pt-3 border-t border-green-200">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-sm font-medium text-green-800">
+                            Статус: {tracking.status}
+                          </span>
+                          {tracking.expectedDeliveryDate && (
+                            <span className="text-xs text-green-600">
+                              Очаквана доставка:{" "}
+                              {new Date(
+                                tracking.expectedDeliveryDate
+                              ).toLocaleDateString("bg-BG")}
+                            </span>
+                          )}
+                        </div>
+                        {tracking.deliveredDate && (
+                          <p className="text-xs text-green-600 mb-2">
+                            Доставена на:{" "}
+                            {new Date(
+                              tracking.deliveredDate
+                            ).toLocaleDateString("bg-BG", {
+                              day: "numeric",
+                              month: "long",
+                              year: "numeric",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })}
+                          </p>
+                        )}
+                      </div>
+                    )}
+
+                    {isLoadingTracking && !tracking && (
+                      <div className="mt-3 pt-3 border-t border-green-200 flex items-center gap-2 text-sm text-green-600">
+                        <div className="w-4 h-4 border-2 border-green-500 border-t-transparent rounded-full animate-spin" />
+                        Зареждане на статус...
+                      </div>
+                    )}
                   </div>
-                  <p className="text-sm text-green-600 mt-1">
-                    Номер: {order.econt_tracking_number}
-                  </p>
+
+                  {/* Tracking events timeline */}
+                  {tracking && tracking.events.length > 0 && (
+                    <div className="p-4 bg-stone-50 border border-stone-200 rounded-xl">
+                      <h3 className="text-sm font-semibold text-stone-700 mb-3">
+                        История на пратката
+                      </h3>
+                      <div className="space-y-3">
+                        {tracking.events.map((event, index) => (
+                          <div key={index} className="flex gap-3">
+                            <div className="flex flex-col items-center">
+                              <div
+                                className={`w-2 h-2 rounded-full mt-1.5 ${
+                                  index === 0
+                                    ? "bg-[#2D4A3E]"
+                                    : "bg-stone-300"
+                                }`}
+                              />
+                              {index < tracking.events.length - 1 && (
+                                <div className="w-px flex-1 bg-stone-200 mt-1" />
+                              )}
+                            </div>
+                            <div className="pb-3">
+                              <p className="text-sm font-medium text-stone-800">
+                                {event.event}
+                              </p>
+                              {event.details &&
+                                !["prepared", "processing", "delivered", "returned"].includes(event.details) && (
+                                <p className="text-xs text-stone-500">
+                                  {event.details}
+                                </p>
+                              )}
+                              {event.office && (
+                                <p className="text-xs text-stone-400">
+                                  {event.office}
+                                </p>
+                              )}
+                              <p className="text-xs text-stone-400 mt-0.5">
+                                {new Date(event.time).toLocaleDateString(
+                                  "bg-BG",
+                                  {
+                                    day: "numeric",
+                                    month: "short",
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                  }
+                                )}
+                              </p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
             </div>

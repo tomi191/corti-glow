@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { CheckCircle, Package, Mail, HelpCircle } from "lucide-react";
+import { CheckCircle, Package, Truck, HelpCircle, ExternalLink } from "lucide-react";
 import { PurchaseTracker } from "./PurchaseTracker";
 
 export const metadata: Metadata = {
@@ -10,12 +10,15 @@ export const metadata: Metadata = {
 };
 
 interface SuccessPageProps {
-  searchParams: Promise<{ orderId?: string; orderNumber?: string }>;
+  searchParams: Promise<{ orderId?: string; orderNumber?: string; tracking?: string }>;
 }
 
 export default async function SuccessPage({ searchParams }: SuccessPageProps) {
-  const { orderId, orderNumber } = await searchParams;
+  const { orderId, orderNumber, tracking } = await searchParams;
   const displayOrderNumber = orderNumber || orderId;
+  const trackingUrl = tracking
+    ? `https://www.econt.com/services/track-shipment/${tracking}`
+    : null;
 
   return (
     <div className="min-h-screen bg-stone-50 py-20">
@@ -47,28 +50,49 @@ export default async function SuccessPage({ searchParams }: SuccessPageProps) {
 
         {/* Info Cards */}
         <div className="space-y-4 mb-8">
+          {/* Tracking Card — shown when shipment is created */}
+          {tracking && trackingUrl && (
+            <a
+              href={trackingUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-[#2D4A3E] rounded-xl p-5 flex items-start gap-3 text-left block"
+            >
+              <Truck className="w-6 h-6 text-[#B2D8C6] mt-0.5 flex-shrink-0" />
+              <div className="flex-1">
+                <p className="font-semibold text-white">Товарителница</p>
+                <p className="text-[#B2D8C6] font-mono text-lg">{tracking}</p>
+                <p className="text-white/60 text-sm mt-1 flex items-center gap-1">
+                  Проследи в Еконт <ExternalLink className="w-3 h-3" />
+                </p>
+              </div>
+            </a>
+          )}
+
           <div className="bg-white rounded-xl p-4 border border-stone-100 flex items-start gap-3 text-left">
             <Package className="w-5 h-5 text-[#2D4A3E] mt-0.5 flex-shrink-0" />
             <div>
               <p className="font-medium text-stone-800">Очаквай доставка</p>
               <p className="text-sm text-stone-500">
-                1-2 работни дни с Еконт или Спиди
+                1-2 работни дни с Еконт
               </p>
             </div>
           </div>
 
-          <Link
-            href="/prosledi-porachka"
-            className="bg-white rounded-xl p-4 border border-stone-100 flex items-start gap-3 text-left hover:border-[#B2D8C6] transition block"
-          >
-            <Mail className="w-5 h-5 text-[#2D4A3E] mt-0.5 flex-shrink-0" />
-            <div>
-              <p className="font-medium text-stone-800">Проследи поръчката</p>
-              <p className="text-sm text-stone-500">
-                Виж статуса на доставката по всяко време
-              </p>
-            </div>
-          </Link>
+          {!tracking && (
+            <Link
+              href="/prosledi-porachka"
+              className="bg-white rounded-xl p-4 border border-stone-100 flex items-start gap-3 text-left hover:border-[#B2D8C6] transition block"
+            >
+              <Truck className="w-5 h-5 text-[#2D4A3E] mt-0.5 flex-shrink-0" />
+              <div>
+                <p className="font-medium text-stone-800">Проследи поръчката</p>
+                <p className="text-sm text-stone-500">
+                  Виж статуса на доставката по всяко време
+                </p>
+              </div>
+            </Link>
+          )}
         </div>
 
         {/* Contact info */}

@@ -7,12 +7,14 @@ import {
   getOrderByPaymentIntent,
   updatePaymentStatus,
   updateOrderStatus,
+  updateEcontTracking,
   deductStock,
 } from "@/lib/actions/orders";
 import {
   updateSubscriptionByStripeId,
 } from "@/lib/actions/subscriptions";
 import { sendOrderConfirmationEmail } from "@/lib/email";
+import { createShipment, buildShipmentParamsFromOrder } from "@/lib/econt/shipments";
 
 export async function POST(request: NextRequest) {
   try {
@@ -70,8 +72,21 @@ export async function POST(request: NextRequest) {
             })));
           }
 
+          // Auto-create Econt shipment (don't block webhook if it fails)
+          let updatedOrder = order;
+          try {
+            const shipmentParams = buildShipmentParamsFromOrder(order);
+            const label = await createShipment(shipmentParams);
+            if (label) {
+              await updateEcontTracking(order.id, label.shipmentNumber, label.shipmentNumber);
+              updatedOrder = { ...order, econt_tracking_number: label.shipmentNumber };
+            }
+          } catch (err) {
+            console.error("Auto-create shipment failed (card):", err);
+          }
+
           // Send confirmation email (async, don't await)
-          sendOrderConfirmationEmail(order).catch(err =>
+          sendOrderConfirmationEmail(updatedOrder).catch(err =>
             console.error("Failed to send confirmation email:", err)
           );
         } else {

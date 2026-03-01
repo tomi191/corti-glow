@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@/lib/supabase/server";
 import { createPaymentIntent } from "@/lib/stripe/actions";
-import { createOrder, updateOrder, checkStock, deductStock } from "@/lib/actions/orders";
+import { createOrder, updateOrder, updateEcontTracking, checkStock, deductStock } from "@/lib/actions/orders";
+import { createShipment, buildShipmentParamsFromOrder } from "@/lib/econt/shipments";
 import { z } from "zod";
 import type { CartItem } from "@/types";
 import { createRateLimiter, getClientIp } from "@/lib/rate-limit";
@@ -176,7 +177,7 @@ export async function POST(request: NextRequest) {
     const calculatedTotal = calculatedSubtotal + verifiedShippingPrice - verifiedDiscountAmount;
 
     // 4. Create Pending Order
-    const { order, error: orderError } = await createOrder({
+    let { order, error: orderError } = await createOrder({
       customer_first_name: customerFirstName,
       customer_last_name: customerLastName,
       customer_email: customerEmail,
@@ -223,6 +224,20 @@ export async function POST(request: NextRequest) {
         }
       }
 
+      // Auto-create Econt shipment (don't block order if it fails)
+      let trackingNumber: string | null = null;
+      try {
+        const shipmentParams = buildShipmentParamsFromOrder(order);
+        const label = await createShipment(shipmentParams);
+        if (label) {
+          trackingNumber = label.shipmentNumber;
+          await updateEcontTracking(order.id, label.shipmentNumber, label.shipmentNumber);
+          order = { ...order, econt_tracking_number: trackingNumber } as typeof order;
+        }
+      } catch (err) {
+        console.error("Auto-create shipment failed (COD):", err);
+      }
+
       // Send confirmation email (fire-and-forget)
       sendOrderConfirmationEmail(order).catch(err =>
         console.error("Failed to send COD confirmation email:", err)
@@ -232,6 +247,7 @@ export async function POST(request: NextRequest) {
         success: true,
         orderId: order.id,
         orderNumber: order.order_number,
+        trackingNumber,
         paymentMethod: "cod",
       });
     }

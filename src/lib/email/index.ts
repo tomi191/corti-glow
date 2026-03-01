@@ -192,13 +192,24 @@ export async function sendOrderConfirmationEmail(
         </div>
       </div>
 
-      <div style="background: #B2D8C6; background: linear-gradient(135deg, #B2D8C6 0%, #2D4A3E 100%); color: white; border-radius: 12px; padding: 24px; text-align: center; margin-bottom: 24px;">
+      ${order.econt_tracking_number ? `
+      <div style="background: #2D4A3E; color: white; border-radius: 12px; padding: 24px; text-align: center; margin-bottom: 24px;">
+        <p style="margin: 0 0 8px; font-size: 14px;">Товарителница:</p>
+        <p style="margin: 0 0 16px; font-size: 22px; font-weight: bold; font-family: monospace;">${order.econt_tracking_number}</p>
+        <a href="https://www.econt.com/services/track-shipment/${order.econt_tracking_number}"
+           style="display: inline-block; background: white; color: #2D4A3E; padding: 12px 24px; border-radius: 50px; text-decoration: none; font-weight: 600;">
+          Проследи в Еконт
+        </a>
+      </div>
+      ` : `
+      <div style="background: linear-gradient(135deg, #B2D8C6 0%, #2D4A3E 100%); color: white; border-radius: 12px; padding: 24px; text-align: center; margin-bottom: 24px;">
         <p style="margin: 0 0 12px; font-size: 14px;">Проследи поръчката си:</p>
         <a href="${process.env.NEXT_PUBLIC_APP_URL || "https://luralab.eu"}/prosledi-porachka"
            style="display: inline-block; background: white; color: #2D4A3E; padding: 12px 24px; border-radius: 50px; text-decoration: none; font-weight: 600;">
           Проследи Поръчката
         </a>
       </div>
+      `}
 
       <div style="text-align: center; color: #999; font-size: 12px;">
         <p>Въпроси? Пиши ни на ${SUPPORT_EMAIL}</p>
@@ -219,7 +230,7 @@ ${items.map((item) => `- ${item.title} x${item.quantity}: ${(item.price * item.q
 
 Общо: ${order.total.toFixed(2)} €
 
-Проследи поръчката: ${process.env.NEXT_PUBLIC_APP_URL || "https://luralab.eu"}/prosledi-porachka
+${order.econt_tracking_number ? `Товарителница: ${order.econt_tracking_number}\nПроследи в Еконт: https://www.econt.com/services/track-shipment/${order.econt_tracking_number}` : `Проследи поръчката: ${process.env.NEXT_PUBLIC_APP_URL || "https://luralab.eu"}/prosledi-porachka`}
 
 Въпроси? Пиши ни на ${SUPPORT_EMAIL}
   `;

@@ -176,10 +176,11 @@ export function CheckoutForm() {
         // For COD orders, show success animation then redirect
         if (payment.method === "cod") {
           setCodSuccess(true);
+          const trackingParam = data.trackingNumber ? `&tracking=${data.trackingNumber}` : "";
           setTimeout(() => {
             clearCart();
             resetCheckout();
-            router.push(`/uspeh?orderNumber=${data.orderNumber}`);
+            router.push(`/uspeh?orderNumber=${data.orderNumber}${trackingParam}`);
           }, 1500);
           return;
         }
