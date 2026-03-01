@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { CheckCircle, Package, Truck, HelpCircle, ExternalLink } from "lucide-react";
+import { CheckCircle, Package, Truck, HelpCircle, ExternalLink, Clock, CreditCard } from "lucide-react";
 import { PurchaseTracker } from "./PurchaseTracker";
+import { getOrderByNumber } from "@/lib/actions/orders";
 
 export const metadata: Metadata = {
   title: "Поръчката е приета",
@@ -14,8 +15,25 @@ interface SuccessPageProps {
 }
 
 export default async function SuccessPage({ searchParams }: SuccessPageProps) {
-  const { orderId, orderNumber, tracking } = await searchParams;
+  const { orderId, orderNumber, tracking: trackingParam } = await searchParams;
   const displayOrderNumber = orderNumber || orderId;
+
+  // If no tracking in URL params, try fetching from DB (async webhook case)
+  let tracking = trackingParam || null;
+  let paymentStatus: string | null = null;
+
+  if (!tracking && displayOrderNumber) {
+    try {
+      const { order } = await getOrderByNumber(displayOrderNumber);
+      if (order) {
+        tracking = order.econt_tracking_number;
+        paymentStatus = order.payment_status;
+      }
+    } catch {
+      // Non-critical — page still works without tracking
+    }
+  }
+
   const trackingUrl = tracking
     ? `https://www.econt.com/services/track-shipment/${tracking}`
     : null;
@@ -48,10 +66,18 @@ export default async function SuccessPage({ searchParams }: SuccessPageProps) {
           Изпратихме потвърждение на имейла ти.
         </p>
 
+        {/* Status Badge */}
+        {paymentStatus === "paid" && (
+          <div className="inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full text-sm font-medium mb-6">
+            <CreditCard className="w-3.5 h-3.5" />
+            Платено
+          </div>
+        )}
+
         {/* Info Cards */}
         <div className="space-y-4 mb-8">
           {/* Tracking Card — shown when shipment is created */}
-          {tracking && trackingUrl && (
+          {tracking && trackingUrl ? (
             <a
               href={trackingUrl}
               target="_blank"
@@ -67,6 +93,17 @@ export default async function SuccessPage({ searchParams }: SuccessPageProps) {
                 </p>
               </div>
             </a>
+          ) : (
+            /* No tracking yet — shipment being prepared */
+            <div className="bg-[#2D4A3E]/5 rounded-xl p-5 flex items-start gap-3 text-left border border-[#2D4A3E]/10">
+              <Clock className="w-6 h-6 text-[#2D4A3E] mt-0.5 flex-shrink-0 animate-pulse" />
+              <div className="flex-1">
+                <p className="font-semibold text-[#2D4A3E]">Товарителницата се подготвя</p>
+                <p className="text-stone-500 text-sm mt-1">
+                  Ще получиш имейл с номер за проследяване, когато пратката бъде предадена на Еконт.
+                </p>
+              </div>
+            </div>
           )}
 
           <div className="bg-white rounded-xl p-4 border border-stone-100 flex items-start gap-3 text-left">
@@ -79,20 +116,18 @@ export default async function SuccessPage({ searchParams }: SuccessPageProps) {
             </div>
           </div>
 
-          {!tracking && (
-            <Link
-              href="/prosledi-porachka"
-              className="bg-white rounded-xl p-4 border border-stone-100 flex items-start gap-3 text-left hover:border-[#B2D8C6] transition block"
-            >
-              <Truck className="w-5 h-5 text-[#2D4A3E] mt-0.5 flex-shrink-0" />
-              <div>
-                <p className="font-medium text-stone-800">Проследи поръчката</p>
-                <p className="text-sm text-stone-500">
-                  Виж статуса на доставката по всяко време
-                </p>
-              </div>
-            </Link>
-          )}
+          <Link
+            href="/prosledi-porachka"
+            className="bg-white rounded-xl p-4 border border-stone-100 flex items-start gap-3 text-left hover:border-[#B2D8C6] transition block"
+          >
+            <Truck className="w-5 h-5 text-[#2D4A3E] mt-0.5 flex-shrink-0" />
+            <div>
+              <p className="font-medium text-stone-800">Проследи поръчката</p>
+              <p className="text-sm text-stone-500">
+                Виж статуса на доставката по всяко време
+              </p>
+            </div>
+          </Link>
         </div>
 
         {/* Contact info */}
