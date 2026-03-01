@@ -134,6 +134,7 @@ export default function OrderDetailPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          orderId: order.id,
           receiverName: `${order.customer_first_name} ${order.customer_last_name}`,
           receiverPhone: order.customer_phone,
           receiverEmail: order.customer_email,
@@ -154,19 +155,12 @@ export default function OrderDetailPage() {
       const data = await res.json();
 
       if (res.ok && data.shipmentNumber) {
-        // Update local state
+        // Update local state (DB is already updated by the API)
         setOrder({
           ...order,
           econt_shipment_id: data.shipmentNumber,
           econt_tracking_number: data.shipmentNumber,
           status: "shipped",
-        });
-
-        // Update database
-        await fetch("/api/admin/orders", {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ orderId: order.id, status: "shipped" }),
         });
 
         if (data.pdfURL) {

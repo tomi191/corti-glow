@@ -40,4 +40,5 @@ export {
   trackShipment,
   getShipmentLabel,
   cancelShipment,
+  syncOrderToDelivery,
 } from "./shipments";

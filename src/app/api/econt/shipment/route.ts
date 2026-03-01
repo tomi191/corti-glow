@@ -1,7 +1,10 @@
 // Econt Shipment Creation API
 
 import { NextRequest, NextResponse } from "next/server";
-import { createShipment, validateShipment, getShipmentLabel } from "@/lib/econt";
+import { createShipment, validateShipment, getShipmentLabel, syncOrderToDelivery } from "@/lib/econt";
+import { updateEcontTracking } from "@/lib/actions/orders";
+import { sendShippingNotificationEmail } from "@/lib/email";
+import { createServerClient } from "@/lib/supabase/server";
 
 // Create a new shipment
 export async function POST(request: NextRequest) {
@@ -19,6 +22,7 @@ export async function POST(request: NextRequest) {
       address, // { city, postCode, fullAddress }
 
       // Order info
+      orderId, // DB order id — for updating tracking
       orderNumber,
       weight = 0.5,
       description,
@@ -82,6 +86,38 @@ export async function POST(request: NextRequest) {
         { status: 500 }
       );
     }
+
+    // Save tracking number in DB and set status to "shipped"
+    if (orderId) {
+      await updateEcontTracking(orderId, result.shipmentNumber, result.shipmentNumber);
+
+      // Send shipping notification email to customer (fire-and-forget)
+      const supabase = createServerClient();
+      const { data: order } = await (supabase as any)
+        .from("orders")
+        .select("*")
+        .eq("id", orderId)
+        .single();
+
+      if (order) {
+        sendShippingNotificationEmail(order).catch(err =>
+          console.error("Failed to send shipping notification:", err)
+        );
+      }
+    }
+
+    // Sync to Econt Delivery dashboard (fire-and-forget)
+    syncOrderToDelivery({
+      orderNumber,
+      receiverName,
+      receiverPhone,
+      receiverEmail,
+      deliveryMethod,
+      officeCode,
+      address,
+      codAmount,
+      shipmentNumber: result.shipmentNumber,
+    }).catch(err => console.error("Failed to sync to Econt Delivery:", err));
 
     return NextResponse.json({
       success: true,
