@@ -9,7 +9,8 @@ import type {
 
 // LuraLab sender info (update with real data)
 const SENDER_INFO = {
-  name: process.env.ECONT_SENDER_NAME || "LuraLab EOOD",
+  personName: process.env.ECONT_SENDER_PERSON || "Тодор Маринов",
+  companyName: process.env.ECONT_SENDER_COMPANY || "\"Лура Лаб\" ЕООД",
   phone: process.env.ECONT_SENDER_PHONE || "+359888123456",
   email: process.env.ECONT_SENDER_EMAIL || "orders@luralab.eu",
   officeCode: process.env.ECONT_SENDER_OFFICE || "1127",
@@ -55,11 +56,14 @@ export async function createShipment(
 
   const requestBody = {
     label: {
-      // Sender
+      // Sender (legal entity with authorized person)
       senderClient: {
-        name: SENDER_INFO.name,
+        name: SENDER_INFO.personName,
         phones: [SENDER_INFO.phone],
         email: SENDER_INFO.email,
+        clientObject: {
+          name: SENDER_INFO.companyName,
+        },
       },
       senderOfficeCode: SENDER_INFO.officeCode,
 
@@ -109,9 +113,9 @@ export async function createShipment(
         },
       }),
 
-      // Payment - sender pays shipping for card payments, receiver for COD
-      paymentReceiverMethod: params.codAmount ? "CASH" : undefined,
-      paymentSenderMethod: params.codAmount ? undefined : "CONTRACT",
+      // Payment - sender ALWAYS pays Econt transport fee via contract
+      // Customer pays only the COD amount (which includes our shipping markup)
+      paymentSenderMethod: "CONTRACT",
     },
     mode: "create" as const,
   };
@@ -141,8 +145,11 @@ export async function validateShipment(
   const requestBody = {
     label: {
       senderClient: {
-        name: SENDER_INFO.name,
+        name: SENDER_INFO.personName,
         phones: [SENDER_INFO.phone],
+        clientObject: {
+          name: SENDER_INFO.companyName,
+        },
       },
       senderOfficeCode: SENDER_INFO.officeCode,
       receiverClient: {
@@ -163,6 +170,7 @@ export async function validateShipment(
       packCount: 1,
       shipmentType: "PACK" as const,
       weight: params.weight || 0.5,
+      shipmentDescription: params.description || "Хранителни добавки",
     },
     mode: "validate" as const,
   };
