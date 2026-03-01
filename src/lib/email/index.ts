@@ -1,6 +1,16 @@
 import type { Order } from "@/lib/supabase/types";
 import { getEmailTemplate } from "./templates";
 
+// HTML escape to prevent XSS in email templates
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 // Email configuration
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
 const FROM_EMAIL = process.env.EMAIL_FROM || "LURA <noreply@luralab.eu>";
@@ -92,21 +102,25 @@ export async function sendContactEmail({
   email: string;
   message: string;
 }): Promise<{ success: boolean; error?: string }> {
+  const safeName = escapeHtml(name);
+  const safeEmail = escapeHtml(email);
+  const safeMessage = escapeHtml(message).replace(/\n/g, "<br>");
+
   const html = `
     <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
       <h2 style="color: #2D4A3E;">Ново съобщение от контактната форма</h2>
-      <p><strong>Име:</strong> ${name}</p>
-      <p><strong>Имейл:</strong> ${email}</p>
+      <p><strong>Име:</strong> ${safeName}</p>
+      <p><strong>Имейл:</strong> ${safeEmail}</p>
       <p><strong>Съобщение:</strong></p>
       <div style="background: #F5F2EF; padding: 16px; border-radius: 8px;">
-        ${message.replace(/\n/g, "<br>")}
+        ${safeMessage}
       </div>
     </div>
   `;
 
   return sendEmail({
     to: SUPPORT_EMAIL,
-    subject: `Контактна форма: ${name}`,
+    subject: `Контактна форма: ${safeName}`,
     html,
     text: `Ново съобщение от ${name} (${email}):\n\n${message}`,
   });
@@ -126,7 +140,7 @@ export async function sendOrderConfirmationEmail(
     .map(
       (item) => `
       <tr>
-        <td style="padding: 12px; border-bottom: 1px solid #eee;">${item.title}</td>
+        <td style="padding: 12px; border-bottom: 1px solid #eee;">${escapeHtml(item.title)}</td>
         <td style="padding: 12px; border-bottom: 1px solid #eee; text-align: center;">${item.quantity}</td>
         <td style="padding: 12px; border-bottom: 1px solid #eee; text-align: right;">${(item.price * item.quantity).toFixed(2)} €</td>
       </tr>

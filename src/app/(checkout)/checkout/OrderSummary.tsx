@@ -18,7 +18,7 @@ export function OrderSummary() {
   }, []);
 
   const subtotal = getSubtotal();
-  const hasFreeShipping = isFreeShipping();
+  const hasFreeShipping = isSubscription || isFreeShipping();
   const shippingPrice = hasFreeShipping ? 0 : (shipping.price ?? 4.99);
   const discountAmount = discount?.amount ?? 0;
   const total = subtotal + shippingPrice - discountAmount;

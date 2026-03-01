@@ -41,7 +41,7 @@ export function CheckoutForm() {
   const { items, getSubtotal, isFreeShipping, clearCart, hasSubscriptionItem } = useCartStore();
   const { isSubscription, setIsSubscription } = useCheckoutStore();
   const subtotal = getSubtotal();
-  const shippingPrice = isFreeShipping() ? 0 : (shipping.price ?? 4.99);
+  const shippingPrice = (isSubscription || isFreeShipping()) ? 0 : (shipping.price ?? 4.99);
   const discountAmount = discount?.amount ?? 0;
   const total = subtotal + shippingPrice - discountAmount;
 

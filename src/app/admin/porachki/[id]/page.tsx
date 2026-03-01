@@ -168,7 +168,7 @@ export default function OrderDetailPage() {
       const shippingAddress = order.shipping_address as unknown as ShippingAddress;
       const isOffice = shippingAddress.type === "office";
 
-      const res = await fetch("/api/econt/shipment", {
+      const res = await fetch("/api/admin/econt/shipment", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

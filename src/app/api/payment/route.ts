@@ -139,10 +139,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 3. Shipping Validation (Simple Rule: >= 80 EUR = Free)
-    // SHIPPING_THRESHOLD imported from @/lib/constants
+    // 3. Shipping Validation (server-side price enforcement)
     const isFreeShipping = calculatedSubtotal >= SHIPPING_THRESHOLD;
-    const verifiedShippingPrice = isFreeShipping ? 0 : Number(clientShippingPrice);
+    // Enforce minimum shipping price server-side to prevent client manipulation
+    const MIN_SHIPPING_PRICE = 3.00; // Minimum Econt shipping in EUR
+    const MAX_SHIPPING_PRICE = 15.00; // Sanity cap
+    const verifiedShippingPrice = isFreeShipping
+      ? 0
+      : Math.min(MAX_SHIPPING_PRICE, Math.max(MIN_SHIPPING_PRICE, Number(clientShippingPrice)));
 
     // 3b. Discount Validation (server-side re-validation)
     let verifiedDiscountCode: string | null = null;
@@ -209,18 +213,15 @@ export async function POST(request: NextRequest) {
       // Deduct stock immediately for COD orders
       await deductStock(stockItems);
 
-      // Increment discount used_count
+      // Atomically increment discount used_count via RPC
       if (verifiedDiscountCode) {
-        const { data: disc } = await (supabase as any)
-          .from("discounts")
-          .select("used_count")
-          .eq("code", verifiedDiscountCode)
-          .single();
-        if (disc) {
-          await (supabase as any)
-            .from("discounts")
-            .update({ used_count: disc.used_count + 1 })
-            .eq("code", verifiedDiscountCode);
+        const { data: discountOk, error: discountErr } = await (supabase as any).rpc("increment_discount_usage", {
+          p_code: verifiedDiscountCode,
+        });
+        if (discountErr) {
+          console.error("Failed to increment discount usage:", discountErr);
+        } else if (discountOk === false) {
+          console.warn(`Discount ${verifiedDiscountCode} max_uses reached (race)`);
         }
       }
 

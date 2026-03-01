@@ -1,4 +1,4 @@
-// Econt Shipment Creation API
+// Econt Shipment Creation API (Admin-only, protected by middleware)
 
 import { NextRequest, NextResponse } from "next/server";
 import { createShipment, validateShipment, getShipmentLabel, syncOrderToDelivery } from "@/lib/econt";

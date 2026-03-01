@@ -552,6 +552,9 @@ export interface Database {
         };
       };
     };
+    // RPC functions are called via (supabase as any).rpc() due to Supabase JS v2.90 typing constraints
+    // Available RPCs: next_order_number(), deduct_product_stock(p_slug, p_quantity),
+    // restore_product_stock(p_slug, p_quantity), increment_discount_usage(p_code)
     Functions: Record<string, never>;
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;

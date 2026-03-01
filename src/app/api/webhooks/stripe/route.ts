@@ -3,6 +3,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { headers } from "next/headers";
 import { constructWebhookEvent } from "@/lib/stripe";
+import { createServerClient } from "@/lib/supabase/server";
 import {
   getOrderByPaymentIntent,
   updatePaymentStatus,
@@ -70,6 +71,19 @@ export async function POST(request: NextRequest) {
               variantId: item.variantId,
               quantity: item.quantity,
             })));
+          }
+
+          // Atomically increment discount used_count for card payments
+          if (order.discount_code) {
+            const supabase = createServerClient();
+            const { data: discountOk, error: discountErr } = await (supabase as any).rpc("increment_discount_usage", {
+              p_code: order.discount_code,
+            });
+            if (discountErr) {
+              console.error("Failed to increment discount usage (card):", discountErr);
+            } else if (discountOk === false) {
+              console.warn(`Discount ${order.discount_code} max_uses reached (race, card)`);
+            }
           }
 
           // Auto-create Econt shipment (don't block webhook if it fails)

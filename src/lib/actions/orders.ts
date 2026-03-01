@@ -28,31 +28,18 @@ interface StockCheckResult {
   }>;
 }
 
-// Generate sequential order number (LL-1001, LL-1002, ...)
+// Generate sequential order number atomically via Postgres RPC
 async function generateOrderNumber(): Promise<string> {
   const supabase = createServerClient();
+  const { data, error } = await (supabase as any).rpc("next_order_number");
 
-  // Find the highest sequential number from existing orders
-  const { data } = await supabase
-    .from("orders")
-    .select("order_number")
-    .order("created_at", { ascending: false })
-    .limit(50);
-
-  let maxNum = 1000;
-  if (data) {
-    for (const row of data) {
-      const match = (row as { order_number: string }).order_number.match(
-        /^LL-(\d+)$/
-      );
-      if (match) {
-        const num = parseInt(match[1]);
-        if (num > maxNum) maxNum = num;
-      }
-    }
+  if (error || !data) {
+    console.error("Failed to generate order number via RPC:", error);
+    // Fallback: timestamp-based to avoid blocking orders
+    return `LL-${Date.now()}`;
   }
 
-  return `LL-${maxNum + 1}`;
+  return data as string;
 }
 
 // Create a new order
@@ -191,12 +178,13 @@ export async function updatePaymentStatus(
 export async function updateEcontTracking(
   orderId: string,
   shipmentId: string,
-  trackingNumber: string
+  trackingNumber: string,
+  status: OrderStatus = "shipped"
 ): Promise<{ success: boolean; error: string | null }> {
   const { error } = await updateOrder(orderId, {
     econt_shipment_id: shipmentId,
     econt_tracking_number: trackingNumber,
-    status: "shipped",
+    status,
   });
   return { success: !error, error };
 }
@@ -372,7 +360,7 @@ export async function checkStock(
   };
 }
 
-// Deduct stock when order is confirmed
+// Deduct stock atomically when order is confirmed
 export async function deductStock(
   items: StockItem[]
 ): Promise<{ success: boolean; error: string | null }> {
@@ -385,35 +373,22 @@ export async function deductStock(
     productQuantities.set(item.productId, current + item.quantity);
   }
 
-  // Deduct stock for each product
+  // Atomically deduct stock for each product via RPC
   for (const [productId, quantity] of productQuantities) {
-    // First get current stock
-    const { data: product, error: fetchError } = await supabase
-      .from("products")
-      .select("id, stock, track_inventory")
-      .eq("slug", productId)
-      .single() as { data: { id: string; stock: number; track_inventory: boolean } | null; error: any };
+    const { data: success, error } = await (supabase as any).rpc("deduct_product_stock", {
+      p_slug: productId,
+      p_quantity: quantity,
+    });
 
-    if (fetchError || !product) {
-      console.error(`Failed to fetch product ${productId}:`, fetchError);
-      continue;
-    }
-
-    // Skip if inventory tracking is disabled
-    if (!product.track_inventory) {
-      continue;
-    }
-
-    const newStock = Math.max(0, product.stock - quantity);
-
-    const { error: updateError } = await (supabase
-      .from("products") as any)
-      .update({ stock: newStock })
-      .eq("id", product.id);
-
-    if (updateError) {
-      console.error(`Failed to update stock for ${productId}:`, updateError);
+    if (error) {
+      console.error(`Failed to deduct stock for ${productId}:`, error);
       return { success: false, error: `Failed to update stock for product` };
+    }
+
+    // RPC returns false if insufficient stock (race-safe)
+    if (success === false) {
+      console.warn(`Insufficient stock for ${productId} (requested ${quantity})`);
+      return { success: false, error: `Недостатъчна наличност за ${productId}` };
     }
   }
 
@@ -422,7 +397,7 @@ export async function deductStock(
   return { success: true, error: null };
 }
 
-// Restore stock when order is cancelled
+// Restore stock atomically when order is cancelled
 export async function restoreStock(
   items: StockItem[]
 ): Promise<{ success: boolean; error: string | null }> {
@@ -435,32 +410,15 @@ export async function restoreStock(
     productQuantities.set(item.productId, current + item.quantity);
   }
 
-  // Restore stock for each product
+  // Atomically restore stock for each product via RPC
   for (const [productId, quantity] of productQuantities) {
-    const { data: product, error: fetchError } = await supabase
-      .from("products")
-      .select("id, stock, track_inventory")
-      .eq("slug", productId)
-      .single() as { data: { id: string; stock: number; track_inventory: boolean } | null; error: any };
+    const { error } = await (supabase as any).rpc("restore_product_stock", {
+      p_slug: productId,
+      p_quantity: quantity,
+    });
 
-    if (fetchError || !product) {
-      console.error(`Failed to fetch product ${productId}:`, fetchError);
-      continue;
-    }
-
-    if (!product.track_inventory) {
-      continue;
-    }
-
-    const newStock = product.stock + quantity;
-
-    const { error: updateError } = await (supabase
-      .from("products") as any)
-      .update({ stock: newStock })
-      .eq("id", product.id);
-
-    if (updateError) {
-      console.error(`Failed to restore stock for ${productId}:`, updateError);
+    if (error) {
+      console.error(`Failed to restore stock for ${productId}:`, error);
       return { success: false, error: `Failed to restore stock` };
     }
   }
