@@ -27,8 +27,10 @@ interface PwaState {
   ageRange: string | null;
   concerns: ConcernOption[];
   contraception: "yes" | "no" | "unsure" | null;
+  lastSyncedAt: string | null;
   // Transient (not persisted)
   isBreathingOpen: boolean;
+  isSyncing: boolean;
 }
 
 interface PwaActions {
@@ -50,6 +52,7 @@ interface PwaActions {
   dismissIOSInstall: () => void;
   openBreathing: () => void;
   closeBreathing: () => void;
+  syncWithServer: () => Promise<void>;
 }
 
 interface PwaGetters {
@@ -78,7 +81,9 @@ export const usePwaStore = create<PwaStore>()(
       ageRange: null,
       concerns: [],
       contraception: null,
+      lastSyncedAt: null,
       isBreathingOpen: false,
+      isSyncing: false,
 
       // Actions
       saveCheckIn: ({ periodStarted, sleep, stress, symptoms }) => {
@@ -133,6 +138,63 @@ export const usePwaStore = create<PwaStore>()(
       openBreathing: () => set({ isBreathingOpen: true }),
       closeBreathing: () => set({ isBreathingOpen: false }),
 
+      syncWithServer: async () => {
+        const state = get();
+        if (state.isSyncing) return;
+        set({ isSyncing: true });
+
+        try {
+          const res = await fetch("/api/pwa/sync", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              profile: {
+                lastPeriodDate: state.lastPeriodDate,
+                cycleLength: state.cycleLength,
+                periodDuration: state.periodDuration,
+                userName: state.userName,
+                ageRange: state.ageRange,
+                concerns: state.concerns,
+                contraception: state.contraception,
+                hasSeenTour: state.hasSeenTour,
+                pushEnabled: state.pushEnabled,
+                iosInstallDismissed: state.iosInstallDismissed,
+              },
+              checkIns: state.checkIns,
+              lastSyncedAt: state.lastSyncedAt,
+            }),
+          });
+
+          if (!res.ok) {
+            console.warn("PWA sync failed:", res.status);
+            return;
+          }
+
+          const data = await res.json();
+          if (!data.success) return;
+
+          // Merge server response into local state
+          set({
+            lastPeriodDate: data.profile.lastPeriodDate,
+            cycleLength: data.profile.cycleLength,
+            periodDuration: data.profile.periodDuration,
+            userName: data.profile.userName,
+            ageRange: data.profile.ageRange,
+            concerns: data.profile.concerns,
+            contraception: data.profile.contraception,
+            hasSeenTour: data.profile.hasSeenTour,
+            pushEnabled: data.profile.pushEnabled,
+            iosInstallDismissed: data.profile.iosInstallDismissed,
+            checkIns: data.checkIns,
+            lastSyncedAt: data.syncedAt,
+          });
+        } catch (err) {
+          console.warn("PWA sync error:", err);
+        } finally {
+          set({ isSyncing: false });
+        }
+      },
+
       // Getters
       getTodayCheckIn: () => {
         const today = getToday();
@@ -176,7 +238,8 @@ export const usePwaStore = create<PwaStore>()(
         ageRange: state.ageRange,
         concerns: state.concerns,
         contraception: state.contraception,
-        // isBreathingOpen intentionally excluded
+        lastSyncedAt: state.lastSyncedAt,
+        // isBreathingOpen, isSyncing intentionally excluded
       }),
       onRehydrateStorage: () => (state, error) => {
         if (error) {

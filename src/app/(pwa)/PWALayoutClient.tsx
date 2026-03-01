@@ -7,6 +7,7 @@ import { usePathname } from "next/navigation";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { useUserSafe } from "@/hooks/use-clerk-safe";
 import { usePwaStore } from "@/stores/pwa-store";
+import { usePwaSync } from "@/hooks/use-pwa-sync";
 
 const HAS_CLERK = !!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
 
@@ -56,6 +57,9 @@ export default function PWALayout({
   const { user, isLoaded: clerkLoaded } = useUserSafe();
   const userName = usePwaStore((s) => s.userName);
   const firstName = userName || (clerkLoaded ? user?.firstName : null);
+
+  // Sync local data with server when user is logged in
+  usePwaSync();
 
   useEffect(() => {
     registerServiceWorker();

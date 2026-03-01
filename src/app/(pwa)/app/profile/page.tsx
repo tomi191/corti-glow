@@ -23,6 +23,9 @@ import {
   Activity,
   Moon,
   ChevronRight,
+  Download,
+  Trash2,
+  AlertTriangle,
 } from "lucide-react";
 import {
   isPushSupported,
@@ -139,6 +142,9 @@ export default function ProfilePage() {
   const [duration, setDuration] = useState(5);
   const [saved, setSaved] = useState(false);
   const [pushLoading, setPushLoading] = useState(false);
+  const [deleteConfirm, setDeleteConfirm] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [exporting, setExporting] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -245,6 +251,47 @@ export default function ProfilePage() {
       console.error("Push toggle error:", err);
     } finally {
       setPushLoading(false);
+    }
+  }
+
+  async function handleExportData() {
+    if (exporting) return;
+    setExporting(true);
+    try {
+      const res = await fetch("/api/pwa/export");
+      if (!res.ok) throw new Error("Export failed");
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `lura-data-export-${getToday()}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      haptic.success();
+    } catch (err) {
+      console.error("Export error:", err);
+    } finally {
+      setExporting(false);
+    }
+  }
+
+  async function handleDeleteAccount() {
+    if (deleting) return;
+    setDeleting(true);
+    try {
+      const res = await fetch("/api/pwa/delete-account", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ confirm: true }),
+      });
+      if (!res.ok) throw new Error("Delete failed");
+      // Clear local data
+      try { localStorage.removeItem("lura-pwa"); } catch { /* noop */ }
+      haptic.success();
+      signOut({ redirectUrl: "/" });
+    } catch (err) {
+      console.error("Delete error:", err);
+      setDeleting(false);
     }
   }
 
@@ -535,6 +582,87 @@ export default function ProfilePage() {
           </span>
           <ChevronRight className="w-4 h-4 text-stone-400" />
         </button>
+      </motion.section>
+
+      {/* GDPR: Data & Privacy */}
+      <motion.section
+        variants={staggerItem}
+        className="glass rounded-[2rem] p-5 space-y-4 shadow-md shadow-brand-forest/5"
+      >
+        <h3 className="text-xs font-bold uppercase tracking-widest text-brand-forest/60 flex items-center gap-2">
+          <Shield className="w-3.5 h-3.5" />
+          Данни и поверителност
+        </h3>
+
+        {/* Export data */}
+        <button
+          onClick={handleExportData}
+          disabled={exporting}
+          className="flex items-center gap-3 w-full text-left"
+        >
+          <div className="w-9 h-9 rounded-xl bg-brand-sage/30 flex items-center justify-center">
+            {exporting ? (
+              <Loader2 className="w-4 h-4 text-brand-forest animate-spin" />
+            ) : (
+              <Download className="w-4 h-4 text-brand-forest" />
+            )}
+          </div>
+          <div className="flex-1">
+            <p className="text-sm font-medium text-stone-700">
+              Изтегли данните ми
+            </p>
+            <p className="text-xs text-stone-400">JSON файл с всичките ти данни</p>
+          </div>
+          <ChevronRight className="w-4 h-4 text-stone-400" />
+        </button>
+
+        {/* Delete account */}
+        {!deleteConfirm ? (
+          <button
+            onClick={() => setDeleteConfirm(true)}
+            className="flex items-center gap-3 w-full text-left"
+          >
+            <div className="w-9 h-9 rounded-xl bg-red-50 flex items-center justify-center">
+              <Trash2 className="w-4 h-4 text-red-500" />
+            </div>
+            <div className="flex-1">
+              <p className="text-sm font-medium text-red-600">
+                Изтрий акаунта ми
+              </p>
+              <p className="text-xs text-stone-400">Безвъзвратно изтрива всички данни</p>
+            </div>
+            <ChevronRight className="w-4 h-4 text-stone-400" />
+          </button>
+        ) : (
+          <div className="rounded-2xl border-2 border-red-200 bg-red-50/50 p-4 space-y-3">
+            <div className="flex items-center gap-2 text-red-600">
+              <AlertTriangle className="w-4 h-4" />
+              <p className="text-sm font-semibold">Сигурна ли си?</p>
+            </div>
+            <p className="text-xs text-stone-600">
+              Всички твои данни (профил, записи, настройки) ще бъдат изтрити безвъзвратно.
+            </p>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setDeleteConfirm(false)}
+                className="flex-1 py-2.5 px-4 rounded-xl border border-stone-200 text-sm font-medium text-stone-600 bg-white"
+              >
+                Отказ
+              </button>
+              <button
+                onClick={handleDeleteAccount}
+                disabled={deleting}
+                className="flex-1 py-2.5 px-4 rounded-xl bg-red-500 text-sm font-medium text-white disabled:opacity-50 flex items-center justify-center gap-1.5"
+              >
+                {deleting ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  "Изтрий завинаги"
+                )}
+              </button>
+            </div>
+          </div>
+        )}
       </motion.section>
 
       {/* App info */}
