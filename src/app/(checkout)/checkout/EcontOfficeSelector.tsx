@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Search, MapPin, Clock, Phone, CheckCircle, ChevronDown } from "lucide-react";
+import { Search, MapPin, Clock, Phone, CheckCircle, ChevronDown, Package } from "lucide-react";
 import { useCheckoutStore } from "@/stores/checkout-store";
 import { useShippingCalculation } from "@/hooks/useShippingCalculation";
 import type { SimpleEcontCity, SimpleEcontOffice } from "@/lib/econt/types";
@@ -94,7 +94,7 @@ export function EcontOfficeSelector() {
   return (
     <div className="space-y-4">
       <h3 className="text-sm font-bold text-stone-500 uppercase tracking-wide">
-        Избери Офис на Еконт
+        Избери Офис или Еконтомат
       </h3>
 
       {/* City Search */}
@@ -189,6 +189,12 @@ export function EcontOfficeSelector() {
                           <span className={`font-medium text-sm ${isSelected ? "text-[#2D4A3E]" : "text-stone-800"}`}>
                             {office.name}
                           </span>
+                          {office.isAPS && (
+                            <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 bg-blue-50 text-blue-700 text-[10px] font-semibold rounded">
+                              <Package className="w-2.5 h-2.5" />
+                              24/7
+                            </span>
+                          )}
                           {isSelected && (
                             <CheckCircle className="w-4 h-4 text-[#2D4A3E] flex-shrink-0" />
                           )}

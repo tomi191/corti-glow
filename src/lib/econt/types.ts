@@ -166,6 +166,7 @@ export interface SimpleEcontOffice {
   address: string;
   phone: string;
   workTime: string;
+  isAPS: boolean; // true = Еконтомат (Automated Parcel Station)
   latitude?: number;
   longitude?: number;
 }

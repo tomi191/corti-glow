@@ -18,6 +18,7 @@ function transformOffice(office: EcontOffice): SimpleEcontOffice {
     address: office.address?.fullAddress || "",
     phone: office.phone || "",
     workTime: office.workTime || "",
+    isAPS: office.isAPS || false,
     latitude: office.address?.location?.latitude,
     longitude: office.address?.location?.longitude,
   };
@@ -26,7 +27,7 @@ function transformOffice(office: EcontOffice): SimpleEcontOffice {
 // Get all offices (cached in DB recommended)
 export async function getAllOffices(): Promise<SimpleEcontOffice[]> {
   const client = getEcontClient();
-  const response = await client.getNomenclatures<OfficesResponse>("offices", {
+  const response = await client.getOffices<OfficesResponse>({
     countryCode: "BGR",
   });
 

@@ -20,7 +20,7 @@ function transformCity(city: EcontCity): SimpleEcontCity {
 // Get all cities (cached in DB recommended)
 export async function getAllCities(): Promise<SimpleEcontCity[]> {
   const client = getEcontClient();
-  const response = await client.getNomenclatures<CitiesResponse>("cities", {
+  const response = await client.getCities<CitiesResponse>({
     countryCode: "BGR",
   });
 
@@ -81,7 +81,7 @@ export async function getCityByName(
 // Get cities with express delivery (faster delivery options)
 export async function getExpressCities(): Promise<SimpleEcontCity[]> {
   const client = getEcontClient();
-  const response = await client.getNomenclatures<CitiesResponse>("cities", {
+  const response = await client.getCities<CitiesResponse>({
     countryCode: "BGR",
   });
 

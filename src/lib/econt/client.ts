@@ -74,15 +74,32 @@ class EcontClient {
     }
   }
 
-  // Nomenclatures API
-  async getNomenclatures<T>(
-    type: string,
+  // Nomenclatures API — production uses specific endpoints per type
+  async getCities<T>(
     params?: Record<string, unknown>
   ): Promise<EcontResponse<T>> {
-    return this.request<T>("Nomenclatures/NomenclaturesService.getNomenclatures.json", {
-      nomenType: type,
-      ...params,
-    });
+    return this.request<T>(
+      "Nomenclatures/NomenclaturesService.getCities.json",
+      params || {}
+    );
+  }
+
+  async getOffices<T>(
+    params?: Record<string, unknown>
+  ): Promise<EcontResponse<T>> {
+    return this.request<T>(
+      "Nomenclatures/NomenclaturesService.getOffices.json",
+      params || {}
+    );
+  }
+
+  async getStreets<T>(
+    params?: Record<string, unknown>
+  ): Promise<EcontResponse<T>> {
+    return this.request<T>(
+      "Nomenclatures/NomenclaturesService.getStreets.json",
+      params || {}
+    );
   }
 
   // Shipments API
