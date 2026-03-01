@@ -28,6 +28,7 @@ interface PwaState {
   concerns: ConcernOption[];
   contraception: "yes" | "no" | "unsure" | null;
   email: string | null;
+  timezone: string | null;
   lastSyncedAt: string | null;
   // Transient (not persisted)
   isBreathingOpen: boolean;
@@ -86,6 +87,7 @@ export const usePwaStore = create<PwaStore>()(
       concerns: [],
       contraception: null,
       email: null,
+      timezone: null,
       lastSyncedAt: null,
       isBreathingOpen: false,
       isSyncing: false,
@@ -167,6 +169,7 @@ export const usePwaStore = create<PwaStore>()(
                 concerns: state.concerns,
                 contraception: state.contraception,
                 email: state.email,
+                timezone: state.timezone,
                 hasSeenTour: state.hasSeenTour,
                 pushEnabled: state.pushEnabled,
                 iosInstallDismissed: state.iosInstallDismissed,
@@ -279,6 +282,7 @@ export const usePwaStore = create<PwaStore>()(
         concerns: state.concerns,
         contraception: state.contraception,
         email: state.email,
+        timezone: state.timezone,
         lastSyncedAt: state.lastSyncedAt,
         // isBreathingOpen, isSyncing intentionally excluded
       }),
@@ -290,6 +294,18 @@ export const usePwaStore = create<PwaStore>()(
             localStorage.removeItem("lura-pwa");
           } catch {
             // localStorage itself may be unavailable
+          }
+          return;
+        }
+        // Auto-detect timezone on every hydration
+        if (state) {
+          try {
+            const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+            if (tz && tz !== state.timezone) {
+              state.timezone = tz;
+            }
+          } catch {
+            // Intl not available in rare environments
           }
         }
       },
