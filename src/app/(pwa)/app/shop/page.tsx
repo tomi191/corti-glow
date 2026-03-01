@@ -6,7 +6,7 @@ import Image from "next/image";
 import { usePwaStore } from "@/stores/pwa-store";
 import { trackPwaEvent } from "@/lib/pwa-analytics";
 import { WaitlistModal } from "@/components/ui/WaitlistModal";
-import { getPhaseRecommendation, type CyclePhase } from "@/lib/pwa-logic";
+import { getPhaseRecommendation, getConcernRecommendations, type CyclePhase, type ConcernOption } from "@/lib/pwa-logic";
 import { haptic } from "@/lib/haptics";
 import { staggerContainer, staggerItem } from "@/lib/framer-variants";
 import {
@@ -17,6 +17,7 @@ import {
   Tag,
   Package,
   Crown,
+  Heart,
 } from "lucide-react";
 import { productInfo, productVariants, ingredients } from "@/data/products";
 
@@ -73,6 +74,7 @@ export default function ShopPage() {
   const [waitlistOpen, setWaitlistOpen] = useState(false);
   const getCurrentPhase = usePwaStore((s) => s.getCurrentPhase);
   const lastPeriodDate = usePwaStore((s) => s.lastPeriodDate);
+  const concerns = usePwaStore((s) => s.concerns);
 
   const productTilt = useTilt(5);
 
@@ -97,6 +99,7 @@ export default function ShopPage() {
   const phase = getCurrentPhase();
   const hasSetup = !!lastPeriodDate;
   const recommendation = getPhaseRecommendation(phase);
+  const concernRecs = getConcernRecommendations(concerns);
 
   function handleWaitlist() {
     haptic.medium();
@@ -116,7 +119,7 @@ export default function ShopPage() {
       {/* Header */}
       <motion.div variants={staggerItem}>
         <h1 className="font-display text-xl font-bold text-brand-forest">
-          Препоръки за теб
+          {concernRecs.length > 0 ? "Точно за теб" : "Препоръки за теб"}
         </h1>
         {hasSetup && (
           <p className="text-sm text-stone-500 mt-1">
@@ -124,9 +127,51 @@ export default function ShopPage() {
             <span className="font-semibold text-brand-forest">
               {PHASE_LABELS[phase]}
             </span>
+            {concernRecs.length > 0 && " + твоите нужди"}
           </p>
         )}
       </motion.div>
+
+      {/* Concern-based personalized recommendations */}
+      {concernRecs.length > 0 && (
+        <motion.div
+          variants={staggerItem}
+          className="glass rounded-[2rem] p-5 space-y-3 border border-brand-sage/20"
+        >
+          <div className="flex items-center gap-2">
+            <Heart className="w-4 h-4 text-brand-forest" />
+            <span className="text-xs font-bold uppercase tracking-widest text-brand-forest/60">
+              За твоите нужди
+            </span>
+          </div>
+          <div className="space-y-2.5">
+            {concernRecs.slice(0, 3).map((rec) => (
+              <div key={rec.ingredient} className="flex items-start gap-3">
+                <div className="w-6 h-6 rounded-full bg-brand-sage/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <Check className="w-3.5 h-3.5 text-brand-forest" />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-stone-800">
+                    {rec.ingredient} <span className="text-xs font-normal text-stone-400">({rec.dosage})</span>
+                  </p>
+                  <p className="text-xs text-stone-500 leading-relaxed">
+                    {rec.claim}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+          <p className="text-[11px] text-stone-400 pt-1">
+            Базирано на: {concerns.map((c) => {
+              const labels: Record<ConcernOption, string> = {
+                stress: "Стрес", sleep: "Лош сън", skin: "Кожа", pms: "ПМС",
+                bloating: "Подуване", fatigue: "Умора", anxiety: "Тревожност", irregular: "Нередовен цикъл",
+              };
+              return labels[c];
+            }).join(", ")}
+          </p>
+        </motion.div>
+      )}
 
       {/* Phase-based recommendation card */}
       {hasSetup && (

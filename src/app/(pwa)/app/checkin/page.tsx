@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { usePwaStore } from "@/stores/pwa-store";
 import { SYMPTOM_OPTIONS, type SymptomOption } from "@/lib/pwa-logic";
@@ -9,7 +10,7 @@ import { trackPwaEvent } from "@/lib/pwa-analytics";
 import {
   Check, X, Plus, Droplets,
   CloudMoon, Moon, Meh, Smile, Sparkles,
-  AlertCircle, Flame, TrendingUp, TrendingDown, Wind,
+  AlertCircle, Flame, TrendingUp, TrendingDown, Wind, Pill,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import PremiumSlider from "@/components/pwa/PremiumSlider";
@@ -274,6 +275,27 @@ export default function CheckInPage() {
               <p className="text-xs text-stone-500">Опитай дихателно упражнение →</p>
             </div>
           </motion.button>
+        )}
+
+        {/* Contextual product nudge for high stress */}
+        {showBreathing && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.8 }}
+          >
+            <Link
+              href="/app/shop"
+              onClick={() => trackPwaEvent("conversion_checkin_stress")}
+              className="flex items-center gap-3 px-4 py-3 rounded-2xl bg-brand-forest/5 border border-brand-forest/10 w-full max-w-xs active:scale-[0.98] transition-transform"
+            >
+              <Pill className="w-4 h-4 text-brand-forest flex-shrink-0" />
+              <p className="text-xs text-stone-600 leading-relaxed">
+                <span className="font-semibold text-brand-forest">Знаеше ли?</span>{" "}
+                KSM-66 Ашваганда намалява кортизола с до 27%
+              </p>
+            </Link>
+          </motion.div>
         )}
       </div>
     );

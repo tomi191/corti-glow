@@ -299,6 +299,74 @@ export function getPhaseRecommendation(phase: CyclePhase): PhaseRecommendation {
   return PHASE_RECOMMENDATIONS[phase];
 }
 
+// ─── Concern → Ingredient Mapping (Monetization) ───
+
+export interface ConcernRecommendation {
+  concern: string; // BG label
+  ingredient: string;
+  dosage: string;
+  claim: string; // one-liner science-backed claim
+}
+
+const CONCERN_INGREDIENT_MAP: Record<ConcernOption, ConcernRecommendation[]> = {
+  stress: [
+    { concern: "Стрес", ingredient: "Ашваганда KSM-66", dosage: "300mg", claim: "Клинично доказано намаляване на кортизола с до 27%" },
+    { concern: "Стрес", ingredient: "L-Теанин", dosage: "200mg", claim: "Стимулира алфа вълните за спокоен фокус без сънливост" },
+  ],
+  sleep: [
+    { concern: "Лош сън", ingredient: "Магнезиев Бисглицинат", dosage: "300mg", claim: "Най-усвоимата форма на магнезий — подобрява качеството на съня" },
+    { concern: "Лош сън", ingredient: "L-Теанин", dosage: "200mg", claim: "Помага за по-бързо заспиване без сънливост на сутринта" },
+  ],
+  skin: [
+    { concern: "Кожа и акне", ingredient: "Мио-инозитол", dosage: "2000mg", claim: "Подкрепя хормоналния баланс, свързан с акне" },
+    { concern: "Кожа и акне", ingredient: "Бромелаин", dosage: "100mg", claim: "Намалява възпалението, което влияе на кожата" },
+  ],
+  pms: [
+    { concern: "ПМС", ingredient: "Ашваганда KSM-66", dosage: "300mg", claim: "Намалява кортизола, който усилва ПМС симптомите" },
+    { concern: "ПМС", ingredient: "Магнезиев Бисглицинат", dosage: "300mg", claim: "Доказано облекчава крампи, раздразнителност и задържане на вода" },
+  ],
+  bloating: [
+    { concern: "Подуване", ingredient: "Бромелаин", dosage: "100mg", claim: "Ензим от ананас — премахва задържаната вода" },
+    { concern: "Подуване", ingredient: "Магнезиев Бисглицинат", dosage: "300mg", claim: "Помага за нормалния електролитен баланс" },
+  ],
+  fatigue: [
+    { concern: "Умора", ingredient: "Ашваганда KSM-66", dosage: "300mg", claim: "Адаптоген — помага на тялото да се справя с натоварване" },
+    { concern: "Умора", ingredient: "Магнезиев Бисглицинат", dosage: "300mg", claim: "Участва в 300+ ензимни реакции за енергиен метаболизъм" },
+  ],
+  anxiety: [
+    { concern: "Тревожност", ingredient: "L-Теанин", dosage: "200mg", claim: "Насърчава алфа мозъчни вълни — спокойствие без сънливост" },
+    { concern: "Тревожност", ingredient: "Ашваганда KSM-66", dosage: "300mg", claim: "Клинично доказано намаляване на тревожността с до 56%" },
+  ],
+  irregular: [
+    { concern: "Нередовен цикъл", ingredient: "Мио-инозитол", dosage: "2000mg", claim: "Подкрепя инсулиновата чувствителност и хормоналния баланс" },
+    { concern: "Нередовен цикъл", ingredient: "Ашваганда KSM-66", dosage: "300mg", claim: "Балансира кортизола, който влияе на хормоналната ос" },
+  ],
+};
+
+/**
+ * Returns personalized ingredient recommendations based on user's onboarding concerns.
+ * Deduplicates ingredients (same ingredient may appear for multiple concerns).
+ */
+export function getConcernRecommendations(concerns: ConcernOption[]): ConcernRecommendation[] {
+  if (concerns.length === 0) return [];
+
+  const seen = new Set<string>();
+  const results: ConcernRecommendation[] = [];
+
+  for (const concern of concerns) {
+    const recs = CONCERN_INGREDIENT_MAP[concern];
+    if (!recs) continue;
+    for (const rec of recs) {
+      if (!seen.has(rec.ingredient)) {
+        seen.add(rec.ingredient);
+        results.push(rec);
+      }
+    }
+  }
+
+  return results;
+}
+
 // ─── Smart Insights ───
 
 export interface WeeklyInsight {

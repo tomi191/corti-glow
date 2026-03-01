@@ -12,6 +12,7 @@ import {
   type DailyAction,
 } from "@/lib/pwa-logic";
 import { isValidDateString, getToday, getDiffDays } from "@/lib/date-utils";
+import { trackPwaEvent } from "@/lib/pwa-analytics";
 import {
   Sparkles,
   Heart,
@@ -26,6 +27,7 @@ import {
   Sprout,
   Sun,
   Flame,
+  ArrowRight,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import OnboardingWizard from "@/components/pwa/OnboardingWizard";
@@ -397,6 +399,36 @@ export default function AppDashboard() {
           <p className="text-sm opacity-90 leading-relaxed">
             {getDailyTip(phase, checkIn.stress)}
           </p>
+        </motion.div>
+      )}
+
+      {/* Conversion trigger: luteal phase + high stress → science card */}
+      {hasSetup && phase === "luteal" && checkIn && checkIn.stress >= 6 && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
+        >
+          <Link
+            href="/app/shop"
+            onClick={() => trackPwaEvent("conversion_dashboard_luteal")}
+            className="block glass rounded-[2rem] p-5 space-y-2 border border-brand-sage/20 active:scale-[0.99] transition-transform"
+          >
+            <div className="flex items-center gap-2">
+              <Pill className="w-4 h-4 text-brand-forest" />
+              <span className="text-xs font-bold uppercase tracking-widest text-brand-forest/60">
+                Наука за фазата
+              </span>
+            </div>
+            <p className="text-sm text-stone-700 leading-relaxed">
+              В лутеалната фаза кортизолът е естествено по-висок.{" "}
+              <span className="font-semibold text-brand-forest">KSM-66 Ашваганда</span> е клинично доказана, че го намалява с до 27%.
+            </p>
+            <div className="flex items-center gap-1 text-xs font-semibold text-brand-forest">
+              <span>Виж как работи</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </div>
+          </Link>
         </motion.div>
       )}
     </div>
