@@ -27,6 +27,7 @@ interface PwaState {
   ageRange: string | null;
   concerns: ConcernOption[];
   contraception: "yes" | "no" | "unsure" | null;
+  email: string | null;
   lastSyncedAt: string | null;
   // Transient (not persisted)
   isBreathingOpen: boolean;
@@ -47,6 +48,7 @@ interface PwaActions {
   setAgeRange: (range: string) => void;
   setConcerns: (concerns: ConcernOption[]) => void;
   setContraception: (value: "yes" | "no" | "unsure") => void;
+  setEmail: (email: string) => void;
   markTourSeen: () => void;
   setPushEnabled: (enabled: boolean) => void;
   dismissIOSInstall: () => void;
@@ -83,6 +85,7 @@ export const usePwaStore = create<PwaStore>()(
       ageRange: null,
       concerns: [],
       contraception: null,
+      email: null,
       lastSyncedAt: null,
       isBreathingOpen: false,
       isSyncing: false,
@@ -141,6 +144,7 @@ export const usePwaStore = create<PwaStore>()(
       setAgeRange: (range) => set({ ageRange: range }),
       setConcerns: (concerns) => set({ concerns }),
       setContraception: (value) => set({ contraception: value }),
+      setEmail: (email) => set({ email }),
       openBreathing: () => set({ isBreathingOpen: true }),
       closeBreathing: () => set({ isBreathingOpen: false }),
 
@@ -162,6 +166,7 @@ export const usePwaStore = create<PwaStore>()(
                 ageRange: state.ageRange,
                 concerns: state.concerns,
                 contraception: state.contraception,
+                email: state.email,
                 hasSeenTour: state.hasSeenTour,
                 pushEnabled: state.pushEnabled,
                 iosInstallDismissed: state.iosInstallDismissed,
@@ -273,6 +278,7 @@ export const usePwaStore = create<PwaStore>()(
         ageRange: state.ageRange,
         concerns: state.concerns,
         contraception: state.contraception,
+        email: state.email,
         lastSyncedAt: state.lastSyncedAt,
         // isBreathingOpen, isSyncing intentionally excluded
       }),

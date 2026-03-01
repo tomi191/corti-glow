@@ -353,6 +353,31 @@ export default function ShopPage() {
           ))}
       </motion.section>
 
+      {/* Social proof */}
+      <motion.div
+        variants={staggerItem}
+        className="glass rounded-[2rem] p-5 space-y-3"
+      >
+        <div className="text-center">
+          <p className="text-2xl font-display font-bold text-brand-forest">1,200+</p>
+          <p className="text-xs text-stone-500">жени вече следят цикъла си с LURA</p>
+        </div>
+        <div className="space-y-2">
+          <div className="bg-white/60 rounded-xl px-4 py-3">
+            <p className="text-xs text-stone-600 leading-relaxed italic">
+              &ldquo;Най-после разбирам защо се чувствам така в определени дни. Спрях да се обвинявам.&rdquo;
+            </p>
+            <p className="text-[11px] text-stone-400 mt-1 font-semibold">— Мария, 29</p>
+          </div>
+          <div className="bg-white/60 rounded-xl px-4 py-3">
+            <p className="text-xs text-stone-600 leading-relaxed italic">
+              &ldquo;Дихателното упражнение ми помага повече от колкото очаквах. 4 минути и стресът спада.&rdquo;
+            </p>
+            <p className="text-[11px] text-stone-400 mt-1 font-semibold">— Елена, 32</p>
+          </div>
+        </div>
+      </motion.div>
+
       {/* Pre-launch info */}
       <motion.div
         variants={staggerItem}

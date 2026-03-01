@@ -20,9 +20,9 @@
 
 | # | Проблем | Приоритет | Статус |
 |---|---------|-----------|--------|
-| CF1 | Multi-device sync презаписва данни (client always wins) | КРИТИЧЕН | ⬜ |
-| CF2 | Sync не се тригерва след check-in (само при app load) | КРИТИЧЕН | ⬜ |
-| CF3 | Analytics events записват user_id: null за logged-in users | КРИТИЧЕН | ⬜ |
+| CF1 | Multi-device sync презаписва данни (client always wins) | КРИТИЧЕН | ✅ |
+| CF2 | Sync не се тригерва след check-in (само при app load) | КРИТИЧЕН | ✅ |
+| CF3 | Analytics events записват user_id: null за logged-in users | КРИТИЧЕН | ✅ |
 
 ---
 
@@ -31,11 +31,11 @@
 | # | Проблем | Приоритет | Статус |
 |---|---------|-----------|--------|
 | R1 | Няма scheduled push reminders (инфраструктура има, sender липсва) | КРИТИЧЕН | ⬜ |
-| R2 | Streak скрит в Profile (не се вижда на dashboard) | ВИСОК | ⬜ |
-| R3 | Няма loss aversion trigger ("1 ден до 7-дневна серия!") | ВИСОК | ⬜ |
-| R4 | Няма micro-win след check-in ("Sleep +2 vs вчера!") | ВИСОК | ⬜ |
-| R5 | Няма re-engagement при 3+ дни отсъствие | ВИСОК | ⬜ |
-| R6 | Breathing не е свързано със stress (няма trigger при stress >= 7) | ВИСОК | ⬜ |
+| R2 | Streak скрит в Profile (не се вижда на dashboard) | ВИСОК | ✅ |
+| R3 | Няма loss aversion trigger ("1 ден до 7-дневна серия!") | ВИСОК | ✅ |
+| R4 | Няма micro-win след check-in ("Sleep +2 vs вчера!") | ВИСОК | ✅ |
+| R5 | Няма re-engagement при 3+ дни отсъствие | ВИСОК | ✅ |
+| R6 | Breathing не е свързано със stress (няма trigger при stress >= 7) | ВИСОК | ✅ |
 | R7 | Няма phase transition celebration/notification | СРЕДЕН | ⬜ |
 
 ---
@@ -44,9 +44,9 @@
 
 | # | Проблем | Revenue Impact | Статус |
 |---|---------|----------------|--------|
-| M1 | Concerns от onboarding НЕ се ползват за персонализация | HIGH | ⬜ |
-| M2 | Нула conversion triggers (stress >= 7, лутеална + PMS) | HIGH | ⬜ |
-| M3 | Shop е само waitlist (няма реален purchase flow) | HIGH | ⬜ |
+| M1 | Concerns от onboarding НЕ се ползват за персонализация | HIGH | ✅ |
+| M2 | Нула conversion triggers (stress >= 7, лутеална + PMS) | HIGH | ✅ |
+| M3 | Shop е само waitlist (няма реален purchase flow) | HIGH | ⬜ (pre-launch) |
 | M4 | Няма attribution tracking (PWA → shop → покупка) | HIGH | ⬜ |
 | M5 | Няма email capture при onboarding | HIGH | ⬜ |
 | M6 | Няма social proof (testimonials, "X жени ползват LURA") | MEDIUM | ⬜ |
@@ -79,22 +79,23 @@
 ## VII. ТОП 10 ДЕЙСТВИЯ ПО ПРИОРИТЕТ
 
 ### Блокиращи (сега)
-- [ ] **1. Fix multi-device sync** — timestamp comparison, server wins if newer
-- [ ] **2. Sync след check-in** — trigger syncWithServer() в saveCheckIn()
-- [ ] **3. Fix analytics user_id** — подавай Clerk userId при event logging
+- [x] **1. Fix multi-device sync** — timestamp comparison, server wins if newer
+- [x] **2. Sync след check-in** — trigger syncWithServer() в saveCheckIn()
+- [x] **3. Fix analytics user_id** — подавай Clerk userId при event logging
 
 ### Retention (Седмица 1)
 - [ ] **4. Scheduled push reminders** — cron/Edge Function + timezone
-- [ ] **5. Streak на dashboard** — видим с loss aversion trigger
-- [ ] **6. Micro-win след check-in** — персонализиран feedback
+- [x] **5. Streak на dashboard** — видим с loss aversion trigger
+- [x] **6. Micro-win след check-in** — персонализиран feedback
 
 ### Монетизация (Седмица 2)
-- [ ] **7. Concern→ingredient mapping** — персонализирани product recs
-- [ ] **8. Conversion triggers** — модал при stress >= 7 с product link
+- [x] **7. Concern→ingredient mapping** — персонализирани product recs
+- [x] **8. Conversion triggers** — nudge при stress >= 7 с product link
 - [ ] **9. Email capture** — стъпка в onboarding
+- [ ] **9b. Social proof** — testimonials/counter в shop
 
 ### Growth (Седмица 3-4)
-- [ ] **10. Re-engagement flow** — welcome back при 3+ дни отсъствие
+- [x] **10. Re-engagement flow** — welcome back при 3+ дни отсъствие
 
 ---
 

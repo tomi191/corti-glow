@@ -5,9 +5,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import { usePwaStore } from "@/stores/pwa-store";
 import { CONCERN_OPTIONS, type ConcernOption } from "@/lib/pwa-logic";
 import { haptic } from "@/lib/haptics";
-import { Sparkles, Moon, Leaf, Calendar, ArrowRight, User, Check } from "lucide-react";
+import { Sparkles, Moon, Leaf, Calendar, ArrowRight, User, Check, Mail } from "lucide-react";
 
-const TOTAL_STEPS = 5;
+const TOTAL_STEPS = 6;
 
 const AGE_RANGES = ["18–24", "25–30", "31–35", "36–40", "41+"];
 
@@ -61,6 +61,7 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
   const setAgeRange = usePwaStore((s) => s.setAgeRange);
   const setConcerns = usePwaStore((s) => s.setConcerns);
   const setContraception = usePwaStore((s) => s.setContraception);
+  const setStoreEmail = usePwaStore((s) => s.setEmail);
 
   const [step, setStep] = useState(0);
 
@@ -76,6 +77,9 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
   const [periodDate, setPeriodDate] = useState("");
   const [cycleLen, setCycleLen] = useState(28);
   const [periodDur, setPeriodDur] = useState(5);
+
+  // Email state (step 4)
+  const [email, setEmail] = useState("");
 
   const next = useCallback(() => {
     haptic.light();
@@ -102,8 +106,9 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
     if (periodDate) setLastPeriodDate(periodDate);
     setCycleLength(cycleLen);
     setPeriodDuration(periodDur);
+    if (email.trim()) setStoreEmail(email.trim());
     onComplete();
-  }, [name, selectedAge, selectedConcerns, selectedContraception, periodDate, cycleLen, periodDur, setUserName, setAgeRange, setConcerns, setContraception, setLastPeriodDate, setCycleLength, setPeriodDuration, onComplete]);
+  }, [name, selectedAge, selectedConcerns, selectedContraception, periodDate, cycleLen, periodDur, email, setUserName, setAgeRange, setConcerns, setContraception, setLastPeriodDate, setCycleLength, setPeriodDuration, setStoreEmail, onComplete]);
 
   return (
     <div className="relative w-full min-h-[55vh] flex flex-col items-center justify-center">
@@ -474,10 +479,63 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
           </motion.div>
         )}
 
-        {/* ─── Step 4: Ready ─── */}
+        {/* ─── Step 4: Email (Optional) ─── */}
         {step === 4 && (
           <motion.div
             key="step4"
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            className="glass w-full max-w-sm p-8 rounded-[2rem] text-center shadow-2xl backdrop-blur-xl bg-white/40 border border-white/50"
+          >
+            <motion.div variants={itemVariants} className="flex justify-center mb-5">
+              <div className="w-16 h-16 rounded-full bg-brand-cream/40 flex items-center justify-center">
+                <Mail className="w-8 h-8 text-brand-forest" />
+              </div>
+            </motion.div>
+            <motion.h2 variants={itemVariants} className="font-display text-xl font-bold text-brand-forest mb-2">
+              Искаш ли напомняне?
+            </motion.h2>
+            <motion.p variants={itemVariants} className="text-sm text-stone-500 mb-5 leading-relaxed">
+              Ще ти пишем само когато Corti-Glow е наличен и с персонализирани съвети за цикъла ти.
+            </motion.p>
+            <motion.div variants={itemVariants} className="mb-5">
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="tvoyat@email.bg"
+                autoComplete="email"
+                className="w-full py-3 px-4 border border-white/60 rounded-xl text-stone-700 bg-white/70 backdrop-blur-sm focus:ring-2 focus:ring-brand-forest/30 focus:border-brand-forest outline-none transition-all text-center"
+              />
+            </motion.div>
+            <motion.div variants={itemVariants} className="space-y-2">
+              <button
+                onClick={next}
+                disabled={!email.trim() || !email.includes("@")}
+                className={`w-full py-3.5 rounded-2xl font-semibold text-base active:scale-[0.98] transition-all ${
+                  email.trim() && email.includes("@")
+                    ? CTA_ACTIVE
+                    : CTA_INACTIVE
+                }`}
+              >
+                Запиши ме
+              </button>
+              <button
+                onClick={next}
+                className="w-full py-2 text-sm text-stone-400 font-medium hover:text-stone-600 transition-colors"
+              >
+                Пропусни
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+
+        {/* ─── Step 5: Ready ─── */}
+        {step === 5 && (
+          <motion.div
+            key="step5"
             variants={containerVariants}
             initial="hidden"
             animate="visible"
