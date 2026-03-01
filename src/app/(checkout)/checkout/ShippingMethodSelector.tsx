@@ -70,7 +70,7 @@ export function ShippingMethodSelector() {
           const displayPrice = hasFreeShipping
             ? 0
             : isSelected
-              ? shipping.price
+              ? (shipping.price ?? option.basePrice)
               : option.basePrice;
           const isCalculating = isSelected && shippingCalculating;
 
