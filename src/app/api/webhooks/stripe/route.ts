@@ -90,10 +90,14 @@ export async function POST(request: NextRequest) {
           let updatedOrder = order;
           try {
             const shipmentParams = buildShipmentParamsFromOrder(order);
+            console.log("[Webhook] Creating Econt shipment for", order.order_number, JSON.stringify(shipmentParams));
             const label = await createShipment(shipmentParams);
             if (label) {
+              console.log("[Webhook] Econt shipment created:", label.shipmentNumber);
               await updateEcontTracking(order.id, label.shipmentNumber, label.shipmentNumber);
               updatedOrder = { ...order, econt_tracking_number: label.shipmentNumber };
+            } else {
+              console.warn("[Webhook] Econt createShipment returned null for", order.order_number);
             }
           } catch (err) {
             console.error("Auto-create shipment failed (card):", err);

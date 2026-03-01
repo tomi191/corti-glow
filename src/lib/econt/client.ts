@@ -59,7 +59,12 @@ class EcontClient {
 
       const data = await response.json();
 
-      // Check for Econt-specific errors
+      // Check for Econt-specific errors (multiple formats)
+      if (data.type === "ExException" || data.type === "ExError") {
+        const msg = data.message || "Unknown Econt error";
+        console.error(`Econt API Error [${endpoint}]:`, msg, data.innerErrors || []);
+        return { error: msg };
+      }
       if (data.error) {
         return { error: data.error.message || data.error };
       }
