@@ -11,7 +11,7 @@ import type { Order } from "@/lib/supabase/types";
 // LuraLab sender info (update with real data)
 const SENDER_INFO = {
   personName: process.env.ECONT_SENDER_PERSON || "Служител",
-  companyName: process.env.ECONT_SENDER_COMPANY || "\"Лура Лаб\" ЕООД",
+  companyName: process.env.ECONT_SENDER_COMPANY || "Лура Лаб ЕООД",
   phone: process.env.ECONT_SENDER_PHONE || "+359888123456",
   email: process.env.ECONT_SENDER_EMAIL || "orders@luralab.eu",
   officeCode: process.env.ECONT_SENDER_OFFICE || "1127",
