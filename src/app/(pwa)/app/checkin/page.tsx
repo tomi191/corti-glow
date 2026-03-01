@@ -9,7 +9,7 @@ import { trackPwaEvent } from "@/lib/pwa-analytics";
 import {
   Check, X, Plus, Droplets,
   CloudMoon, Moon, Meh, Smile, Sparkles,
-  AlertCircle,
+  AlertCircle, Flame, TrendingUp, TrendingDown, Wind,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import PremiumSlider from "@/components/pwa/PremiumSlider";
@@ -44,6 +44,9 @@ export default function CheckInPage() {
   const router = useRouter();
   const saveCheckIn = usePwaStore((s) => s.saveCheckIn);
   const getTodayCheckIn = usePwaStore((s) => s.getTodayCheckIn);
+  const getYesterdayCheckIn = usePwaStore((s) => s.getYesterdayCheckIn);
+  const getStreak = usePwaStore((s) => s.getStreak);
+  const openBreathing = usePwaStore((s) => s.openBreathing);
   const [mounted, setMounted] = useState(false);
 
   const [periodStarted, setPeriodStarted] = useState(false);
@@ -99,7 +102,8 @@ export default function CheckInPage() {
       period_started: periodStarted,
     });
     setDone(true);
-    setTimeout(() => router.push("/app"), 1200);
+    // Longer delay so user can see micro-win; skip if they tap breathing
+    setTimeout(() => router.push("/app"), stress >= 7 ? 5000 : 2500);
   }, [saveCheckIn, periodStarted, sleep, stress, symptoms, expanded, router]);
 
   function toggleSymptom(s: SymptomOption) {
@@ -181,19 +185,96 @@ export default function CheckInPage() {
     );
   }
 
-  // ─── Done Screen ───
+  // ─── Done Screen (Micro-win + Breathing Trigger) ───
   if (done) {
+    const yesterday = getYesterdayCheckIn();
+    const streak = getStreak();
+    const sleepDiff = yesterday ? sleep - yesterday.sleep : null;
+    const stressDiff = yesterday ? stress - yesterday.stress : null;
+    const showBreathing = stress >= 7;
+
     return (
-      <div className="max-w-lg mx-auto flex flex-col items-center justify-center min-h-[60vh]">
+      <div className="max-w-lg mx-auto flex flex-col items-center justify-center min-h-[60vh] space-y-5">
+        {/* Success icon */}
         <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
-          className="w-20 h-20 rounded-full bg-brand-sage/30 flex items-center justify-center mb-4"
+          className="w-20 h-20 rounded-full bg-brand-sage/30 flex items-center justify-center"
         >
           <Check className="w-10 h-10 text-brand-forest" />
         </motion.div>
-        <p className="text-lg font-semibold text-brand-forest">Готово</p>
-        <p className="text-sm text-stone-500 mt-1">Денят ти е записан</p>
+
+        <div className="text-center space-y-1">
+          <p className="text-lg font-semibold text-brand-forest">Записано!</p>
+          {streak > 1 && (
+            <motion.div
+              initial={{ opacity: 0, y: 5 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="flex items-center justify-center gap-1.5"
+            >
+              <Flame className="w-4 h-4 text-orange-500" />
+              <span className="text-sm font-bold text-orange-600">{streak} поредни дни!</span>
+            </motion.div>
+          )}
+        </div>
+
+        {/* Comparison with yesterday */}
+        {yesterday && (sleepDiff !== 0 || stressDiff !== 0) && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="glass rounded-2xl px-5 py-3 flex items-center gap-4"
+          >
+            {sleepDiff !== null && sleepDiff !== 0 && (
+              <div className="flex items-center gap-1.5">
+                {sleepDiff > 0 ? (
+                  <TrendingUp className="w-4 h-4 text-emerald-500" />
+                ) : (
+                  <TrendingDown className="w-4 h-4 text-stone-400" />
+                )}
+                <span className={`text-sm font-semibold ${sleepDiff > 0 ? "text-emerald-600" : "text-stone-500"}`}>
+                  Сън {sleepDiff > 0 ? "+" : ""}{sleepDiff}
+                </span>
+              </div>
+            )}
+            {stressDiff !== null && stressDiff !== 0 && (
+              <div className="flex items-center gap-1.5">
+                {stressDiff < 0 ? (
+                  <TrendingDown className="w-4 h-4 text-emerald-500" />
+                ) : (
+                  <TrendingUp className="w-4 h-4 text-red-400" />
+                )}
+                <span className={`text-sm font-semibold ${stressDiff < 0 ? "text-emerald-600" : "text-red-500"}`}>
+                  Стрес {stressDiff > 0 ? "+" : ""}{stressDiff}
+                </span>
+              </div>
+            )}
+          </motion.div>
+        )}
+
+        {/* Breathing suggestion for high stress */}
+        {showBreathing && (
+          <motion.button
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+            onClick={() => {
+              openBreathing();
+              router.push("/app");
+            }}
+            className="glass rounded-2xl px-5 py-4 flex items-center gap-3 w-full max-w-xs border border-brand-sage/30 active:scale-[0.98] transition-transform"
+          >
+            <div className="w-10 h-10 rounded-full bg-brand-sage/30 flex items-center justify-center flex-shrink-0">
+              <Wind className="w-5 h-5 text-brand-forest" />
+            </div>
+            <div className="text-left">
+              <p className="text-sm font-semibold text-brand-forest">Стресът е висок</p>
+              <p className="text-xs text-stone-500">Опитай дихателно упражнение →</p>
+            </div>
+          </motion.button>
+        )}
       </div>
     );
   }

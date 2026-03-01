@@ -13,7 +13,7 @@ import {
   getPhaseInfo,
   calculateGlowScore,
 } from "@/lib/pwa-logic";
-import { getToday } from "@/lib/date-utils";
+import { getToday, formatDateStr } from "@/lib/date-utils";
 
 interface PwaState {
   lastPeriodDate: string | null;
@@ -57,11 +57,13 @@ interface PwaActions {
 
 interface PwaGetters {
   getTodayCheckIn: () => DailyCheckIn | undefined;
+  getYesterdayCheckIn: () => DailyCheckIn | undefined;
   getCurrentCycleDay: () => number;
   getCurrentPhase: () => CyclePhase;
   getCurrentPhaseInfo: () => PhaseInfo;
   getTodayGlowScore: () => number | null;
   getCheckInForDate: (date: string) => DailyCheckIn | undefined;
+  getStreak: () => number;
 }
 
 type PwaStore = PwaState & PwaActions & PwaGetters;
@@ -225,6 +227,35 @@ export const usePwaStore = create<PwaStore>()(
 
       getCheckInForDate: (date: string) => {
         return get().checkIns.find((c) => c.date === date);
+      },
+
+      getYesterdayCheckIn: () => {
+        const yd = new Date();
+        yd.setDate(yd.getDate() - 1);
+        return get().checkIns.find((c) => c.date === formatDateStr(yd));
+      },
+
+      getStreak: () => {
+        const { checkIns } = get();
+        if (checkIns.length === 0) return 0;
+        const sorted = [...checkIns].map((c) => c.date).sort().reverse();
+        const todayStr = getToday();
+        const yd = new Date();
+        yd.setDate(yd.getDate() - 1);
+        const yesterdayStr = formatDateStr(yd);
+        if (sorted[0] !== todayStr && sorted[0] !== yesterdayStr) return 0;
+        let streak = 1;
+        for (let i = 1; i < sorted.length; i++) {
+          const [py, pm, pd] = sorted[i - 1].split("-").map(Number);
+          const prev = new Date(py, pm - 1, pd);
+          prev.setDate(prev.getDate() - 1);
+          if (sorted[i] === formatDateStr(prev)) {
+            streak++;
+          } else {
+            break;
+          }
+        }
+        return streak;
       },
     }),
     {

@@ -11,7 +11,7 @@ import {
   type PhaseInfo,
   type DailyAction,
 } from "@/lib/pwa-logic";
-import { isValidDateString } from "@/lib/date-utils";
+import { isValidDateString, getToday, getDiffDays } from "@/lib/date-utils";
 import {
   Sparkles,
   Heart,
@@ -25,6 +25,7 @@ import {
   Snowflake,
   Sprout,
   Sun,
+  Flame,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import OnboardingWizard from "@/components/pwa/OnboardingWizard";
@@ -58,7 +59,9 @@ export default function AppDashboard() {
   const getCurrentPhase = usePwaStore((s) => s.getCurrentPhase);
   const lastPeriodDate = usePwaStore((s) => s.lastPeriodDate);
   const cycleLength = usePwaStore((s) => s.cycleLength);
+  const checkIns = usePwaStore((s) => s.checkIns);
   const hasSeenTour = usePwaStore((s) => s.hasSeenTour);
+  const getStreak = usePwaStore((s) => s.getStreak);
 
   useEffect(() => setMounted(true), []);
 
@@ -106,6 +109,17 @@ export default function AppDashboard() {
   const hasSetup = !!lastPeriodDate;
   const cycleProgress = hasSetup ? (cycleDay / cycleLength) * 100 : 0;
   const actions = getDailyActions(phase, checkIn?.stress ?? 0);
+  const streak = getStreak();
+
+  // Loss aversion: milestones at 7, 14, 21, 30
+  const nextMilestone = [7, 14, 21, 30].find((m) => streak < m && streak >= m - 1);
+  const streakAtRisk = streak > 0 && !checkIn;
+
+  // Re-engagement: days since last check-in
+  const lastCheckInDate = checkIns.length > 0
+    ? [...checkIns].sort((a, b) => b.date.localeCompare(a.date))[0].date
+    : null;
+  const daysSinceLastCheckIn = lastCheckInDate ? getDiffDays(lastCheckInDate, getToday()) : null;
 
   return (
     <div className="max-w-lg mx-auto space-y-6 py-6">
@@ -157,6 +171,56 @@ export default function AppDashboard() {
           </div>
         </div>
       </motion.section>
+
+      {/* Streak Badge */}
+      {streak > 0 && (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.08 }}
+          className="flex items-center justify-center gap-2 py-2"
+        >
+          <Flame className="w-4 h-4 text-orange-500" />
+          <span className="text-sm font-bold text-orange-600">
+            {streak} {streak === 1 ? "ден" : "поредни дни"}
+          </span>
+          {nextMilestone && (
+            <span className="text-xs text-stone-400">
+              · още {nextMilestone - streak} до {nextMilestone}!
+            </span>
+          )}
+        </motion.div>
+      )}
+
+      {/* Streak at risk warning */}
+      {streakAtRisk && (
+        <motion.div
+          initial={{ opacity: 0, y: -5 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-orange-50 border border-orange-200 rounded-2xl px-4 py-3 flex items-center gap-2.5"
+        >
+          <Flame className="w-4 h-4 text-orange-500 flex-shrink-0" />
+          <p className="text-xs text-orange-700 font-medium">
+            Направи запис, за да запазиш серията от {streak} дни!
+          </p>
+        </motion.div>
+      )}
+
+      {/* Re-engagement banner (3+ days absent) */}
+      {daysSinceLastCheckIn !== null && daysSinceLastCheckIn >= 3 && !checkIn && (
+        <motion.div
+          initial={{ opacity: 0, y: -5 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-brand-forest rounded-2xl px-5 py-4 text-white"
+        >
+          <p className="text-sm font-semibold">Липсваше ни! 👋</p>
+          <p className="text-xs opacity-80 mt-1">
+            {hasSetup
+              ? `Цикълът ти е в ${PHASE_LABELS[phase] ?? phase} фаза. Запиши как си днес →`
+              : `Мина${daysSinceLastCheckIn === 3 ? "ха 3 дни" : `ха ${daysSinceLastCheckIn} дни`}. Как си?`}
+          </p>
+        </motion.div>
+      )}
 
       {/* Vitality & Balance Stats */}
       <motion.section

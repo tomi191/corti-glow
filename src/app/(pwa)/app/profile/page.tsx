@@ -6,7 +6,7 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { usePwaStore } from "@/stores/pwa-store";
 import { haptic } from "@/lib/haptics";
-import { getToday, formatDateStr } from "@/lib/date-utils";
+import { getToday } from "@/lib/date-utils";
 import { staggerContainer, staggerItem } from "@/lib/framer-variants";
 import {
   LogOut,
@@ -88,38 +88,6 @@ function PremiumToggle({
   );
 }
 
-// --- Streak calculator ---
-function computeStreak(checkIns: { date: string }[]): number {
-  if (checkIns.length === 0) return 0;
-  const sorted = [...checkIns]
-    .map((c) => c.date)
-    .sort()
-    .reverse();
-
-  const todayStr = getToday();
-  const yd = new Date();
-  yd.setDate(yd.getDate() - 1);
-  const yesterdayStr = formatDateStr(yd);
-
-  // Streak must start from today or yesterday
-  if (sorted[0] !== todayStr && sorted[0] !== yesterdayStr) return 0;
-
-  let streak = 1;
-  for (let i = 1; i < sorted.length; i++) {
-    // Compare consecutive dates using string comparison (YYYY-MM-DD sorts correctly)
-    const [py, pm, pd] = sorted[i - 1].split("-").map(Number);
-    const prevDate = new Date(py, pm - 1, pd);
-    prevDate.setDate(prevDate.getDate() - 1);
-    const expectedPrev = formatDateStr(prevDate);
-    if (sorted[i] === expectedPrev) {
-      streak++;
-    } else {
-      break;
-    }
-  }
-  return streak;
-}
-
 export default function ProfilePage() {
   const { user, isLoaded } = useUser();
   const { signOut, openUserProfile } = useClerk();
@@ -135,6 +103,7 @@ export default function ProfilePage() {
     setCycleLength,
     setPeriodDuration,
     setPushEnabled,
+    getStreak,
   } = usePwaStore();
 
   const [date, setDate] = useState("");
@@ -156,7 +125,7 @@ export default function ProfilePage() {
   // Compute stats
   const stats = useMemo(() => {
     const totalCheckIns = checkIns.length;
-    const streak = computeStreak(checkIns);
+    const streak = getStreak();
     const avgGlow =
       checkIns.length > 0
         ? Math.round(
