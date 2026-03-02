@@ -105,7 +105,32 @@
       "Bash(npx dotenv:*)",
       "Bash(npx:*)",
       "mcp__plugin_playwright_playwright__browser_fill_form",
-      "mcp__plugin_playwright_playwright__browser_handle_dialog"
+      "mcp__plugin_playwright_playwright__browser_handle_dialog",
+      "Bash(echo EXIT: $?:*)",
+      "mcp__plugin_supabase_supabase__get_project",
+      "Bash(tail:*)",
+      "Bash(head:*)",
+      "Bash(python3:*)",
+      "Bash(gh repo:*)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:blog.fsck.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(# Get hooks.json to understand the hook system\ngh api repos/obra/superpowers/contents/hooks/hooks.json --jq '.content' 2>/dev/null | base64 -d 2>/dev/null)",
+      "Bash(cd:*)",
+      "Bash(cd Z:\\\\Supplements MONEY MAKER\\\\luralab-next:*)",
+      "Bash(vercel:*)",
+      "Bash(gh auth:*)",
+      "Bash(openssl rand:*)",
+      "WebFetch(domain:www.econt.com)",
+      "WebFetch(domain:agma.bg)",
+      "WebFetch(domain:delivery.econt.com)",
+      "WebFetch(domain:ee.econt.com)",
+      "WebFetch(domain:static-content.econt.com)",
+      "WebFetch(domain:api.econt.com)",
+      "WebFetch(domain:help.cloudcart.com)",
+      "Bash(echo No process on 3003:*)",
+      "Bash(python:*)",
+      "mcp__plugin_supabase_supabase__get_logs"
     ]
   }
 }
