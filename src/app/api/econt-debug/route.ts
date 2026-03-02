@@ -12,10 +12,10 @@ export async function GET(request: Request) {
   const doCreate = searchParams.get("create") === "1"; // ?create=1 to actually create
 
   try {
-    // 1. Check env vars
+    // 1. Check env vars (show actual API URL to debug routing issues)
     const envCheck = {
-      ECONT_API_URL: !!process.env.ECONT_API_URL,
-      ECONT_USERNAME: !!process.env.ECONT_USERNAME,
+      ECONT_API_URL: process.env.ECONT_API_URL || "(missing)",
+      ECONT_USERNAME: process.env.ECONT_USERNAME ? `${process.env.ECONT_USERNAME.slice(0, 5)}...` : "(missing)",
       ECONT_PASSWORD: !!process.env.ECONT_PASSWORD,
       ECONT_CONNECTION_CODE: !!process.env.ECONT_CONNECTION_CODE,
       ECONT_SENDER_OFFICE: process.env.ECONT_SENDER_OFFICE || "(default: 1127)",
@@ -91,12 +91,36 @@ export async function GET(request: Request) {
       mode: doCreate ? "create" : "validate",
     };
 
-    // 5. Call Econt API directly with full body
+    // 5. Call Econt API via our client
     const client = getEcontClient();
-    const response = await client.request(
+    const clientResponse = await client.request(
       "Shipments/LabelService.createLabel.json",
       fullBody
     );
+
+    // 6. Also do a RAW fetch for comparison (bypass our client)
+    const apiUrl = process.env.ECONT_API_URL || "";
+    const baseUrl = apiUrl.endsWith("/") ? apiUrl : `${apiUrl}/`;
+    const rawUrl = `${baseUrl}Shipments/LabelService.createLabel.json`;
+    const creds = Buffer.from(
+      `${process.env.ECONT_USERNAME}:${process.env.ECONT_PASSWORD}`
+    ).toString("base64");
+
+    let rawResponse: { status: number; body: unknown } | { error: string };
+    try {
+      const rawResp = await fetch(rawUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Basic ${creds}`,
+        },
+        body: JSON.stringify(fullBody),
+      });
+      const rawBody = await rawResp.json().catch(() => null);
+      rawResponse = { status: rawResp.status, body: rawBody };
+    } catch (e) {
+      rawResponse = { error: e instanceof Error ? e.message : String(e) };
+    }
 
     return NextResponse.json({
       envCheck,
@@ -104,7 +128,8 @@ export async function GET(request: Request) {
       shipmentParams: params,
       mode: doCreate ? "create" : "validate",
       fullRequestBody: fullBody,
-      econtResponse: response,
+      clientResponse,
+      rawFetch: { url: rawUrl, response: rawResponse },
     });
   } catch (err) {
     return NextResponse.json({
