@@ -169,6 +169,7 @@ export interface SimpleEcontOffice {
   isAPS: boolean; // true = Еконтомат (Automated Parcel Station)
   latitude?: number;
   longitude?: number;
+  distance?: number; // km from user, set by getNearestOffices
 }
 
 export interface SimpleEcontCity {

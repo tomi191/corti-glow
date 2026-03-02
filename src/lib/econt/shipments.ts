@@ -95,24 +95,24 @@ export async function createShipment(
       packCount: 1,
       shipmentType: "PACK" as const,
       weight: params.weight || 0.5,
+      sizeUnder60cm: true,
       shipmentDescription: params.description || "Хранителни добавки",
       orderNumber: params.orderNumber,
 
-      // Services (merged to avoid overwrite)
-      ...((params.codAmount || params.declaredValue) && {
-        services: {
-          ...(params.codAmount && {
-            cdAmount: params.codAmount,
-            cdType: "GET" as const,
-            cdCurrency: "EUR",
-            cdPayOptionsToReceiver: "CASH" as const,
-          }),
-          ...(params.declaredValue && {
-            declaredValueAmount: params.declaredValue,
-            declaredValueCurrency: "EUR",
-          }),
-        },
-      }),
+      // Services — always include SMS notification to receiver
+      services: {
+        smsNotification: true,
+        ...(params.codAmount && {
+          cdAmount: params.codAmount,
+          cdType: "GET" as const,
+          cdCurrency: "EUR",
+          cdPayOptionsToReceiver: "CASH" as const,
+        }),
+        ...(params.declaredValue && {
+          declaredValueAmount: params.declaredValue,
+          declaredValueCurrency: "EUR",
+        }),
+      },
 
       // Payment - sender ALWAYS pays Econt transport fee via contract
       // Customer pays only the COD amount (which includes our shipping markup)

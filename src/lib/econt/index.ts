@@ -22,6 +22,7 @@ export {
   getOfficesByCityName,
   searchOffices,
   getOfficeByCode,
+  getNearestOffices,
 } from "./offices";
 
 // Shipping Calculation

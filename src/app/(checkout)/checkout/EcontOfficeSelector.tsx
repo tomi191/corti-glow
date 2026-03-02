@@ -1,14 +1,16 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import { Search, MapPin, Clock, Phone, CheckCircle, ChevronDown, Package } from "lucide-react";
+import { useState, useEffect, useRef, useCallback } from "react";
+import { Search, MapPin, Clock, Phone, CheckCircle, ChevronDown, Package, Navigation } from "lucide-react";
 import { useCheckoutStore } from "@/stores/checkout-store";
 import { useShippingCalculation } from "@/hooks/useShippingCalculation";
+import { useGeolocation } from "@/hooks/useGeolocation";
 import type { SimpleEcontCity, SimpleEcontOffice } from "@/lib/econt/types";
 
 export function EcontOfficeSelector() {
   const { shipping, setSelectedOffice } = useCheckoutStore();
   const { debouncedCalculate } = useShippingCalculation();
+  const geo = useGeolocation();
   const [cityQuery, setCityQuery] = useState("");
   const [cities, setCities] = useState<SimpleEcontCity[]>([]);
   const [selectedCity, setSelectedCity] = useState<SimpleEcontCity | null>(null);
@@ -16,7 +18,46 @@ export function EcontOfficeSelector() {
   const [isLoadingCities, setIsLoadingCities] = useState(false);
   const [isLoadingOffices, setIsLoadingOffices] = useState(false);
   const [showCityDropdown, setShowCityDropdown] = useState(false);
+  const [nearbyMode, setNearbyMode] = useState(false);
   const cityInputRef = useRef<HTMLInputElement>(null);
+
+  // Fetch nearest offices when geolocation completes
+  useEffect(() => {
+    if (!geo.latitude || !geo.longitude) return;
+
+    const fetchNearby = async () => {
+      setIsLoadingOffices(true);
+      setNearbyMode(true);
+      try {
+        const res = await fetch("/api/econt/offices", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ latitude: geo.latitude, longitude: geo.longitude, limit: 10 }),
+        });
+        const data = await res.json();
+        const nearbyOffices = data.offices || [];
+        setOffices(nearbyOffices);
+        // Auto-select city from the nearest office
+        if (nearbyOffices.length > 0) {
+          const nearest = nearbyOffices[0];
+          setCityQuery(nearest.cityName);
+          setSelectedCity({ id: nearest.cityId, name: nearest.cityName, region: "", postCode: "" });
+        }
+      } catch (error) {
+        console.error("Failed to fetch nearby offices:", error);
+        setNearbyMode(false);
+      } finally {
+        setIsLoadingOffices(false);
+      }
+    };
+
+    fetchNearby();
+  }, [geo.latitude, geo.longitude]);
+
+  const handleFindNearest = useCallback(() => {
+    setSelectedOffice(undefined);
+    geo.requestLocation();
+  }, [geo, setSelectedOffice]);
 
   // Search cities
   useEffect(() => {
@@ -46,10 +87,10 @@ export function EcontOfficeSelector() {
     return () => clearTimeout(timeout);
   }, [cityQuery]);
 
-  // Load offices when city is selected
+  // Load offices when city is selected (skip if nearby mode already loaded them)
   useEffect(() => {
-    if (!selectedCity) {
-      setOffices([]);
+    if (!selectedCity || nearbyMode) {
+      if (!selectedCity) setOffices([]);
       return;
     }
 
@@ -71,7 +112,7 @@ export function EcontOfficeSelector() {
     };
 
     loadOffices();
-  }, [selectedCity]);
+  }, [selectedCity, nearbyMode]);
 
   const handleCitySelect = (city: SimpleEcontCity) => {
     setSelectedCity(city);
@@ -97,9 +138,9 @@ export function EcontOfficeSelector() {
         Избери Офис или Еконтомат
       </h3>
 
-      {/* City Search */}
-      <div className="relative">
-        <div className="relative">
+      {/* City Search + Nearby Button */}
+      <div className="flex gap-2">
+        <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
           <input
             ref={cityInputRef}
@@ -108,6 +149,7 @@ export function EcontOfficeSelector() {
             onChange={(e) => {
               setCityQuery(e.target.value);
               setSelectedCity(null);
+              setNearbyMode(false);
             }}
             onFocus={() => cityQuery.length >= 2 && setShowCityDropdown(true)}
             placeholder="Търси град..."
@@ -118,32 +160,52 @@ export function EcontOfficeSelector() {
               <div className="w-4 h-4 border-2 border-[#2D4A3E] border-t-transparent rounded-full animate-spin" />
             </div>
           )}
+
+          {/* City Dropdown */}
+          {showCityDropdown && cities.length > 0 && (
+            <div className="absolute z-10 w-full mt-1 bg-white border border-stone-200 rounded-xl shadow-lg max-h-60 overflow-y-auto">
+              {cities.map((city) => (
+                <button
+                  key={city.id}
+                  type="button"
+                  onClick={() => handleCitySelect(city)}
+                  className="w-full px-4 py-3 text-left hover:bg-stone-50 flex items-center justify-between"
+                >
+                  <div>
+                    <span className="font-medium text-stone-800">{city.name}</span>
+                    {city.region && (
+                      <span className="text-xs text-stone-500 ml-2">{city.region}</span>
+                    )}
+                  </div>
+                  {city.postCode && (
+                    <span className="text-xs text-stone-400">{city.postCode}</span>
+                  )}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
-        {/* City Dropdown */}
-        {showCityDropdown && cities.length > 0 && (
-          <div className="absolute z-10 w-full mt-1 bg-white border border-stone-200 rounded-xl shadow-lg max-h-60 overflow-y-auto">
-            {cities.map((city) => (
-              <button
-                key={city.id}
-                type="button"
-                onClick={() => handleCitySelect(city)}
-                className="w-full px-4 py-3 text-left hover:bg-stone-50 flex items-center justify-between"
-              >
-                <div>
-                  <span className="font-medium text-stone-800">{city.name}</span>
-                  {city.region && (
-                    <span className="text-xs text-stone-500 ml-2">{city.region}</span>
-                  )}
-                </div>
-                {city.postCode && (
-                  <span className="text-xs text-stone-400">{city.postCode}</span>
-                )}
-              </button>
-            ))}
-          </div>
-        )}
+        {/* Geolocation Button */}
+        <button
+          type="button"
+          onClick={handleFindNearest}
+          disabled={geo.isLoading}
+          className="flex-shrink-0 px-3 py-3 border border-[#2D4A3E] text-[#2D4A3E] rounded-xl text-sm font-medium hover:bg-[#2D4A3E]/5 transition-colors disabled:opacity-50"
+          title="Намери най-близкия офис"
+        >
+          {geo.isLoading ? (
+            <div className="w-5 h-5 border-2 border-[#2D4A3E] border-t-transparent rounded-full animate-spin" />
+          ) : (
+            <Navigation className="w-5 h-5" />
+          )}
+        </button>
       </div>
+
+      {/* Geolocation Error */}
+      {geo.error && (
+        <p className="text-xs text-red-500">{geo.error}</p>
+      )}
 
       {/* Selected City Badge */}
       {selectedCity && (
@@ -193,6 +255,12 @@ export function EcontOfficeSelector() {
                             <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 bg-blue-50 text-blue-700 text-[10px] font-semibold rounded">
                               <Package className="w-2.5 h-2.5" />
                               24/7
+                            </span>
+                          )}
+                          {nearbyMode && office.distance != null && (
+                            <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 bg-stone-100 text-stone-600 text-[10px] font-semibold rounded">
+                              <Navigation className="w-2.5 h-2.5" />
+                              ~{office.distance} км
                             </span>
                           )}
                           {isSelected && (

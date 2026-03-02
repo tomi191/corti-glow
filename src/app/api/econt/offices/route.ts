@@ -1,12 +1,21 @@
 // Econt Offices API - Search by city
 
 import { NextRequest, NextResponse } from "next/server";
-import { getOfficesByCityName, searchOffices, getOfficeByCode } from "@/lib/econt";
+import { getOfficesByCityName, searchOffices, getOfficeByCode, getNearestOffices } from "@/lib/econt";
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { cityName, query, code, limit = 50 } = body;
+    const { cityName, query, code, latitude, longitude, limit = 50 } = body;
+
+    // Get nearest offices by coordinates
+    if (typeof latitude === "number" && typeof longitude === "number") {
+      if (latitude < -90 || latitude > 90 || longitude < -180 || longitude > 180) {
+        return NextResponse.json({ error: "Invalid coordinates" }, { status: 400 });
+      }
+      const offices = await getNearestOffices(latitude, longitude, limit);
+      return NextResponse.json({ offices });
+    }
 
     // Get specific office by code
     if (code) {

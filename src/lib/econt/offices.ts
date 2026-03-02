@@ -84,3 +84,39 @@ export async function getOfficeByCode(
   const allOffices = await getAllOffices();
   return allOffices.find((office) => office.code === code) || null;
 }
+
+// Haversine distance in km between two coordinates
+function haversineKm(
+  lat1: number,
+  lon1: number,
+  lat2: number,
+  lon2: number
+): number {
+  const R = 6371;
+  const dLat = ((lat2 - lat1) * Math.PI) / 180;
+  const dLon = ((lon2 - lon1) * Math.PI) / 180;
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos((lat1 * Math.PI) / 180) *
+      Math.cos((lat2 * Math.PI) / 180) *
+      Math.sin(dLon / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+// Get nearest offices sorted by distance from given coordinates
+export async function getNearestOffices(
+  latitude: number,
+  longitude: number,
+  limit = 10
+): Promise<SimpleEcontOffice[]> {
+  const allOffices = await getAllOffices();
+
+  return allOffices
+    .filter((o) => o.latitude != null && o.longitude != null)
+    .map((o) => ({
+      ...o,
+      distance: Math.round(haversineKm(latitude, longitude, o.latitude!, o.longitude!) * 10) / 10,
+    }))
+    .sort((a, b) => a.distance - b.distance)
+    .slice(0, limit);
+}
