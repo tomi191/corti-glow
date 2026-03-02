@@ -33,10 +33,10 @@ export async function GET(request: Request) {
 
     // 4. Build the FULL request body (identical to createShipment function)
     const senderInfo = {
-      personName: process.env.ECONT_SENDER_PERSON || "Служител",
-      companyName: process.env.ECONT_SENDER_COMPANY || "Лура Лаб ЕООД",
-      phone: process.env.ECONT_SENDER_PHONE || "+359888123456",
-      email: process.env.ECONT_SENDER_EMAIL || "orders@luralab.eu",
+      personName: process.env.ECONT_SENDER_PERSON || "Томи Сапунджиев",
+      companyName: process.env.ECONT_SENDER_COMPANY || "ЛЕВЕЛ 8 ЕООД",
+      phone: process.env.ECONT_SENDER_PHONE || "0895552550",
+      email: process.env.ECONT_SENDER_EMAIL || "store@level8.bg",
       officeCode: process.env.ECONT_SENDER_OFFICE || "1127",
     };
 

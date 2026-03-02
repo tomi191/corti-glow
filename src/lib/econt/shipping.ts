@@ -3,9 +3,9 @@
 import { getEcontClient } from "./client";
 import type { EcontCalculateResponse, ShippingCalculation } from "./types";
 
-// LuraLab sender office in Sofia (update with real office code)
+// Sender office — ЛЕВЕЛ 8 ЕООД, Варна
 const SENDER_OFFICE_CODE = process.env.ECONT_SENDER_OFFICE || "1127";
-const SENDER_CITY = "София";
+const SENDER_CITY = process.env.ECONT_SENDER_CITY || "Варна";
 
 export interface CalculateShippingParams {
   receiverCity: string;
