@@ -1,6 +1,9 @@
 // Diagnostic endpoint — test Econt shipment creation
 // DELETE this after debugging is complete
 
+// Run in Frankfurt to test if EU region fixes tariff issue
+export const preferredRegion = "fra1";
+
 import { NextResponse } from "next/server";
 import { buildShipmentParamsFromOrder } from "@/lib/econt/shipments";
 import { getEcontClient } from "@/lib/econt/client";

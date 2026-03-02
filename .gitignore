@@ -55,6 +55,10 @@ next-env.d.ts
 BEST_PRACTICES_2026.md
 BLOG_GUIDELINES.md
 nul
+corti-glow-full-bundle.txt
+pwa-source-code.txt
+gemini-*.md
+screenshots/
 
 # clerk configuration (can include secrets)
 /.clerk/
