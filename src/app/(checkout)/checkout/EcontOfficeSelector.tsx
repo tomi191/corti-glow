@@ -306,6 +306,12 @@ export function EcontOfficeSelector() {
               <p className="text-sm text-stone-600 mt-0.5">
                 {shipping.selectedOffice.address}
               </p>
+              {shipping.selectedOffice.workTime && (
+                <p className="flex items-center gap-1 text-xs text-stone-500 mt-1.5">
+                  <Clock className="w-3 h-3" />
+                  {shipping.selectedOffice.workTime}
+                </p>
+              )}
             </div>
           </div>
         </div>
