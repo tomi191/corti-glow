@@ -20,10 +20,16 @@ export function EcontOfficeSelector() {
   const [showCityDropdown, setShowCityDropdown] = useState(false);
   const [nearbyMode, setNearbyMode] = useState(false);
   const cityInputRef = useRef<HTMLInputElement>(null);
+  const nearbyAbortRef = useRef<AbortController | null>(null);
 
   // Fetch nearest offices when geolocation completes
   useEffect(() => {
     if (!geo.latitude || !geo.longitude) return;
+
+    // Cancel any in-flight nearby fetch before starting a new one
+    nearbyAbortRef.current?.abort();
+    nearbyAbortRef.current = new AbortController();
+    const signal = nearbyAbortRef.current.signal;
 
     const fetchNearby = async () => {
       setIsLoadingOffices(true);
@@ -33,6 +39,7 @@ export function EcontOfficeSelector() {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ latitude: geo.latitude, longitude: geo.longitude, limit: 10 }),
+          signal,
         });
         const data = await res.json();
         const nearbyOffices = data.offices || [];
@@ -44,10 +51,11 @@ export function EcontOfficeSelector() {
           setSelectedCity({ id: nearest.cityId, name: nearest.cityName, region: "", postCode: "" });
         }
       } catch (error) {
+        if ((error as Error).name === "AbortError") return; // User typed — silently cancel
         console.error("Failed to fetch nearby offices:", error);
         setNearbyMode(false);
       } finally {
-        setIsLoadingOffices(false);
+        if (!signal.aborted) setIsLoadingOffices(false);
       }
     };
 
@@ -150,6 +158,8 @@ export function EcontOfficeSelector() {
               setCityQuery(e.target.value);
               setSelectedCity(null);
               setNearbyMode(false);
+              setOffices([]); // Clear stale nearby results
+              nearbyAbortRef.current?.abort(); // Cancel in-flight nearby fetch
             }}
             onFocus={() => cityQuery.length >= 2 && setShowCityDropdown(true)}
             placeholder="Търси град..."
