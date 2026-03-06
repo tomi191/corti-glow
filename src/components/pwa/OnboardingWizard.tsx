@@ -3,7 +3,7 @@
 import { useState, useCallback, useMemo, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { usePwaStore } from "@/stores/pwa-store";
-import { CONCERN_OPTIONS, type ConcernOption } from "@/lib/pwa-logic";
+import { CONCERN_OPTIONS, type ConcernOption, getMaxPeriodDuration, clampPeriodDuration } from "@/lib/pwa-logic";
 import { haptic } from "@/lib/haptics";
 import { Sparkles, Moon, Leaf, Calendar, ArrowRight, User, Check, Mail } from "lucide-react";
 
@@ -105,7 +105,7 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
     if (selectedContraception) setContraception(selectedContraception);
     if (periodDate) setLastPeriodDate(periodDate);
     setCycleLength(cycleLen);
-    setPeriodDuration(Math.min(periodDur, cycleLen - 1));
+    setPeriodDuration(clampPeriodDuration(periodDur, cycleLen));
     if (email.trim()) setStoreEmail(email.trim());
     onComplete();
   }, [name, selectedAge, selectedConcerns, selectedContraception, periodDate, cycleLen, periodDur, email, setUserName, setAgeRange, setConcerns, setContraception, setLastPeriodDate, setCycleLength, setPeriodDuration, setStoreEmail, onComplete]);
@@ -419,7 +419,12 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
                   min={21}
                   max={40}
                   value={cycleLen}
-                  onChange={(e) => setCycleLen(Number(e.target.value))}
+                  onChange={(e) => {
+                    const newLen = Number(e.target.value);
+                    setCycleLen(newLen);
+                    // Auto-clamp period duration if it exceeds the safe max
+                    setPeriodDur((prev) => clampPeriodDuration(prev, newLen));
+                  }}
                   className="w-full accent-brand-forest"
                 />
                 <div className="flex justify-between text-[10px] text-stone-400 -mt-1">
@@ -438,7 +443,7 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
                   id="period-duration"
                   type="range"
                   min={2}
-                  max={8}
+                  max={Math.min(8, getMaxPeriodDuration(cycleLen))}
                   value={periodDur}
                   onChange={(e) => setPeriodDur(Number(e.target.value))}
                   className="w-full accent-brand-forest"
@@ -446,7 +451,7 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
                 <div className="flex justify-between text-[10px] text-stone-400 -mt-1">
                   <span>2</span>
                   <span>5 (средно)</span>
-                  <span>8</span>
+                  <span>{Math.min(8, getMaxPeriodDuration(cycleLen))}</span>
                 </div>
               </div>
             </motion.div>

@@ -55,10 +55,10 @@ export function PremiumCTA() {
 
           <AnimatedHeading delay={0.2}>
             <h2 className="text-5xl md:text-8xl font-normal text-white mt-4 mb-8 font-serif leading-none">
-              Готова ли си за
+              Време е да се почувстваш
               <br />
               <span className="italic block mt-1 font-light opacity-90">
-                Трансформацията?
+                отново себе си.
               </span>
             </h2>
           </AnimatedHeading>
@@ -69,8 +69,8 @@ export function PremiumCTA() {
             transition={{ duration: 0.6, delay: 0.4 }}
             className="text-xl text-white/70 font-light max-w-2xl mx-auto mb-8 md:mb-12"
           >
-            Присъедини се към стотиците жени, които вече откриха отново спокойствието
-            и естествената красота с Corti-Glow.
+            500+ жени вече пият Corti-Glow всяка вечер.
+            Една малка промяна вечер — голяма разлика сутрин.
           </motion.p>
 
           {/* CTA Buttons */}
@@ -86,7 +86,7 @@ export function PremiumCTA() {
               {...(IS_PRELAUNCH ? { onClick: openWaitlist } : { href: "/produkt/corti-glow" })}
               className="bg-white text-[#2D4A3E] hover:bg-white/90"
             >
-              {IS_PRELAUNCH ? "Запиши се Първа" : "Поръчай Сега"}
+              {IS_PRELAUNCH ? "Запиши се Първа" : "Поръчай своята кутия"}
               <ArrowRight className="w-5 h-5" />
             </MagneticButton>
             {IS_PRELAUNCH && (
@@ -101,7 +101,7 @@ export function PremiumCTA() {
               className="text-white border border-white/30 hover:bg-white/10"
             >
               <Sparkles className="w-4 h-4" />
-              Направи Glow Guide
+              Или първо направи теста
             </MagneticButton>
           </motion.div>
 
@@ -138,10 +138,10 @@ export function PremiumCTA() {
             className="mt-16 pt-8 border-t border-white/10 max-w-2xl mx-auto text-center"
           >
             <p className="font-serif italic text-lg sm:text-xl text-white/80 leading-relaxed font-light">
-              &ldquo;Създадохме Corti-Glow, защото вярваме, че красотата започва отвътре — когато тялото е спокойно,&nbsp; а умът — свободен.&rdquo;
+              &ldquo;Създадохме Corti-Glow, защото самите ние бяхме тези жени — уморени, подути, ядосани на себе си. И знаехме, че заслужаваме по-добра вечер.&rdquo;
             </p>
             <p className="mt-4 text-xs tracking-[0.2em] uppercase text-[#B2D8C6] opacity-80 font-medium">
-              — От Екипа на Lura
+              — Екипът на LURA, Варна
             </p>
           </motion.div>
         </div>

@@ -1,16 +1,25 @@
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
 import { createServerClient } from "@/lib/supabase/server";
+
+const trackSchema = z.object({
+  orderNumber: z.string().min(1).max(50).trim(),
+  email: z.string().email("Невалиден имейл").max(255),
+});
 
 export async function POST(request: NextRequest) {
   try {
-    const { orderNumber, email } = await request.json();
+    const body = await request.json();
+    const validated = trackSchema.safeParse(body);
 
-    if (!orderNumber || !email) {
+    if (!validated.success) {
       return NextResponse.json(
-        { error: "Номер на поръчка и имейл са задължителни" },
+        { error: "Номер на поръчка и валиден имейл са задължителни" },
         { status: 400 }
       );
     }
+
+    const { orderNumber, email } = validated.data;
 
     const supabase = createServerClient();
 

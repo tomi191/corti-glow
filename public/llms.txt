@@ -1,19 +1,22 @@
 # LURA — llms.txt
 
-> LURA is a Bulgarian wellness brand offering Corti-Glow, a science-backed evening mocktail supplement for stress relief, hormonal balance, and beauty from within.
+> LURA is a Bulgarian wellness brand offering Corti-Glow, a science-backed evening mocktail supplement with 7 active ingredients for stress relief, hormonal balance, and beauty from within.
+
+> For comprehensive product details, ingredients, clinical references, FAQ, and pricing, see the full version: https://luralab.eu/llms-full.txt
 
 ## About LURA
-- Brand: LURA (Лура Лаб ЕООД)
+- Brand: LURA (operated by "ЛЕВЕЛ 8" ЕООД / LEVEL 8 Ltd.)
+- EIK: 208697165
 - Website: https://luralab.eu
 - Language: Bulgarian (bg)
 - Category: Health supplements, wellness, adaptogens
-- Founded: 2026, Sofia, Bulgaria
+- Founded: 2026, Varna, Bulgaria
 
 ## Product: Corti-Glow
 - Type: Powdered mocktail supplement (sachets)
 - Flavor: Wild Strawberry & Lime (Горска Ягода и Лайм)
 - Servings: 30 sachets per box
-- Key ingredients: KSM-66 Ashwagandha (600mg), Magnesium Bisglycinate (300mg), Myo-Inositol (2000mg), Bromelain (500mg), L-Theanine (200mg)
+- Key ingredients (7 active): Myo-Inositol (2000mg), Ashwagandha 5% withanolides (300mg), Magnesium Bisglycinate (670mg / 100mg elemental), Prebiotic Inulin from chicory root (2500mg), L-Theanine (200mg), Bromelain 2400 GDU/g (100mg), Vitamin B6 P-5-P (1.4mg)
 - Benefits: Lowers cortisol up to 27%, improves sleep, reduces bloating, supports hormonal balance
 - Target audience: Women concerned about stress, sleep quality, skin health, and hormonal wellness
 - Price range: 49.99-119.99 EUR
@@ -28,10 +31,10 @@
 - Shipping & Returns: https://luralab.eu/dostavka-i-vrashtane
 
 ## Scientific References
-- KSM-66 Ashwagandha cortisol reduction: https://pubmed.ncbi.nlm.nih.gov/23439798/
+- Ashwagandha cortisol reduction: https://pubmed.ncbi.nlm.nih.gov/23439798/
 - Magnesium and sleep quality: https://pubmed.ncbi.nlm.nih.gov/23853635/
 - Myo-Inositol hormonal support: https://pubmed.ncbi.nlm.nih.gov/28724175/
 
 ## Contact
 - Email: contact@luralab.eu
-- Address: бул. "Витоша" 10, гр. София, България
+- Address: гр. Варна, 9000, ж.к. Възраждане, бл. 28, вх. 1, ет. 5, ап. 10, България

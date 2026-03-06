@@ -15,7 +15,7 @@ const reviews = [
     rating: 5,
     title: "Не очаквах такава промяна!",
     content:
-      "След 3 седмици с Corti-Glow забелязах огромна разлика. Подуването изчезна, спя спокойно, а колегите ме питат какво правя различно. Кожата ми просто сияе!",
+      "Честно, на третата седмица забелязах, че не се събуждам подута. Колегите питат какво съм променила.",
     author: "Мария К.",
     location: "София",
     verified: true,
@@ -28,7 +28,7 @@ const reviews = [
     size: "medium",
     rating: 5,
     title: "Вечерният ми ритуал",
-    content: "Чакам го всяка вечер като награда след дълъг ден.",
+    content: "Вкусен е, пия го с удоволствие вечер.",
     author: "Ева М.",
     location: "Варна",
     verified: true,
@@ -51,7 +51,7 @@ const reviews = [
     rating: 5,
     title: "Хормоните ми са балансирани",
     content:
-      "Имах проблеми с ПКОС години наред. Инозитолът в тази доза е точно това, което ми препоръча ендокринологът.",
+      "Имах проблеми с ПКОС години наред. Лекарят ми каза да пия инозитол и тук го има в нужното количество.",
     author: "Габриела Т.",
     location: "Бургас",
     verified: true,
@@ -75,7 +75,7 @@ const reviews = [
     rating: 5,
     title: "Скептична бях, но...",
     content:
-      "Честно казано, не вярвах, че ще работи. Но след 2 седмици дрехите ми стоят различно, чувствам се по-спокойна, а мъжът ми забеляза, че съм по-усмихната. Вече съм на третата кутия!",
+      "Не вярвах, че ще работи. Но след 2 седмици заспивам за минути, не за часове. Мъжът ми пита защо пия розово нещо всяка вечер. Вече съм на третата кутия.",
     author: "Петя Д.",
     location: "Стара Загора",
     verified: true,
@@ -258,17 +258,17 @@ export function BentoReviews() {
           <ScrollReveal animation="blur-in">
             <span className="inline-flex items-center gap-2 text-[#2D4A3E] text-sm font-medium uppercase tracking-widest mb-6">
               <Star className="w-4 h-4 fill-current text-[#F4E3B2]" />
-              Нашата Общност
+              Какво казват жените
             </span>
           </ScrollReveal>
 
           <ScrollReveal animation="blur-slide" delay={0.1}>
             <AnimatedHeading>
               <h2 className="text-5xl md:text-7xl font-normal text-[#2D4A3E] mt-4 font-serif leading-none">
-                Истории на
+                Какво казват
                 <br />
                 <span className="italic block mt-1 font-light text-[#2D4A3E]">
-                  Трансформация
+                  жените
                 </span>
               </h2>
             </AnimatedHeading>
@@ -276,7 +276,7 @@ export function BentoReviews() {
 
           <ScrollReveal animation="fade-up" delay={0.2}>
             <p className="text-lg text-stone-600 font-light">
-              Реални жени. Реални резултати. Без филтри.
+              Истински истории от жени като теб.
             </p>
           </ScrollReveal>
         </div>

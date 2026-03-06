@@ -1,6 +1,12 @@
 /**
  * In-memory rate limiter for API routes.
  * Each limiter instance maintains its own Map of IP → attempt records.
+ *
+ * NOTE: On Vercel serverless, each function invocation may get a new instance,
+ * making this limiter less effective at scale. For production with high traffic,
+ * consider migrating to Upstash Redis (@upstash/ratelimit) for distributed
+ * rate limiting. The current approach still provides protection within a single
+ * warm instance (Vercel reuses instances for ~5-15 min).
  */
 
 interface AttemptRecord {

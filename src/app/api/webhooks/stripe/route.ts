@@ -10,12 +10,17 @@ import {
   updateOrderStatus,
   updateEcontTracking,
   deductStock,
+  createOrder,
 } from "@/lib/actions/orders";
 import {
   updateSubscriptionByStripeId,
+  getSubscriptionByStripeId,
+  createSubscriptionOrder,
 } from "@/lib/actions/subscriptions";
+import { getSubscriptionVariant } from "@/lib/stripe/subscription-prices";
 import { sendOrderConfirmationEmail } from "@/lib/email";
 import { createShipment, buildShipmentParamsFromOrder } from "@/lib/econt/shipments";
+import { updateContact } from "@/lib/resend/audiences";
 
 export async function POST(request: NextRequest) {
   try {
@@ -94,7 +99,7 @@ export async function POST(request: NextRequest) {
             const label = await createShipment(shipmentParams);
             if (label) {
               console.log("[Webhook] Econt shipment created:", label.shipmentNumber);
-              await updateEcontTracking(order.id, label.shipmentNumber, label.shipmentNumber);
+              await updateEcontTracking(order.id, label.shipmentNumber, label.shipmentNumber, "shipped", label.pdfURL || undefined);
               updatedOrder = { ...order, econt_tracking_number: label.shipmentNumber };
             } else {
               console.warn("[Webhook] Econt createShipment returned null for", order.order_number);
@@ -106,6 +111,15 @@ export async function POST(request: NextRequest) {
           // Send confirmation email (async, don't await)
           sendOrderConfirmationEmail(updatedOrder).catch(err =>
             console.error("Failed to send confirmation email:", err)
+          );
+
+          // Sync customer to Resend audience (fire-and-forget)
+          updateContact({
+            email: order.customer_email,
+            firstName: order.customer_first_name,
+            lastName: order.customer_last_name,
+          }).catch(err =>
+            console.error("Failed to sync contact to Resend:", err)
           );
         } else {
           console.warn(
@@ -149,6 +163,28 @@ export async function POST(request: NextRequest) {
 
           if (order) {
             await updatePaymentStatus(order.id, "refunded");
+          }
+        }
+        break;
+      }
+
+      case "charge.dispute.created": {
+        const dispute = event.data.object;
+        const disputePaymentIntentId =
+          typeof dispute.payment_intent === "string"
+            ? dispute.payment_intent
+            : dispute.payment_intent?.id;
+
+        if (disputePaymentIntentId) {
+          const { order } = await getOrderByPaymentIntent(disputePaymentIntentId);
+
+          if (order) {
+            // Mark as failed + cancelled since DB doesn't have "disputed"/"on_hold"
+            await updatePaymentStatus(order.id, "failed");
+            await updateOrderStatus(order.id, "cancelled");
+            console.error(
+              `[Webhook] DISPUTE created for order ${order.order_number}, amount: ${dispute.amount}, reason: ${dispute.reason}. Order marked as cancelled. Review in Stripe Dashboard.`
+            );
           }
         }
         break;
@@ -203,13 +239,137 @@ export async function POST(request: NextRequest) {
 
       case "invoice.payment_succeeded": {
         const invoice = event.data.object as any;
-        // Only handle subscription invoices
-        if (invoice.subscription) {
-          console.log(
-            `Subscription invoice paid: ${invoice.id} for sub ${invoice.subscription}`
-          );
-          // Subscription renewal orders will be created by a separate cron
-          // or handled in a more detailed webhook handler later
+
+        // Only handle subscription renewal invoices (not the initial creation)
+        if (invoice.subscription && invoice.billing_reason !== "subscription_create") {
+          try {
+            console.log(
+              `[Webhook] Subscription renewal invoice paid: ${invoice.id} for sub ${invoice.subscription}`
+            );
+
+            // 1. Look up subscription
+            const { subscription: sub } = await getSubscriptionByStripeId(
+              invoice.subscription
+            );
+
+            if (!sub) {
+              console.error(
+                `[Webhook] No subscription found for stripe ID: ${invoice.subscription}`
+              );
+              break;
+            }
+
+            // 2. Look up customer info for the order
+            const supabase = createServerClient();
+            const { data: customer } = await (supabase
+              .from("customers") as any)
+              .select("*")
+              .eq("id", sub.customer_id)
+              .single();
+
+            if (!customer) {
+              console.error(
+                `[Webhook] No customer found for subscription ${sub.id}, customer_id: ${sub.customer_id}`
+              );
+              break;
+            }
+
+            // 3. Get verified variant price
+            const variant = getSubscriptionVariant(sub.variant_id);
+            const verifiedPrice = variant
+              ? variant.subscriptionPrice
+              : Number(sub.price_per_cycle);
+
+            // 4. Build order items (same structure as payment route)
+            const variantName = variant?.name || sub.variant_name;
+            const orderItems = [
+              {
+                productId: "corti-glow",
+                variantId: sub.variant_id,
+                quantity: sub.quantity || 1,
+                price: verifiedPrice,
+                title: `Corti-Glow (${variantName}) - Абонамент`,
+              },
+            ];
+
+            const subtotal = verifiedPrice * (sub.quantity || 1);
+            // Subscription renewals include shipping from the original subscription
+            const shippingPrice = 0; // Shipping is baked into subscription price
+            const total = subtotal + shippingPrice;
+
+            // 5. Create the renewal order
+            const { order: renewalOrder, error: orderError } = await createOrder({
+              customer_first_name: customer.first_name,
+              customer_last_name: customer.last_name,
+              customer_email: customer.email,
+              customer_phone: customer.phone || "",
+              shipping_method: (sub.shipping_method as "econt_office" | "econt_address") || "econt_office",
+              shipping_address: (sub.shipping_address || {}) as Record<string, string>,
+              shipping_price: shippingPrice,
+              payment_method: "card",
+              payment_status: "paid",
+              items: orderItems,
+              subtotal,
+              discount_code: null,
+              discount_amount: 0,
+              total,
+              currency: sub.currency || "EUR",
+              status: "processing",
+              notes: `Автоматично подновяване на абонамент ${sub.id}`,
+            });
+
+            if (orderError || !renewalOrder) {
+              console.error(
+                `[Webhook] Failed to create renewal order for sub ${sub.id}:`,
+                orderError
+              );
+              break;
+            }
+
+            console.log(
+              `[Webhook] Created renewal order ${renewalOrder.order_number} for sub ${sub.id}`
+            );
+
+            // 6. Deduct stock
+            await deductStock(
+              orderItems.map((item) => ({
+                productId: item.productId,
+                variantId: item.variantId,
+                quantity: item.quantity,
+              }))
+            ).catch((err) =>
+              console.error(`[Webhook] Stock deduction failed for renewal ${renewalOrder.order_number}:`, err)
+            );
+
+            // 7. Link order to subscription
+            await createSubscriptionOrder({
+              subscriptionId: sub.id,
+              orderId: renewalOrder.id,
+              stripeInvoiceId: invoice.id,
+              billingPeriodStart: invoice.period_start
+                ? new Date(invoice.period_start * 1000).toISOString()
+                : undefined,
+              billingPeriodEnd: invoice.period_end
+                ? new Date(invoice.period_end * 1000).toISOString()
+                : undefined,
+            }).catch((err) =>
+              console.error(`[Webhook] Failed to link renewal order to subscription:`, err)
+            );
+
+            // 8. Send confirmation email (fire-and-forget)
+            sendOrderConfirmationEmail(renewalOrder).catch((err) =>
+              console.error(
+                `[Webhook] Failed to send renewal confirmation email:`,
+                err
+              )
+            );
+          } catch (err) {
+            // Don't let renewal processing crash the webhook
+            console.error(
+              `[Webhook] Subscription renewal processing failed for invoice ${invoice.id}:`,
+              err
+            );
+          }
         }
         break;
       }

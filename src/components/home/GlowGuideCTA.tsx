@@ -45,7 +45,7 @@ export function GlowGuideCTA() {
               className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 text-[#B2D8C6] text-xs font-medium uppercase tracking-wider mb-6"
             >
               <Sparkles className="w-3.5 h-3.5" />
-              Безплатен Тест
+              Безплатен тест
             </motion.div>
 
             <motion.h2
@@ -54,10 +54,10 @@ export function GlowGuideCTA() {
               transition={{ duration: 0.5, delay: 0.1 }}
               className="text-2xl sm:text-3xl lg:text-4xl font-serif font-light text-white leading-tight mb-4"
             >
-              Какъв е Твоят
+              Как стресът ти
               <br />
               <span className="italic font-semibold text-transparent bg-clip-text bg-gradient-to-r from-[#B2D8C6] to-[#FFC1CC]">
-                Stress-Beauty Score?
+                личи на кожата?
               </span>
             </motion.h2>
 
@@ -67,7 +67,7 @@ export function GlowGuideCTA() {
               transition={{ duration: 0.5, delay: 0.2 }}
               className="text-white/70 font-light mb-8 leading-relaxed"
             >
-              6 въпроса за 2 минути. Разбери как стресът влияе на кожата, съня и
+              Разбери за 2 минути как стресът влияе на кожата, съня и
               фигурата ти — и получи персонализирана препоръка.
             </motion.p>
 
@@ -80,7 +80,7 @@ export function GlowGuideCTA() {
                 href="/glow-guide"
                 className="inline-flex items-center gap-2 px-8 py-4 bg-white text-[#2D4A3E] rounded-full text-base font-medium shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all"
               >
-                Започни Безплатния Тест
+                Направи теста
                 <ArrowRight className="w-5 h-5" />
               </Link>
             </motion.div>

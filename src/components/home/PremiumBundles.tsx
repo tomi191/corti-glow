@@ -80,10 +80,10 @@ export function PremiumBundles({ variants: propVariants }: PremiumBundlesProps) 
 
           <AnimatedHeading delay={0.2}>
             <h2 className="text-5xl md:text-7xl font-normal text-[#2D4A3E] mt-4 font-serif leading-none">
-              Започни Своята
+              Колко време искаш
               <br />
               <span className="italic block mt-1 font-light text-[#2D4A3E]">
-                Трансформация
+                да дадеш на тялото си?
               </span>
             </h2>
           </AnimatedHeading>
@@ -94,7 +94,7 @@ export function PremiumBundles({ variants: propVariants }: PremiumBundlesProps) 
             transition={{ duration: 0.6, delay: 0.4 }}
             className="text-lg text-stone-600 font-light"
           >
-            30 саше във всяка кутия. 14-дневна гаранция за връщане.
+            Всеки пакет е 30 саше — по едно всяка вечер.
           </motion.p>
         </div>
 

@@ -3,7 +3,7 @@
 @layer clerk { }
 
 :root {
-  --background: #fafaf9;
+  --background: #F7F4F0;
   --foreground: #1c1917;
 
   /* Brand Colors */
@@ -226,6 +226,13 @@ details > summary::-webkit-details-marker {
   color: #57534e;
 }
 
+/* ============ Hero Section ============ */
+
+@keyframes hero-ticker {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-33.333%); }
+}
+
 /* ============ Reduced Motion ============ */
 @media (prefers-reduced-motion: reduce) {
   /* Disable CSS animations */
@@ -233,7 +240,8 @@ details > summary::-webkit-details-marker {
   .animate-gentle-float,
   .animate-fade-in-up,
   .animate-pulse,
-  .animate-spin {
+  .animate-spin,
+  .hero-ticker {
     animation: none !important;
   }
 
@@ -253,3 +261,25 @@ details > summary::-webkit-details-marker {
     animation-duration: 0.01ms !important;
   }
 }
+
+/* Premium background blob animations (CSS instead of JS) */
+@keyframes blob-1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(-5%, 8%) scale(1.05); }
+  66% { transform: translate(2%, -3%) scale(0.95); }
+}
+
+@keyframes blob-2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(10%, -5%) scale(0.95); }
+  66% { transform: translate(-5%, 10%) scale(1.05); }
+}
+
+@keyframes blob-3 {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.5; }
+}
+
+.animate-blob-1 { animation: blob-1 20s ease-in-out infinite; }
+.animate-blob-2 { animation: blob-2 25s ease-in-out 2s infinite; }
+.animate-blob-3 { animation: blob-3 15s ease-in-out 5s infinite; }

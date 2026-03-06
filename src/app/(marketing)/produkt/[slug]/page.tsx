@@ -3,6 +3,7 @@ import { ChevronDown, CheckCircle, Shield, Truck, Clock, Star } from "lucide-rea
 import { notFound } from "next/navigation";
 import { getProduct, listProducts } from "@/lib/actions/products";
 import { faqs } from "@/data/faqs";
+import { fullIngredients } from "@/data/products";
 import { ProductBundles } from "../ProductBundles";
 import { ProductGallery } from "../ProductGallery";
 import { TrustBar, GuaranteeBadge, PaymentMethods } from "../TrustBar";
@@ -108,17 +109,32 @@ export default async function ProductPage({ params }: Props) {
     "@context": "https://schema.org",
     "@type": "Product",
     name: product.name,
-    description: product.tagline,
-    image: `https://luralab.eu${product.image}`,
+    description: product.description || product.tagline,
+    image: images.map((img: string) => `https://luralab.eu${img}`),
     brand: { "@type": "Brand", name: "LURA" },
     sku: product.sku || product.slug,
+    ...(product.barcode ? { gtin13: product.barcode } : {}),
+    mpn: product.sku || product.slug,
     category: "Health Supplements",
+    ...(product.weight ? {
+      weight: {
+        "@type": "QuantitativeValue",
+        value: product.weight,
+        unitCode: "KGM",
+      },
+    } : {}),
     offers: variants.map((v) => ({
       "@type": "Offer",
+      name: v.name,
       price: v.price,
       priceCurrency: "EUR",
       availability: outOfStock ? "https://schema.org/OutOfStock" : "https://schema.org/InStock",
       url: `https://luralab.eu/produkt/${slug}`,
+      itemCondition: "https://schema.org/NewCondition",
+      seller: {
+        "@type": "Organization",
+        name: "LURA",
+      },
       hasMerchantReturnPolicy: {
         "@type": "MerchantReturnPolicy",
         applicableCountry: "BG",
@@ -316,6 +332,41 @@ export default async function ProductPage({ params }: Props) {
                     <p>✓ Доставка с Еконт за 1-2 работни дни</p>
                     <p>✓ Плащане с карта или при доставка</p>
                     <p>✓ 14-дневна гаранция за връщане без въпроси</p>
+                  </div>
+                </details>
+
+                <details className="group">
+                  <summary className="flex justify-between items-center cursor-pointer py-3 border-b border-stone-100">
+                    <span className="font-medium text-[#2D4A3E]">Пълен състав (всички 12 съставки)</span>
+                    <ChevronDown className="w-5 h-5 text-stone-400 group-open:rotate-180 transition-transform" />
+                  </summary>
+                  <div className="py-4">
+                    <p className="text-xs text-stone-400 mb-3">
+                      Подредени по тегло (низходящо) · 1 порция = 1 саше (6.9g)
+                    </p>
+                    <div className="space-y-2">
+                      {fullIngredients.map((ing) => (
+                        <div
+                          key={ing.name}
+                          className="flex items-center justify-between py-1.5 border-b border-stone-50 last:border-0"
+                        >
+                          <div className="flex items-center gap-2 min-w-0">
+                            {ing.isActive && (
+                              <span className="w-1.5 h-1.5 rounded-full bg-[#B2D8C6] flex-shrink-0" />
+                            )}
+                            <span className={`text-sm ${ing.isActive ? "text-[#2D4A3E] font-medium" : "text-stone-500"}`}>
+                              {ing.name}
+                            </span>
+                          </div>
+                          <span className="text-sm text-stone-400 ml-3 flex-shrink-0">
+                            {ing.dose}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                    <p className="text-xs text-stone-400 mt-3">
+                      ● = активна съставка · Без изкуствени оцветители, подсладители или консерванти
+                    </p>
                   </div>
                 </details>
               </div>

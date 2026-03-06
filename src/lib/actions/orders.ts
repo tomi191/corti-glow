@@ -179,12 +179,17 @@ export async function updateEcontTracking(
   orderId: string,
   shipmentId: string,
   trackingNumber: string,
-  status: OrderStatus = "shipped"
+  status: OrderStatus = "shipped",
+  labelUrl?: string
 ): Promise<{ success: boolean; error: string | null }> {
   const { error } = await updateOrder(orderId, {
     econt_shipment_id: shipmentId,
     econt_tracking_number: trackingNumber,
     status,
+    ...(labelUrl && {
+      econt_label_url: labelUrl,
+      econt_label_generated_at: new Date().toISOString(),
+    }),
   });
   return { success: !error, error };
 }
@@ -395,6 +400,92 @@ export async function deductStock(
   revalidatePath("/admin/produkti");
   revalidateTag("products", { expire: 0 });
   return { success: true, error: null };
+}
+
+// Cancel an order: restore stock, refund payment, decrement discount, cancel shipment
+export async function cancelOrder(
+  orderId: string,
+  reason?: string
+): Promise<{ success: boolean; error: string | null; refundId?: string }> {
+  const supabase = createServerClient();
+
+  // 1. Get the order
+  const { order, error: fetchErr } = await getOrder(orderId);
+  if (fetchErr || !order) {
+    return { success: false, error: fetchErr || "Order not found" };
+  }
+
+  // 2. Validate cancellability
+  if (order.status === "cancelled") {
+    return { success: false, error: "Поръчката вече е отменена" };
+  }
+  if (order.status === "delivered") {
+    return { success: false, error: "Не може да се отмени доставена поръчка" };
+  }
+
+  let refundId: string | undefined;
+
+  // 3. Refund Stripe payment if paid by card
+  if (order.payment_status === "paid" && order.stripe_payment_intent_id) {
+    try {
+      const { createRefund } = await import("@/lib/stripe/actions");
+      const result = await createRefund(
+        order.stripe_payment_intent_id,
+        undefined, // Full refund
+        "requested_by_customer"
+      );
+      refundId = result.refundId;
+    } catch (err) {
+      console.error("Refund failed for order:", order.order_number, err);
+      return { success: false, error: "Грешка при рефунд. Опитайте ръчно от Stripe." };
+    }
+  }
+
+  // 4. Restore stock
+  const items = (order.items as Array<{ productId: string; variantId: string; quantity: number }>) || [];
+  if (items.length > 0) {
+    await restoreStock(items.map(item => ({
+      productId: item.productId,
+      variantId: item.variantId,
+      quantity: item.quantity,
+    })));
+  }
+
+  // 5. Cancel Econt shipment if exists
+  if (order.econt_shipment_id) {
+    try {
+      const { cancelShipment } = await import("@/lib/econt/shipments");
+      await cancelShipment(order.econt_shipment_id);
+    } catch (err) {
+      console.warn("Econt shipment cancel failed (may already be picked up):", err);
+    }
+  }
+
+  // 6. Decrement discount usage if applicable
+  if (order.discount_code) {
+    // Get current usage and decrement by 1
+    const { data: disc } = await (supabase as any)
+      .from("discounts")
+      .select("used_count")
+      .eq("code", order.discount_code)
+      .single();
+    if (disc && disc.used_count > 0) {
+      await (supabase as any)
+        .from("discounts")
+        .update({ used_count: disc.used_count - 1 })
+        .eq("code", order.discount_code);
+    }
+  }
+
+  // 7. Update order status
+  await updateOrder(orderId, {
+    status: "cancelled",
+    payment_status: refundId ? "refunded" : order.payment_status,
+    notes: reason ? `Отменена: ${reason}` : "Отменена от admin",
+  } as OrderUpdate);
+
+  revalidatePath("/admin/porachki");
+  return { success: true, error: null, refundId };
 }
 
 // Restore stock atomically when order is cancelled

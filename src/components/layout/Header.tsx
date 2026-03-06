@@ -2,15 +2,19 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles } from "lucide-react";
 import { NAV_LINKS, SHIPPING_THRESHOLD, IS_PRELAUNCH } from "@/lib/constants";
 import { CartBadge } from "@/components/cart/CartBadge";
 import { MobileMenu } from "./MobileMenu";
+import { cn } from "@/lib/utils";
 
 export function Header() {
+  const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [showAnnouncement, setShowAnnouncement] = useState(true);
+
+  const isHome = pathname === "/";
 
   useEffect(() => {
     const handleScroll = () => {
@@ -27,125 +31,134 @@ export function Header() {
   }, []);
 
   return (
-    <>
-      {/* Announcement Bar */}
+    <header
+      className={cn(
+        "w-full flex flex-col transition-all duration-300 z-50",
+        isHome ? "fixed top-0 left-0 right-0" : "sticky top-0"
+      )}
+    >
       <AnimatePresence>
         {showAnnouncement && (
           <motion.div
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            className="bg-gradient-to-r from-[#2D4A3E] via-[#3d5f4f] to-[#2D4A3E] text-white text-xs text-center py-2.5 overflow-hidden"
+            transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+            className={cn(
+              "text-[9px] md:text-[10px] font-semibold tracking-[0.25em] uppercase text-center py-2 md:py-2.5 overflow-hidden w-full transition-colors duration-300",
+              scrolled || !isHome
+                ? "bg-[#2D4A3E] text-[#F7F4F0]"
+                : "bg-transparent text-[#F7F4F0] border-b border-[#F7F4F0]/10"
+            )}
           >
             <motion.div
               initial={{ y: 20 }}
               animate={{ y: 0 }}
-              className="flex items-center justify-center gap-2"
+              className="flex items-center justify-center gap-4 px-4"
             >
-              <Sparkles className="w-3 h-3" />
-              <span className="tracking-wide">
+              <span>
                 {IS_PRELAUNCH ? (
                   "ЗАПИШИ СЕ И ПОЛУЧИ БЕЗПЛАТЕН PDF ГАЙД"
                 ) : (
                   <>
                     БЕЗПЛАТНА ДОСТАВКА НАД {SHIPPING_THRESHOLD} €
-                    <span className="hidden sm:inline"> • 14-ДНЕВНА ГАРАНЦИЯ</span>
+                    <span className="hidden sm:inline opacity-50 mx-2">|</span>
+                    <span className="hidden sm:inline text-[#B2D8C6]">14-ДНЕВНА ГАРАНЦИЯ ЗА ВРЪЩАНЕ</span>
                   </>
                 )}
               </span>
-              <Sparkles className="w-3 h-3" />
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Navigation */}
       <motion.nav
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-        className={`sticky top-0 z-40 transition-all duration-500 ${scrolled
-            ? "bg-white/95 backdrop-blur-xl shadow-[0_4px_30px_rgba(0,0,0,0.08)] border-b border-stone-100"
-            : "bg-white/70 backdrop-blur-md"
-          }`}
+        className={cn(
+          "w-full transition-all duration-300",
+          scrolled || !isHome
+            ? "bg-[#F7F4F0]/90 backdrop-blur-xl border-b border-[#2D4A3E]/10 py-3 shadow-sm"
+            : "bg-transparent py-5"
+        )}
       >
-        <div className="max-w-7xl mx-auto px-6">
-          <div
-            className={`flex items-center justify-between transition-all duration-300 ${scrolled ? "h-16" : "h-20"
-              }`}
-          >
-            {/* Left - Mobile Menu + Primary Nav */}
-            <div className="flex items-center gap-8 w-1/3">
+        <div className="max-w-[1400px] mx-auto px-6 md:px-12 flex items-center justify-between">
+
+          {/* Left - Primary Nav (Desktop) / Mobile Menu (Mobile) */}
+          <div className="flex items-center gap-8 md:gap-10 w-1/3">
+            <div className="md:hidden">
               <MobileMenu />
-              {NAV_LINKS.slice(0, 2).map((link, index) => (
-                <motion.div
-                  key={link.href}
-                  initial={{ opacity: 0, y: -20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.1 * index }}
-                  className="hidden md:block"
-                >
-                  <Link
-                    href={link.href}
-                    className="relative text-sm font-medium text-stone-600 hover:text-[#2D4A3E] transition-colors group"
-                  >
-                    {link.label}
-                    <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#B2D8C6] group-hover:w-full transition-all duration-300" />
-                  </Link>
-                </motion.div>
-              ))}
             </div>
 
-            {/* Center - Logo */}
-            <div className="flex justify-center w-1/3">
-              <Link href="/" className="group relative">
-                <motion.span
-                  whileHover={{ scale: 1.05 }}
-                  className={`block font-semibold tracking-[0.3em] text-[#2D4A3E] transition-all duration-300 ${scrolled ? "text-xl" : "text-2xl"
-                    }`}
-                >
-                  LURA
-                </motion.span>
-                {/* Underline effect */}
-                <motion.span
-                  className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-[#B2D8C6] to-[#FFC1CC] group-hover:w-full transition-all duration-300"
-                />
-              </Link>
-            </div>
-
-            {/* Right - Secondary Nav + Cart */}
-            <div className="flex items-center justify-end gap-8 w-1/3">
-              {NAV_LINKS.slice(2).map((link, index) => (
-                <motion.div
-                  key={link.href}
-                  initial={{ opacity: 0, y: -20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.1 * (index + 2) }}
-                  className="hidden md:block"
-                >
+            <div className="hidden md:flex gap-8">
+              {NAV_LINKS.slice(0, 2).map((link) => {
+                const isActive = pathname === link.href || pathname.startsWith(link.href + "/");
+                return (
                   <Link
+                    key={link.href}
                     href={link.href}
-                    className="relative text-sm font-medium text-stone-600 hover:text-[#2D4A3E] transition-colors group"
+                    className={cn(
+                      "text-[11px] font-bold tracking-[0.15em] uppercase transition-colors duration-300",
+                      isActive
+                        ? (scrolled || !isHome ? "text-[#2D4A3E]" : "text-[#F7F4F0]")
+                        : (scrolled || !isHome ? "text-[#2D4A3E]/50 hover:text-[#2D4A3E]" : "text-[#F7F4F0]/70 hover:text-[#F7F4F0]")
+                    )}
                   >
                     {link.label}
-                    <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#B2D8C6] group-hover:w-full transition-all duration-300" />
                   </Link>
-                </motion.div>
-              ))}
-              {!IS_PRELAUNCH && (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.4, type: "spring" as const }}
-                >
-                  <CartBadge />
-                </motion.div>
-              )}
+                );
+              })}
             </div>
           </div>
+
+          {/* Center - Brand Logo */}
+          <div className="flex justify-center w-1/3">
+            <Link
+              href="/"
+              className={cn(
+                "text-2xl md:text-3xl font-serif font-light tracking-widest transition-colors duration-300",
+                scrolled || !isHome ? "text-[#2D4A3E]" : "text-[#F7F4F0]"
+              )}
+            >
+              LURA
+            </Link>
+          </div>
+
+          {/* Right - Secondary Nav + Cart */}
+          <div className="flex items-center justify-end gap-6 md:gap-8 w-1/3">
+            <div className="hidden md:flex gap-8">
+              {NAV_LINKS.slice(2).map((link) => {
+                const isActive = pathname === link.href || pathname.startsWith(link.href + "/");
+                return (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className={cn(
+                      "text-[11px] font-bold tracking-[0.15em] uppercase transition-colors duration-300",
+                      isActive
+                        ? (scrolled || !isHome ? "text-[#2D4A3E]" : "text-[#F7F4F0]")
+                        : (scrolled || !isHome ? "text-[#2D4A3E]/50 hover:text-[#2D4A3E]" : "text-[#F7F4F0]/70 hover:text-[#F7F4F0]")
+                    )}
+                  >
+                    {link.label}
+                  </Link>
+                );
+              })}
+            </div>
+
+            {!IS_PRELAUNCH && (
+              <div className={cn(
+                "flex items-center justify-center transition-colors duration-300",
+                scrolled || !isHome ? "text-[#2D4A3E]" : "text-[#F7F4F0]"
+              )}>
+                <CartBadge />
+              </div>
+            )}
+          </div>
+
         </div>
       </motion.nav>
-    </>
+    </header>
   );
 }

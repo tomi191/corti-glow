@@ -1,6 +1,7 @@
 // Econt Shipping Calculation API
 
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
 import {
   calculateOfficeDelivery,
   calculateAddressDelivery,
@@ -8,18 +9,35 @@ import {
   isFreeShipping,
 } from "@/lib/econt";
 
+const calculateSchema = z.object({
+  method: z.enum(["office", "address"]).optional(),
+  cityName: z.string().max(100).optional(),
+  officeCode: z.string().max(20).optional(),
+  address: z.string().max(200).optional(),
+  weight: z.number().positive().max(50).optional().default(0.5),
+  subtotal: z.number().min(0).optional().default(0),
+  codAmount: z.number().positive().optional(),
+});
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
+    const parsed = calculateSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: "Invalid request", details: parsed.error.flatten().fieldErrors },
+        { status: 400 }
+      );
+    }
     const {
-      method, // "office" | "address"
+      method,
       cityName,
       officeCode,
       address,
-      weight = 0.5,
-      subtotal = 0, // For free shipping calculation
+      weight,
+      subtotal,
       codAmount,
-    } = body;
+    } = parsed.data;
 
     // Check for free shipping
     if (isFreeShipping(subtotal)) {
@@ -35,14 +53,13 @@ export async function POST(request: NextRequest) {
     // Calculate based on method
     if (method === "office" && officeCode) {
       const result = await calculateOfficeDelivery({
-        receiverCity: cityName,
+        receiverCity: cityName || "",
         receiverOfficeCode: officeCode,
         weight,
         codAmount,
       });
 
       if (!result) {
-        // Return estimated price if API fails
         const estimates = getEstimatedShippingPrices();
         return NextResponse.json({
           ...estimates.office,

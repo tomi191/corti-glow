@@ -49,7 +49,7 @@ export default async function Image() {
 
         {/* Pills row */}
         <div style={{ display: "flex", gap: 10, marginBottom: 28 }}>
-          {["KSM-66® Ashwagandha", "7 активни съставки", "Без захар"].map(
+          {["Клинични Дози", "7 активни съставки", "Без захар"].map(
             (text) => (
               <div
                 key={text}

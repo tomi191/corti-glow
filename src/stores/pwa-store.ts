@@ -155,58 +155,78 @@ export const usePwaStore = create<PwaStore>()(
         if (state.isSyncing) return;
         set({ isSyncing: true });
 
-        try {
-          const res = await fetch("/api/pwa/sync", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              profile: {
-                lastPeriodDate: state.lastPeriodDate,
-                cycleLength: state.cycleLength,
-                periodDuration: state.periodDuration,
-                userName: state.userName,
-                ageRange: state.ageRange,
-                concerns: state.concerns,
-                contraception: state.contraception,
-                email: state.email,
-                timezone: state.timezone,
-                hasSeenTour: state.hasSeenTour,
-                pushEnabled: state.pushEnabled,
-                iosInstallDismissed: state.iosInstallDismissed,
-              },
-              checkIns: state.checkIns,
-              lastSyncedAt: state.lastSyncedAt,
-            }),
-          });
+        const MAX_RETRIES = 3;
+        const BASE_DELAY_MS = 1000; // 1s, 2s, 4s exponential backoff
 
-          if (!res.ok) {
-            console.warn("PWA sync failed:", res.status);
-            return;
+        for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
+          try {
+            const currentState = get();
+            const res = await fetch("/api/pwa/sync", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                profile: {
+                  lastPeriodDate: currentState.lastPeriodDate,
+                  cycleLength: currentState.cycleLength,
+                  periodDuration: currentState.periodDuration,
+                  userName: currentState.userName,
+                  ageRange: currentState.ageRange,
+                  concerns: currentState.concerns,
+                  contraception: currentState.contraception,
+                  email: currentState.email,
+                  timezone: currentState.timezone,
+                  hasSeenTour: currentState.hasSeenTour,
+                  pushEnabled: currentState.pushEnabled,
+                  iosInstallDismissed: currentState.iosInstallDismissed,
+                },
+                checkIns: currentState.checkIns,
+                lastSyncedAt: currentState.lastSyncedAt,
+              }),
+            });
+
+            if (!res.ok) {
+              throw new Error(`HTTP ${res.status}`);
+            }
+
+            const data = await res.json();
+            if (!data.success) {
+              throw new Error("Server returned success=false");
+            }
+
+            // Merge server response into local state
+            set({
+              lastPeriodDate: data.profile.lastPeriodDate,
+              cycleLength: data.profile.cycleLength,
+              periodDuration: data.profile.periodDuration,
+              userName: data.profile.userName,
+              ageRange: data.profile.ageRange,
+              concerns: data.profile.concerns,
+              contraception: data.profile.contraception,
+              hasSeenTour: data.profile.hasSeenTour,
+              pushEnabled: data.profile.pushEnabled,
+              iosInstallDismissed: data.profile.iosInstallDismissed,
+              checkIns: data.checkIns,
+              lastSyncedAt: data.syncedAt,
+              isSyncing: false,
+            });
+            return; // Success — exit retry loop
+          } catch (err) {
+            const isLastAttempt = attempt === MAX_RETRIES - 1;
+            if (isLastAttempt) {
+              console.warn(
+                `PWA sync failed after ${MAX_RETRIES} attempts:`,
+                err instanceof Error ? err.message : err
+              );
+              set({ isSyncing: false });
+              return;
+            }
+            // Exponential backoff: 1s, 2s, 4s
+            const delay = BASE_DELAY_MS * Math.pow(2, attempt);
+            await new Promise((resolve) => setTimeout(resolve, delay));
           }
-
-          const data = await res.json();
-          if (!data.success) return;
-
-          // Merge server response into local state
-          set({
-            lastPeriodDate: data.profile.lastPeriodDate,
-            cycleLength: data.profile.cycleLength,
-            periodDuration: data.profile.periodDuration,
-            userName: data.profile.userName,
-            ageRange: data.profile.ageRange,
-            concerns: data.profile.concerns,
-            contraception: data.profile.contraception,
-            hasSeenTour: data.profile.hasSeenTour,
-            pushEnabled: data.profile.pushEnabled,
-            iosInstallDismissed: data.profile.iosInstallDismissed,
-            checkIns: data.checkIns,
-            lastSyncedAt: data.syncedAt,
-          });
-        } catch (err) {
-          console.warn("PWA sync error:", err);
-        } finally {
-          set({ isSyncing: false });
         }
+
+        set({ isSyncing: false });
       },
 
       // Getters

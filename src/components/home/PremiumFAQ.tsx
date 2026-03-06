@@ -26,15 +26,15 @@ export function PremiumFAQ() {
             className="inline-flex items-center gap-2 text-[#2D4A3E] text-sm font-medium uppercase tracking-widest mb-6"
           >
             <HelpCircle className="w-4 h-4" />
-            Често Задавани Въпроси
+            Въпроси и отговори
           </motion.span>
 
           <AnimatedHeading delay={0.2}>
             <h2 className="text-5xl md:text-7xl font-normal text-[#2D4A3E] mt-4 font-serif leading-none">
-              Имаш Въпроси?
+              Честни отговори
               <br />
               <span className="italic block mt-1 text-[#2D4A3E]/70 font-light">
-                Имаме Отговори.
+                на твоите въпроси.
               </span>
             </h2>
           </AnimatedHeading>

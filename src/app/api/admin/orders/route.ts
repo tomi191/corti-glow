@@ -41,10 +41,47 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// Update order status
+// Update order status (single or bulk)
 export async function PATCH(request: NextRequest) {
   try {
     const body = await request.json();
+
+    // Bulk update: { orderIds: string[], status: string }
+    if (Array.isArray(body.orderIds)) {
+      const { orderIds, status } = body;
+      if (!orderIds.length || !status) {
+        return NextResponse.json(
+          { error: "orderIds array and status required" },
+          { status: 400 }
+        );
+      }
+      if (orderIds.length > 100) {
+        return NextResponse.json(
+          { error: "Maximum 100 orders per bulk operation" },
+          { status: 400 }
+        );
+      }
+
+      let successCount = 0;
+      const errors: string[] = [];
+      for (const id of orderIds) {
+        const result = await updateOrderStatus(id, status);
+        if (result.success) {
+          successCount++;
+        } else {
+          errors.push(`${id}: ${result.error}`);
+        }
+      }
+
+      return NextResponse.json({
+        success: true,
+        updated: successCount,
+        total: orderIds.length,
+        errors: errors.length > 0 ? errors : undefined,
+      });
+    }
+
+    // Single update: { orderId: string, status: string }
     const { orderId, status } = body;
 
     if (!orderId || !status) {

@@ -1,26 +1,20 @@
-// Legacy exports (kept for compatibility)
-export { HeroSection } from "./HeroSection";
-export { SocialProof } from "./SocialProof";
-export { ProblemSection } from "./ProblemSection";
-export { SolutionSection } from "./SolutionSection";
-export { IngredientsStrip } from "./IngredientsStrip";
-export { HowToUseSection } from "./HowToUseSection";
-export { BundlesSection } from "./BundlesSection";
-export { ReviewsSection } from "./ReviewsSection";
-export { FAQSection } from "./FAQSection";
-export { MobileStickyBar } from "./MobileStickyBar";
+// v4.0 — Warm Minimalism (2026-03-06)
+export { ImmersiveHero } from "./ImmersiveHero";
+export { ScienceScrollytelling } from "./ScienceScrollytelling";
+export { TheRitual } from "./TheRitual";
+export { BrandEthos } from "./BrandEthos";
+export { DigitalCompanion } from "./DigitalCompanion";
+export { RawSocialProof } from "./RawSocialProof";
+export { GlowGuidePromo } from "./GlowGuidePromo";
+export { FrictionlessCheckout } from "./FrictionlessCheckout";
 
-// Premium 2026 exports
-export { PremiumHero } from "./PremiumHero";
-export { SocialProofBanner } from "./SocialProofBanner";
-export { PremiumFeatures } from "./PremiumFeatures";
-export { GlowGuideCTA } from "./GlowGuideCTA";
-export { GlowGuideCTAMini } from "./GlowGuideCTAMini";
-export { RealResults } from "./RealResults";
+// Legacy exports (kept for other pages that may reference them)
+export { CortisolEducation } from "./CortisolEducation";
+export { ExpectationsTimeline } from "./ExpectationsTimeline";
+export { TesterWall } from "./TesterWall";
+export { FullTransparency } from "./FullTransparency";
+export { GuaranteeFooterCTA } from "./GuaranteeFooterCTA";
+export { PremiumBackground } from "./PremiumBackground";
 export { PremiumBundles } from "./PremiumBundles";
-export { PremiumTestimonials } from "./PremiumTestimonials";
-export { BentoReviews } from "./BentoReviews";
-export { PremiumIngredients } from "./PremiumIngredients";
-export { PremiumHowTo } from "./PremiumHowTo";
 export { PremiumFAQ } from "./PremiumFAQ";
-export { PremiumCTA } from "./PremiumCTA";
+export { MobileStickyBar } from "./MobileStickyBar";

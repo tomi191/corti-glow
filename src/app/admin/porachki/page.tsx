@@ -11,6 +11,10 @@ import {
   AlertCircle,
   Package,
   RefreshCw,
+  Download,
+  CheckSquare,
+  Square,
+  X,
 } from "lucide-react";
 import { formatPrice } from "@/lib/utils";
 import type { Order, OrderStatus } from "@/lib/supabase/types";
@@ -65,6 +69,8 @@ function OrdersPageContent() {
   const [statusFilter, setStatusFilter] = useState(searchParams.get("status") || "");
   const [page, setPage] = useState(1);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [bulkLoading, setBulkLoading] = useState(false);
   const limit = 20;
 
   useEffect(() => {
@@ -99,6 +105,62 @@ function OrdersPageContent() {
     setAppliedSearch(search);
   };
 
+  // Clear selection when page/filter changes
+  useEffect(() => {
+    setSelectedIds(new Set());
+  }, [page, statusFilter, appliedSearch]);
+
+  const toggleSelect = (id: string) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedIds.size === orders.length) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(orders.map((o) => o.id)));
+    }
+  };
+
+  const handleBulkStatus = async (status: string) => {
+    if (selectedIds.size === 0) return;
+    const confirmMsg = `Промяна на статуса на ${selectedIds.size} поръчки на "${statusLabels[status] || status}"?`;
+    if (!confirm(confirmMsg)) return;
+
+    setBulkLoading(true);
+    try {
+      const res = await fetch("/api/admin/orders", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ orderIds: Array.from(selectedIds), status }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        alert(`Обновени: ${data.updated} от ${data.total}`);
+        setSelectedIds(new Set());
+        setRefreshKey((k) => k + 1);
+      } else {
+        alert("Грешка при обновяване");
+      }
+    } catch {
+      alert("Грешка при обновяване");
+    } finally {
+      setBulkLoading(false);
+    }
+  };
+
+  const handleExportCSV = () => {
+    const params = new URLSearchParams();
+    if (statusFilter) params.set("status", statusFilter);
+    if (appliedSearch) params.set("search", appliedSearch);
+    window.open(`/api/admin/orders/export?${params}`, "_blank");
+  };
+
   const totalPages = Math.ceil(totalCount / limit);
 
   const formatDate = (dateString: string) => {
@@ -122,13 +184,22 @@ function OrdersPageContent() {
           </p>
         </div>
 
-        <button
-          onClick={() => setRefreshKey((k) => k + 1)}
-          className="flex items-center gap-2 px-4 py-2 bg-white border border-stone-200 rounded-xl text-sm font-medium hover:bg-stone-50 transition"
-        >
-          <RefreshCw className="w-4 h-4" />
-          Обнови
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={handleExportCSV}
+            className="flex items-center gap-2 px-4 py-2 bg-white border border-stone-200 rounded-xl text-sm font-medium hover:bg-stone-50 transition"
+          >
+            <Download className="w-4 h-4" />
+            CSV
+          </button>
+          <button
+            onClick={() => setRefreshKey((k) => k + 1)}
+            className="flex items-center gap-2 px-4 py-2 bg-white border border-stone-200 rounded-xl text-sm font-medium hover:bg-stone-50 transition"
+          >
+            <RefreshCw className="w-4 h-4" />
+            Обнови
+          </button>
+        </div>
       </div>
 
       {/* Filters */}
@@ -169,6 +240,42 @@ function OrdersPageContent() {
         </div>
       </div>
 
+      {/* Bulk Actions Bar */}
+      {selectedIds.size > 0 && (
+        <div className="bg-[#2D4A3E] text-white rounded-xl px-4 py-3 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <span className="text-sm font-medium">
+              {selectedIds.size} избрани
+            </span>
+            <button
+              onClick={() => setSelectedIds(new Set())}
+              className="p-1 hover:bg-white/20 rounded"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+          <div className="flex items-center gap-2">
+            <select
+              disabled={bulkLoading}
+              onChange={(e) => {
+                if (e.target.value) handleBulkStatus(e.target.value);
+                e.target.value = "";
+              }}
+              className="px-3 py-1.5 bg-white/20 border border-white/30 rounded-lg text-sm text-white focus:outline-none"
+              defaultValue=""
+            >
+              <option value="" disabled>
+                Смени статус...
+              </option>
+              <option value="processing">В обработка</option>
+              <option value="shipped">Изпратена</option>
+              <option value="delivered">Доставена</option>
+              <option value="cancelled">Отказана</option>
+            </select>
+          </div>
+        </div>
+      )}
+
       {/* Orders Table */}
       <div className="bg-white rounded-2xl shadow-sm border border-stone-100 overflow-hidden">
         {isLoading ? (
@@ -190,6 +297,19 @@ function OrdersPageContent() {
               <table className="w-full">
                 <thead className="bg-stone-50 border-b border-stone-100">
                   <tr>
+                    <th className="px-3 py-3 w-10">
+                      <button
+                        onClick={toggleSelectAll}
+                        className="text-stone-400 hover:text-stone-600"
+                        aria-label="Избери всички"
+                      >
+                        {selectedIds.size === orders.length && orders.length > 0 ? (
+                          <CheckSquare className="w-4 h-4" />
+                        ) : (
+                          <Square className="w-4 h-4" />
+                        )}
+                      </button>
+                    </th>
                     <th className="text-left px-6 py-3 text-xs font-bold text-stone-500 uppercase tracking-wide">
                       Поръчка
                     </th>
@@ -213,7 +333,19 @@ function OrdersPageContent() {
                 </thead>
                 <tbody className="divide-y divide-stone-100">
                   {orders.map((order) => (
-                    <tr key={order.id} className="hover:bg-stone-50 transition">
+                    <tr key={order.id} className={`hover:bg-stone-50 transition ${selectedIds.has(order.id) ? "bg-[#2D4A3E]/5" : ""}`}>
+                      <td className="px-3 py-4">
+                        <button
+                          onClick={() => toggleSelect(order.id)}
+                          className="text-stone-400 hover:text-stone-600"
+                        >
+                          {selectedIds.has(order.id) ? (
+                            <CheckSquare className="w-4 h-4 text-[#2D4A3E]" />
+                          ) : (
+                            <Square className="w-4 h-4" />
+                          )}
+                        </button>
+                      </td>
                       <td className="px-6 py-4">
                         <span className="font-medium text-stone-800">
                           {order.order_number}

@@ -5,14 +5,23 @@ import { createPortal } from "react-dom";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
 import { NAV_LINKS, FOOTER_LINKS } from "@/lib/constants";
+import { useCartStore } from "@/stores/cart-store";
 
 export function MobileMenu() {
   const [isOpen, setIsOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const cartIsOpen = useCartStore((s) => s.isOpen);
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  // Close mobile menu when cart drawer opens
+  useEffect(() => {
+    if (cartIsOpen && isOpen) {
+      setIsOpen(false);
+    }
+  }, [cartIsOpen, isOpen]);
 
   useEffect(() => {
     if (isOpen) {

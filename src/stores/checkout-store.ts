@@ -193,9 +193,9 @@ export const useCheckoutStore = create<CheckoutStore>()(
   canProceedToShipping: () => {
     const { customer } = get();
     return (
-      customer.firstName.length >= 2 &&
-      customer.lastName.length >= 2 &&
-      customer.email.includes("@") &&
+      customer.firstName.trim().length >= 2 &&
+      customer.lastName.trim().length >= 2 &&
+      customer.email.trim().includes("@") &&
       /^(\+359|0)[0-9]{9}$/.test(customer.phone.replace(/\s/g, ""))
     );
   },
@@ -207,9 +207,9 @@ export const useCheckoutStore = create<CheckoutStore>()(
     }
     return (
       !!shipping.city &&
-      shipping.city.length >= 2 &&
+      shipping.city.trim().length >= 2 &&
       !!shipping.street &&
-      shipping.street.length >= 3
+      shipping.street.trim().length >= 3
     );
   },
 
@@ -227,7 +227,16 @@ export const useCheckoutStore = create<CheckoutStore>()(
     storage: createJSONStorage(() => sessionStorage),
     partialize: (state) => ({
       customer: state.customer,
-      shipping: { method: state.shipping.method },
+      shipping: {
+        method: state.shipping.method,
+        selectedOffice: state.shipping.selectedOffice,
+        city: state.shipping.city,
+        postCode: state.shipping.postCode,
+        street: state.shipping.street,
+        building: state.shipping.building,
+        apartment: state.shipping.apartment,
+      },
+      payment: { method: state.payment.method },
     }),
   }
 ));

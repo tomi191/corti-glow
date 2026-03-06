@@ -32,7 +32,7 @@ const comparisons = [
     others: false,
   },
   {
-    feature: "KSM-66® Ашваганда (300mg)",
+    feature: "Ашваганда 5% витанолиди (300mg)",
     us: true,
     others: false,
   },
@@ -47,7 +47,17 @@ const comparisons = [
     others: false,
   },
   {
-    feature: "Без захар, без ГМО, веган",
+    feature: "Натурален цвят от цвекло (без Е-номера)",
+    us: true,
+    others: false,
+  },
+  {
+    feature: "0% захар — Стевия Reb-A 97%",
+    us: true,
+    others: "частично",
+  },
+  {
+    feature: "Без ГМО, веган, без глутен",
     us: true,
     others: "частично",
   },
@@ -66,13 +76,13 @@ const comparisons = [
 const defaultBenefits = [
   {
     icon: Beaker,
-    title: "5 Активни Съставки",
+    title: "7 Активни Съставки",
     description: "Научно подбрани за синергичен ефект",
   },
   {
     icon: Award,
     title: "Премиум Качество",
-    description: "Използваме само патентовани екстракти",
+    description: "Висококачествени екстракти в клинични дози",
   },
   {
     icon: Heart,
@@ -113,7 +123,7 @@ export function WhyCortiGlow({ features: dbFeatures }: WhyCortiGlowProps) {
             Не всички добавки са еднакви
           </h2>
           <p className="text-stone-600 max-w-2xl mx-auto">
-            Corti-Glow използва само патентовани съставки в клинично доказани дозировки
+            Corti-Glow използва само висококачествени съставки в клинично доказани дозировки
           </p>
         </div>
 

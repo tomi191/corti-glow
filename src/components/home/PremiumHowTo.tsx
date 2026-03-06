@@ -30,8 +30,8 @@ const steps = [
     step: 3,
     time: "Релакс",
     icon: Sparkles,
-    title: "Наслади Се",
-    description: "Пий бавно и се наслади на вкуса.",
+    title: "Изпий и се наслади",
+    description: "Изпий го — вкусен е и с лед.",
     tip: "Идеално 1–2 часа преди сън",
     color: "#F4E3B2",
   },
@@ -41,7 +41,7 @@ const results: { day: string; result: string; icon: LucideIcon; color: string }[
   { day: "Ден 1-3", result: "Забелязваш по-добър сън", icon: Moon, color: "#B2D8C6" },
   { day: "Ден 7", result: "Подуването намалява видимо", icon: Sparkles, color: "#FFC1CC" },
   { day: "Ден 14", result: "Чувстваш се по-спокойна", icon: Heart, color: "#F4E3B2" },
-  { day: "Ден 30", result: "Пълна трансформация", icon: Star, color: "#B2D8C6" },
+  { day: "Ден 30", result: "Усещаш пълната разлика", icon: Star, color: "#B2D8C6" },
 ];
 
 export function PremiumHowTo() {
@@ -102,10 +102,10 @@ export function PremiumHowTo() {
 
           <AnimatedHeading delay={0.2}>
             <h2 className="text-5xl md:text-7xl font-normal text-[#2D4A3E] mt-4 font-serif leading-none">
-              Толкова Лесно.
+              3 стъпки.
               <br />
               <span className="italic block mt-1 bg-clip-text text-transparent bg-gradient-to-r from-[#B2D8C6] to-[#FFC1CC]">
-                Толкова Вкусно.
+                30 секунди.
               </span>
             </h2>
           </AnimatedHeading>
@@ -116,7 +116,7 @@ export function PremiumHowTo() {
             transition={{ duration: 0.6, delay: 0.4 }}
             className="text-lg text-stone-600 font-light"
           >
-            Замени вечерната захар с ритуал за красота отвътре.
+            Твоят нов вечерен навик — по-лесен от миенето на зъби.
           </motion.p>
         </div>
 

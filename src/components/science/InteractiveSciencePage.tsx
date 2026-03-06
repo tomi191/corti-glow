@@ -530,7 +530,7 @@ export function InteractiveSciencePage() {
                 <div className="space-y-6">
                   {[
                     {
-                      title: "KSM-66® Ashwagandha Study",
+                      title: "Ashwagandha (5% Withanolides) Study",
                       journal: "Indian J Psychol Med, 2012",
                       result: "27.9% намаление на кортизола след 60 дни",
                       participants: "64 участника",

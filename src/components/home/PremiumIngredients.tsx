@@ -19,26 +19,48 @@ const ingredients: {
   image: string;
 }[] = [
     {
+      id: "inositol",
+      name: "Мио-инозитол",
+      dose: "2000mg",
+      icon: FlaskConical,
+      color: "#E5E5E5",
+      description: "Златният стандарт за женски хормонален баланс и инсулинова чувствителност.",
+      benefits: ["Балансира хормоните", "Поддържа редовен цикъл", "Намалява тревожността"],
+      studies: "Препоръчван от ендокринолози",
+      image: "/images/ingredients-inositol.webp",
+    },
+    {
       id: "ashwagandha",
-      name: "KSM-66® Ашваганда",
+      name: "Ашваганда (5% витанолиди)",
       dose: "300mg",
       icon: Leaf,
       color: "#B2D8C6",
-      description: "Златният стандарт в адаптогените. Клинично доказано намалява кортизола с до 27%.",
+      description: "Висококонцентриран адаптоген, който клинично понижава кортизола с до 27%.",
       benefits: ["Намалява стреса", "Подобрява съня", "Повишава енергията"],
       studies: "24 клинични проучвания",
       image: "/images/ingredients-ashwagandha.webp",
     },
     {
       id: "magnesium",
-      name: "Магнезий бисглицинат",
-      dose: "300mg",
+      name: "Магнезиев бисглицинат",
+      dose: "670mg (100mg елементен)",
       icon: Gem,
       color: "#FFC1CC",
-      description: "Най-усвоимата форма магнезий. Успокоява нервната система и отпуска мускулите.",
+      description: "Най-високоусвоимата форма магнезий за дълбок сън, без стомашен дискомфорт.",
       benefits: ["Отпуска мускулите", "Поддържа нервите", "Подобрява съня"],
       studies: "Биодостъпност 80%+",
       image: "/images/ingredients-magnesium.webp",
+    },
+    {
+      id: "inulin",
+      name: "Пребиотик Инулин",
+      dose: "2500mg",
+      icon: Leaf,
+      color: "#D4E8D0",
+      description: "Фибри от корен на цикория. Връзката между спокоен стомах и спокоен ум.",
+      benefits: ["Елиминира подуването", "Подхранва добрите бактерии", "Подпомага серотонина"],
+      studies: "Ос стомах-мозък",
+      image: "/images/ingredients-inulin.webp",
     },
     {
       id: "l-theanine",
@@ -46,32 +68,32 @@ const ingredients: {
       dose: "200mg",
       icon: Leaf,
       color: "#F4E3B2",
-      description: "Аминокиселина от зелен чай. Стимулира алфа мозъчните вълни за спокойна концентрация без сънливост.",
+      description: "Аминокиселина от зелен чай. Изключва препускащите мисли преди сън.",
       benefits: ["Спокойна концентрация", "Намалява тревожността", "Подобрява фокуса"],
       studies: "Ефект за 40 минути",
       image: "/images/ingredients-l-theanine.webp",
     },
     {
-      id: "inositol",
-      name: "Мио-инозитол",
-      dose: "2000mg",
-      icon: FlaskConical,
-      color: "#F4E3B2",
-      description: "Клинична доза за хормонален баланс. Особено ефективен при ПКОС.",
-      benefits: ["Балансира хормоните", "Поддържа редовен цикъл", "Намалява тревожността"],
-      studies: "Препоръчван от ендокринолози",
-      image: "/images/ingredients-inositol.webp",
-    },
-    {
       id: "bromelain",
       name: "Бромелаин",
-      dose: "100mg",
+      dose: "100mg (2400 GDU/g)",
       icon: Cherry,
-      color: "#B2D8C6",
-      description: "Естествен ензим от ананас. Премахва подуването и подпомага храносмилането.",
-      benefits: ["Де-блоут ефект", "Подобрява храносмилането", "Противовъзпалително действие"],
+      color: "#FFD4A3",
+      description: "Високоактивен ензим от ананас за лекота в корема.",
+      benefits: ["Против подуване", "Подобрява храносмилането", "Противовъзпалително действие"],
       studies: "Действа за 24 часа",
       image: "/images/ingredients-bromelain.webp",
+    },
+    {
+      id: "vitamin-b6",
+      name: "Витамин B6 (P-5-P)",
+      dose: "1.4mg",
+      icon: FlaskConical,
+      color: "#E8D5F0",
+      description: "Биоактивната форма на B6 — помага на магнезия и инозитола да се усвоят пълноценно.",
+      benefits: ["Помага на магнезия да влезе в клетките", "Хормонална подкрепа", "Енергиен метаболизъм"],
+      studies: "Premium P-5-P форма",
+      image: "/images/ingredients-vitamin-b6.webp",
     },
   ];
 
@@ -109,7 +131,7 @@ export function PremiumIngredients() {
             className="inline-flex items-center gap-2 text-[#2D4A3E] text-sm font-medium uppercase tracking-widest mb-6"
           >
             <FlaskConical className="w-4 h-4" />
-            Научно Доказани Съставки
+            Научно доказани съставки
           </motion.span>
 
           <AnimatedHeading delay={0.2}>
@@ -128,7 +150,7 @@ export function PremiumIngredients() {
             transition={{ duration: 0.6, delay: 0.4 }}
             className="text-lg text-stone-600 font-light"
           >
-            Премиум съставки в клинични дози. Без компромиси.
+            7 активни съставки в клинични дози. Нищо излишно.
           </motion.p>
         </div>
 
@@ -285,9 +307,9 @@ export function PremiumIngredients() {
           className="flex flex-wrap justify-center gap-4 md:gap-6 mt-12 md:mt-20"
         >
           {[
-            { icon: Leaf, label: "100% Натурално" },
-            { icon: FlaskConical, label: "Лабораторно Тествано" },
-            { icon: Award, label: "GMP Сертифицирано" },
+            { icon: Leaf, label: "100% натурално" },
+            { icon: FlaskConical, label: "Лабораторно тествано" },
+            { icon: Award, label: "GMP сертифицирано" },
           ].map((badge) => (
             <div
               key={badge.label}

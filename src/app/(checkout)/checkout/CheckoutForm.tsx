@@ -277,6 +277,7 @@ export function CheckoutForm() {
               type="text"
               value={customer.firstName}
               onChange={(e) => setCustomer({ firstName: e.target.value })}
+              autoComplete="given-name"
               className="w-full bg-white border border-stone-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-[#2D4A3E] focus:ring-1 focus:ring-[#2D4A3E]"
               placeholder="Мария"
             />
@@ -290,6 +291,7 @@ export function CheckoutForm() {
               type="text"
               value={customer.lastName}
               onChange={(e) => setCustomer({ lastName: e.target.value })}
+              autoComplete="family-name"
               className="w-full bg-white border border-stone-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-[#2D4A3E] focus:ring-1 focus:ring-[#2D4A3E]"
               placeholder="Иванова"
             />
@@ -303,6 +305,7 @@ export function CheckoutForm() {
               type="tel"
               value={customer.phone}
               onChange={(e) => setCustomer({ phone: e.target.value })}
+              autoComplete="tel"
               className={`w-full bg-white border rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-[#2D4A3E] focus:ring-1 focus:ring-[#2D4A3E] ${
                 customer.phone && !isValidPhone(customer.phone)
                   ? "border-red-300"
@@ -325,6 +328,7 @@ export function CheckoutForm() {
               type="email"
               value={customer.email}
               onChange={(e) => setCustomer({ email: e.target.value })}
+              autoComplete="email"
               className="w-full bg-white border border-stone-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-[#2D4A3E] focus:ring-1 focus:ring-[#2D4A3E]"
               placeholder="maria@example.com"
             />

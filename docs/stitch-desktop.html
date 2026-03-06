@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>LURA Corti-Glow</title>
+<!-- Google Fonts: Manrope (Display) and Cormorant Garamond (Serif Accent) -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300..700;1,300..700&amp;family=Manrope:wght@200..800&amp;family=Noto+Sans:ital,wght@0,100..900;1,100..900&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Theme Configuration -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#69867a",
+              "background-light": "#f7f7f7",
+              "background-dark": "#181a19",
+            },
+            fontFamily: {
+              "display": ["Manrope", "sans-serif"],
+              "serif": ["Cormorant Garamond", "serif"],
+            },
+            borderRadius: {
+                "DEFAULT": "0.5rem", 
+                "lg": "1rem", 
+                "xl": "1.5rem", 
+                "2xl": "2rem",
+                "3xl": "3rem",
+                "full": "9999px"
+            },
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+          font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display antialiased overflow-x-hidden">
+<!-- TopNavBar -->
+<header class="sticky top-0 z-50 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-primary/10 px-6 py-4">
+<div class="max-w-[1200px] mx-auto flex items-center justify-between">
+<div class="flex items-center gap-2 text-primary">
+<span class="material-symbols-outlined text-2xl">spa</span>
+<span class="text-xl font-bold tracking-tight uppercase">LURA</span>
+</div>
+<nav class="hidden md:flex items-center gap-8">
+<a class="text-sm font-medium hover:text-primary transition-colors" href="#">Shop</a>
+<a class="text-sm font-medium hover:text-primary transition-colors" href="#">Science</a>
+<a class="text-sm font-medium hover:text-primary transition-colors" href="#">Ritual</a>
+<a class="text-sm font-medium hover:text-primary transition-colors" href="#">Reviews</a>
+</nav>
+<div class="flex items-center gap-4">
+<a class="hidden sm:block text-sm font-medium hover:text-primary transition-colors" href="#">Log In</a>
+<button class="bg-primary text-white px-6 py-2.5 rounded-full text-sm font-bold tracking-wide hover:bg-primary/90 transition-colors shadow-sm">
+                    Купи Сега
+                </button>
+</div>
+</div>
+</header>
+<main>
+<!-- Section 1: Hero -->
+<section class="relative pt-16 pb-24 px-6 overflow-hidden">
+<div class="max-w-[1200px] mx-auto grid md:grid-cols-2 gap-12 items-center">
+<!-- Left Content -->
+<div class="flex flex-col gap-8 z-10">
+<div class="flex flex-wrap gap-3">
+<span class="bg-primary/10 text-primary px-4 py-1.5 rounded-full text-sm font-medium border border-primary/20">Стрес и кортизол</span>
+<span class="bg-primary/10 text-primary px-4 py-1.5 rounded-full text-sm font-medium border border-primary/20">Подуване</span>
+<span class="bg-primary/10 text-primary px-4 py-1.5 rounded-full text-sm font-medium border border-primary/20">Лош сън</span>
+</div>
+<h1 class="font-serif italic text-5xl md:text-6xl lg:text-7xl leading-tight text-slate-900 dark:text-slate-100">
+                        Когато кортизолът спадне,<br/>всичко се подрежда.
+                    </h1>
+<p class="text-lg md:text-xl text-slate-600 dark:text-slate-400 max-w-md font-light">
+                        7 активни съставки. 1 саше преди сън. За спокоен ум и тяло без подуване.
+                    </p>
+<div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center mt-4">
+<button class="bg-primary text-white px-8 py-4 rounded-full text-base font-bold tracking-wide hover:bg-primary/90 transition-colors shadow-lg shadow-primary/20 w-full sm:w-auto">
+                            Открий Corti-Glow
+                        </button>
+</div>
+<!-- Trust Line -->
+<div class="flex items-center gap-4 mt-8 pt-8 border-t border-primary/10">
+<div class="flex -space-x-3">
+<img alt="Avatar of a woman" class="w-10 h-10 rounded-full border-2 border-background-light object-cover" data-alt="Portrait of a smiling woman" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB4LhXffNaw_veXnJJZRtlSWkRogrqdd_kXu-d659wOQBSTjlqk9_6LwL6RZr7riEJir6P-GkeZpsU_SX5iZ6fmeu2k5u-MXee7AGSzac9YLfFe-yMT7A3IlRxhd5k7NT6m_fW4JBRWWBFSmjSmhDatv_x4VvpQP_fvfHGtqC5imKF_jMFYtUJ-xSFIGKe8rXuG8pnpKD96aa2fLeC6vhcksxOcVuTOP_2gJBsSukxCnok6UAHUeUtOx0I89XCZ-5yAjOyKM3VY09o"/>
+<img alt="Avatar of a woman" class="w-10 h-10 rounded-full border-2 border-background-light object-cover" data-alt="Portrait of a calm woman" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCEQR4hxgM0p19p2Z09k8I6IP0PsxPrgkTw_Xm9h0Hm9h7cwrIcTCynjO_6NpCXakvjMHiyL2n4HJjfuoZa7B3hNVlf_VnDeGel5omkvTfJHnRtzzWHtlqqvoqn4JdOnlloRivJqZU-Qcujliw7i3vtWZMMHDEzMYMfiyLHWUSPS0wt4_kvrU8t5IkSZ18DF-aeLLYa1CcVDnLJyzGk0WIS02JFKWOc6mJk1zG2GDWTP2aGrfWyX5iciZZOWS9bDerreaJrmsFm4Dc"/>
+<img alt="Avatar of a woman" class="w-10 h-10 rounded-full border-2 border-background-light object-cover" data-alt="Portrait of a relaxed woman" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCrwX9IvLHdCsX7v4PVA2uvFAdPCVpbVcxuIuYO4uiP3EHdyvPjCPdj9OMuP9n6yBf9Zq6r8Tm8dA9KX6dINDAdkFZ2N0x2u1fYb4A9w2kLEePvqSTdeaPg9HkoPeV5vdKbmcDFlkE3TNhfp8eu3aIMu4CdYQlgyjZZVwj8MIgesdXivtcHdpWteavXePiO-qiif82olVylbkoBZ1wACJcNfFLzq9Zmyjjqun2cA1fu0xOC9DlbJvM6jnyrqJ2037rSvUONGjA8P_Q"/>
+</div>
+<div class="flex flex-col">
+<div class="flex text-primary text-sm">
+<span class="material-symbols-outlined" style="font-size: 16px;">star</span>
+<span class="material-symbols-outlined" style="font-size: 16px;">star</span>
+<span class="material-symbols-outlined" style="font-size: 16px;">star</span>
+<span class="material-symbols-outlined" style="font-size: 16px;">star</span>
+<span class="material-symbols-outlined" style="font-size: 16px;">star</span>
+</div>
+<p class="text-sm font-medium text-slate-700 dark:text-slate-300"><span class="font-bold">2,847+</span> жени вече спят спокойно</p>
+</div>
+</div>
+</div>
+<!-- Right Image -->
+<div class="relative h-[500px] md:h-[700px] w-full rounded-2xl md:rounded-[3rem] overflow-hidden bg-primary/5">
+<!-- Abstract Background Graphic -->
+<div class="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent"></div>
+<div class="absolute top-1/4 right-1/4 w-64 h-64 bg-primary/20 blur-[100px] rounded-full"></div>
+<img alt="Corti-Glow product mockups" class="absolute inset-0 w-full h-full object-cover mix-blend-multiply opacity-90" data-alt="Minimalist composition of wellness supplement packaging" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBq2ZNia7u4iLKox2AMVTnF7Uu5f7-tK02gK0yU-zr-ixNZ3RUkVAgdFUrKRynvO7U3MTX0-_DsUlZ2VC61w3Zp5U8Sx7h1IZN2xneBsRIspn6TplBPNmLNjy53du0VwwDDvil6TCLFUn40AujQZvoG9J6A9xmdWO5pXXWJlACY-_FSKyUWqTPYH0vAN5kTca99iNHERYn1dILQ4ad2BffPxGntSssMrHTsLDst-0OpXtES3G-kA2LKf5b6Exe68ve2XjrhzwcfA4U"/>
+</div>
+</div>
+</section>
+<!-- Section 2: Science (Sticky/Scroll Concept) -->
+<section class="py-24 px-6 bg-white dark:bg-background-dark border-y border-primary/5">
+<div class="max-w-[1000px] mx-auto">
+<div class="text-center mb-16">
+<h2 class="font-serif italic text-4xl md:text-5xl text-slate-900 dark:text-slate-100 mb-4">Науката зад Corti-Glow</h2>
+<p class="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">Прецизно формулиран комплекс за баланс на нервната система и качествен сън.</p>
+</div>
+<div class="flex flex-col gap-16 relative">
+<!-- Vertical Line connecting items -->
+<div class="hidden md:block absolute left-8 top-10 bottom-10 w-px bg-primary/20"></div>
+<!-- Stage 1 -->
+<div class="flex flex-col md:flex-row gap-8 md:gap-16 items-start relative">
+<div class="relative z-10 flex-shrink-0 w-16 h-16 bg-background-light rounded-full border-2 border-primary flex items-center justify-center text-primary font-serif italic text-3xl shadow-lg">
+                            1
+                        </div>
+<div class="flex-1 bg-background-light/50 p-8 rounded-2xl md:rounded-[2rem] border border-primary/10 relative overflow-hidden group">
+<div class="absolute -right-20 -top-20 w-64 h-64 bg-primary/10 blur-[80px] rounded-full transition-all duration-700 group-hover:bg-primary/20"></div>
+<h3 class="text-2xl font-bold mb-2 flex items-baseline gap-3">
+                                Bromelain <span class="text-primary text-xl font-medium tracking-wider">100mg</span>
+</h3>
+<p class="text-slate-600 dark:text-slate-400 leading-relaxed max-w-lg">
+                                Мощен ензим, извлечен от ананас. Ефективно намалява възпаленията и подуването, като подпомага храносмилането и възстановяването на тъканите през нощта.
+                            </p>
+</div>
+</div>
+<!-- Stage 2 -->
+<div class="flex flex-col md:flex-row gap-8 md:gap-16 items-start relative">
+<div class="relative z-10 flex-shrink-0 w-16 h-16 bg-background-light rounded-full border-2 border-primary flex items-center justify-center text-primary font-serif italic text-3xl shadow-lg">
+                            2
+                        </div>
+<div class="flex-1 bg-background-light/50 p-8 rounded-2xl md:rounded-[2rem] border border-primary/10 relative overflow-hidden group">
+<div class="absolute -left-20 -bottom-20 w-64 h-64 bg-primary/10 blur-[80px] rounded-full transition-all duration-700 group-hover:bg-primary/20"></div>
+<h3 class="text-2xl font-bold mb-2 flex items-baseline gap-3">
+                                Ashwagandha KSM-66 <span class="text-primary text-xl font-medium tracking-wider">300mg</span>
+</h3>
+<p class="text-slate-600 dark:text-slate-400 leading-relaxed max-w-lg">
+                                Клинично доказан адаптоген от най-висок клас. Значително понижава нивата на стрес и кортизол, успокоява ума и подготвя тялото за дълбок, възстановителен сън.
+                            </p>
+</div>
+</div>
+<!-- Stage 3 -->
+<div class="flex flex-col md:flex-row gap-8 md:gap-16 items-start relative">
+<div class="relative z-10 flex-shrink-0 w-16 h-16 bg-background-light rounded-full border-2 border-primary flex items-center justify-center text-primary font-serif italic text-3xl shadow-lg">
+                            3
+                        </div>
+<div class="flex-1 bg-background-light/50 p-8 rounded-2xl md:rounded-[2rem] border border-primary/10 relative overflow-hidden group">
+<div class="absolute -right-10 -bottom-10 w-80 h-80 bg-primary/10 blur-[100px] rounded-full transition-all duration-700 group-hover:bg-primary/20"></div>
+<h3 class="text-2xl font-bold mb-2 flex items-baseline gap-3">
+                                Myo-inositol <span class="text-primary text-xl font-medium tracking-wider">2000mg</span>
+</h3>
+<p class="text-slate-600 dark:text-slate-400 leading-relaxed max-w-lg">
+                                Ключов компонент за хормоналния баланс. Подобрява инсулиновата чувствителност, насърчава релаксацията и спомага за поддържането на спокоен емоционален фон.
+                            </p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Section 3: Ritual -->
+<section class="py-24 px-6 overflow-hidden">
+<div class="max-w-[1200px] mx-auto grid lg:grid-cols-12 gap-12 lg:gap-20 items-center">
+<!-- Large Image (Spans 7 cols) -->
+<div class="lg:col-span-7 relative h-[600px] rounded-3xl overflow-hidden">
+<img alt="Woman performing evening ritual" class="absolute inset-0 w-full h-full object-cover object-center" data-alt="Woman stretching in cozy evening light" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC2u2Q-6j6ZTd5FlKLcjeorvIvoEP6fl1vnUAuA8lX1HIpk2aGXxaQmIHfuTL0_06ilXlSb_iZc2_qy7WkuGzigfIeqM3cDenjNQ-yJdagFFIqr-2PTwkCRYwpKxq_Z0U0XmCmsmpuBFP-Og7xn1SrhhhEbyDw-fuaMt549UTRv2kWv6uD3O6AwPxmo8ipZHBbz5hR7yll6m8vWU5UzRVP0BT1xahYnWTsN4jlgr91m3RIxdbKVEFu8x7VCv_KFBqsYBx52GJV6Lrk"/>
+<div class="absolute inset-0 bg-primary/5"></div> <!-- Subtle tint -->
+</div>
+<!-- Text / Steps (Spans 5 cols) -->
+<div class="lg:col-span-5 flex flex-col gap-10">
+<div>
+<h2 class="font-serif italic text-4xl md:text-5xl text-slate-900 dark:text-slate-100 mb-4">Твоят вечерен ритуал</h2>
+<p class="text-lg text-slate-600 dark:text-slate-400">Превърни подготовката за сън в момент на удоволствие и грижа за себе си.</p>
+</div>
+<div class="flex flex-col gap-8">
+<div class="flex gap-6">
+<span class="font-serif italic text-4xl text-primary/40 leading-none">01</span>
+<div>
+<h4 class="text-xl font-bold mb-2">Разтвори</h4>
+<p class="text-slate-600 dark:text-slate-400 text-sm md:text-base">Изсипи едно саше Corti-Glow в 150-200ml вода със стайна температура.</p>
+</div>
+</div>
+<div class="flex gap-6">
+<span class="font-serif italic text-4xl text-primary/40 leading-none">02</span>
+<div>
+<h4 class="text-xl font-bold mb-2">Наслади се</h4>
+<p class="text-slate-600 dark:text-slate-400 text-sm md:text-base">Изпий приятната напитка около 30-45 минути преди времето за лягане.</p>
+</div>
+</div>
+<div class="flex gap-6">
+<span class="font-serif italic text-4xl text-primary/40 leading-none">03</span>
+<div>
+<h4 class="text-xl font-bold mb-2">Отпусни се</h4>
+<p class="text-slate-600 dark:text-slate-400 text-sm md:text-base">Почувствай как напрежението отстъпва, подготвяйки те за дълбок сън.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Section 5: Checkout (Bundles) -->
+<section class="mt-12 bg-primary/5 dark:bg-primary/10 rounded-t-[3rem] md:rounded-t-[5rem] pt-24 pb-32 px-6 border-t border-primary/10">
+<div class="max-w-[1200px] mx-auto text-center">
+<h2 class="font-serif italic text-4xl md:text-5xl text-slate-900 dark:text-slate-100 mb-4">Избери своя абонамент за спокойствие</h2>
+<p class="text-slate-600 dark:text-slate-400 mb-16">Инвестирай в своя качествен сън и хормонален баланс.</p>
+<div class="grid md:grid-cols-3 gap-6 max-w-[1000px] mx-auto items-center">
+<!-- Card 1 -->
+<div class="bg-white dark:bg-background-dark rounded-3xl p-8 border border-primary/10 shadow-sm hover:shadow-md transition-shadow">
+<h3 class="text-xl font-bold mb-1">1 Месец</h3>
+<p class="text-sm text-slate-500 mb-6">Пробен период</p>
+<div class="text-4xl font-light mb-6">€49.99</div>
+<ul class="text-left text-sm text-slate-600 dark:text-slate-400 space-y-3 mb-8">
+<li class="flex items-center gap-2"><span class="material-symbols-outlined text-primary text-sm">check_circle</span> 30 Сашета</li>
+<li class="flex items-center gap-2"><span class="material-symbols-outlined text-primary text-sm">check_circle</span> Стандартна доставка</li>
+</ul>
+<button class="w-full py-3 rounded-full border-2 border-primary text-primary font-bold hover:bg-primary hover:text-white transition-colors">
+                            Избери
+                        </button>
+</div>
+<!-- Card 2 (Highlighted) -->
+<div class="bg-primary text-white rounded-3xl p-10 shadow-xl shadow-primary/20 relative transform md:-translate-y-4">
+<div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white text-primary px-4 py-1 rounded-full text-xs font-bold uppercase tracking-wider border border-primary/20 shadow-sm">
+                            Най-популярен
+                        </div>
+<h3 class="text-2xl font-bold mb-1">2 Месеца</h3>
+<p class="text-sm text-white/80 mb-6">Оптимален резултат</p>
+<div class="text-5xl font-light mb-6">€85.99 <span class="text-lg line-through text-white/50">€99.98</span></div>
+<ul class="text-left text-sm text-white/90 space-y-3 mb-8">
+<li class="flex items-center gap-2"><span class="material-symbols-outlined text-white text-sm">check_circle</span> 60 Сашета</li>
+<li class="flex items-center gap-2"><span class="material-symbols-outlined text-white text-sm">check_circle</span> Безплатна доставка</li>
+<li class="flex items-center gap-2"><span class="material-symbols-outlined text-white text-sm">check_circle</span> -15% Отстъпка</li>
+</ul>
+<button class="w-full py-4 rounded-full bg-slate-900 text-white font-bold hover:bg-slate-800 transition-colors shadow-lg">
+                            Купи Сега
+                        </button>
+</div>
+<!-- Card 3 -->
+<div class="bg-white dark:bg-background-dark rounded-3xl p-8 border border-primary/10 shadow-sm hover:shadow-md transition-shadow">
+<h3 class="text-xl font-bold mb-1">3 Месеца</h3>
+<p class="text-sm text-slate-500 mb-6">Пълна трансформация</p>
+<div class="text-4xl font-light mb-6">€119.99 <span class="text-lg line-through text-slate-400">€149.97</span></div>
+<ul class="text-left text-sm text-slate-600 dark:text-slate-400 space-y-3 mb-8">
+<li class="flex items-center gap-2"><span class="material-symbols-outlined text-primary text-sm">check_circle</span> 90 Сашета</li>
+<li class="flex items-center gap-2"><span class="material-symbols-outlined text-primary text-sm">check_circle</span> Безплатна доставка</li>
+<li class="flex items-center gap-2"><span class="material-symbols-outlined text-primary text-sm">check_circle</span> -20% Отстъпка</li>
+</ul>
+<button class="w-full py-3 rounded-full border-2 border-primary text-primary font-bold hover:bg-primary hover:text-white transition-colors">
+                            Избери
+                        </button>
+</div>
+</div>
+</div>
+</section>
+</main>
+<footer class="bg-background-light dark:bg-background-dark py-12 border-t border-primary/10 text-center text-slate-500 text-sm">
+<p>© 2024 LURA Wellness. All rights reserved.</p>
+</footer>
+</body></html>

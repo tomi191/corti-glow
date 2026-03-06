@@ -100,6 +100,7 @@ export default function ShopPage() {
   const hasSetup = !!lastPeriodDate;
   const recommendation = getPhaseRecommendation(phase);
   const concernRecs = getConcernRecommendations(concerns);
+  const starterVariant = productVariants.find((v) => v.quantity === 1) ?? productVariants[0];
 
   return (
     <motion.div
@@ -256,18 +257,18 @@ export default function ShopPage() {
             <div className="flex items-center justify-between pt-2">
               <div>
                 <span className="text-2xl font-bold text-brand-forest">
-                  49.99
+                  {starterVariant.price.toFixed(2)}
                 </span>
                 <span className="text-sm font-semibold text-brand-forest/70 ml-1">
-                  лв.
+                  €
                 </span>
               </div>
               <AddToCartButton
-                id="starter-box"
+                id={starterVariant.id}
                 productId="corti-glow"
-                variantId="starter-box"
-                title="Corti-Glow Старт"
-                price={49.99}
+                variantId={starterVariant.id}
+                title={`Corti-Glow ${starterVariant.name}`}
+                price={starterVariant.price}
                 image={productInfo.image}
                 className="flex items-center gap-2 px-5 py-3.5 rounded-2xl text-base font-semibold shadow-lg shadow-brand-forest/20"
               />
@@ -321,7 +322,7 @@ export default function ShopPage() {
                     <div className="flex items-center gap-1 mt-0.5">
                       <Tag className="w-3 h-3 text-emerald-600" />
                       <span className="text-[11px] font-semibold text-emerald-600">
-                        Спестяваш {variant.savings} лв.
+                        Спестяваш {variant.savings} €
                       </span>
                     </div>
                   )}
@@ -330,11 +331,11 @@ export default function ShopPage() {
 
               <div className="flex flex-col items-end gap-1 flex-shrink-0 ml-3">
                 <span className="text-sm font-bold text-brand-forest">
-                  {variant.price.toFixed(2)} лв.
+                  {variant.price.toFixed(2)} €
                 </span>
                 {variant.compareAtPrice && (
                   <span className="text-[10px] text-stone-400 line-through">
-                    {variant.compareAtPrice.toFixed(2)} лв.
+                    {variant.compareAtPrice.toFixed(2)} €
                   </span>
                 )}
                 <AddToCartButton

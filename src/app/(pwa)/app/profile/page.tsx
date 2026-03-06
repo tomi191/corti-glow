@@ -34,6 +34,7 @@ import {
   subscribeToPush,
   getExistingSubscription,
 } from "@/lib/push-notifications";
+import { getMaxPeriodDuration, clampPeriodDuration } from "@/lib/pwa-logic";
 
 // --- Shimmer Skeleton ---
 function ShimmerSkeleton({ className }: { className?: string }) {
@@ -162,8 +163,8 @@ export default function ProfilePage() {
       if (date > today) return;
       setLastPeriodDate(date);
     }
-    // Ensure period duration doesn't exceed cycle length
-    const safeDuration = Math.min(duration, length - 1);
+    // Ensure period duration doesn't exceed safe max (cycleLength - 5)
+    const safeDuration = clampPeriodDuration(duration, length);
     setCycleLength(length);
     setPeriodDuration(safeDuration);
     setSaved(true);
@@ -419,7 +420,7 @@ export default function ProfilePage() {
             <input
               type="range"
               min={2}
-              max={10}
+              max={Math.min(10, getMaxPeriodDuration(length))}
               value={duration}
               onChange={(e) => setDuration(Number(e.target.value))}
               className="flex-1 accent-brand-forest"
@@ -444,7 +445,12 @@ export default function ProfilePage() {
               min={21}
               max={40}
               value={length}
-              onChange={(e) => setLength(Number(e.target.value))}
+              onChange={(e) => {
+                const newLen = Number(e.target.value);
+                setLength(newLen);
+                // Auto-clamp period duration if it exceeds the safe max
+                setDuration((prev) => clampPeriodDuration(prev, newLen));
+              }}
               className="flex-1 accent-brand-forest"
               aria-label="Дължина на цикъла"
             />

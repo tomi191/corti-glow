@@ -8,7 +8,7 @@ export function SmoothScrollProvider({
   children: React.ReactNode;
 }) {
   useEffect(() => {
-    // Apply smooth scroll via CSS — zero main thread cost
+    // Apply smooth scroll via CSS ╨▓╨ВтАЭ zero main thread cost
     document.documentElement.style.scrollBehavior = "smooth";
     return () => {
       document.documentElement.style.scrollBehavior = "";

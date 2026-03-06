@@ -8,7 +8,7 @@ import Link from "next/link";
 
 const clinicalRefs = [
   {
-    text: "KSM-66® Ашваганда намалява нивата на кортизол с 27.9% за 60 дни",
+    text: "Ашваганда (5% витанолиди) намалява нивата на кортизол с до 27% за 60 дни",
     source: "Journal of the American Nutraceutical Association, 2008",
   },
   {
@@ -25,7 +25,7 @@ const ugcResults = [
   {
     metric: "-3 см талия",
     quote: "След 2 седмици подуването просто изчезна. Дрехите ми стоят съвсем различно.",
-    author: "Елена К.",
+    author: "Ива К.",
     verified: true,
   },
   {
@@ -45,8 +45,8 @@ const ugcResults = [
 const timeline = [
   { day: "Ден 3", result: "По-лесно заспиване" },
   { day: "Ден 7", result: "Намалено подуване" },
-  { day: "Ден 14", result: "Видимо по-сияйна кожа" },
-  { day: "Ден 30", result: "Пълен хормонален баланс" },
+  { day: "Ден 14", result: "Кожата изглежда по-свежа" },
+  { day: "Ден 30", result: "Усещаш пълната разлика" },
 ];
 
 export function RealResults() {
@@ -64,10 +64,10 @@ export function RealResults() {
           className="text-center mb-12"
         >
           <span className="text-[#B2D8C6] font-medium tracking-widest uppercase text-sm font-display mb-4 block">
-            Реални Резултати
+            Реални резултати
           </span>
           <h2 className="text-5xl md:text-7xl font-light text-[#2D4A3E] mt-4 font-serif leading-tight">
-            Науката + <span className="font-normal italic">Клиентски Истории</span>
+            Науката + <span className="font-normal italic">клиентски истории</span>
           </h2>
         </motion.div>
 
@@ -97,7 +97,7 @@ export function RealResults() {
             className="space-y-4"
           >
             <h3 className="text-sm font-medium text-stone-500 uppercase tracking-wider mb-4">
-              Клинични Изследвания
+              Клинични изследвания
             </h3>
             {clinicalRefs.map((ref, i) => (
               <div
@@ -127,7 +127,7 @@ export function RealResults() {
             className="space-y-4"
           >
             <h3 className="text-sm font-medium text-stone-500 uppercase tracking-wider mb-4">
-              Клиентски Отзиви
+              Клиентски отзиви
             </h3>
             {ugcResults.map((result, i) => (
               <div
@@ -162,7 +162,7 @@ export function RealResults() {
           className="mt-12"
         >
           <h3 className="text-sm font-medium text-stone-500 uppercase tracking-wider text-center mb-6">
-            Времева Линия на Резултатите
+            Какво да очакваш по дни
           </h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {timeline.map((item, i) => (

@@ -89,7 +89,7 @@ export async function POST(request: NextRequest) {
 
     // Save tracking number in DB and set status to "shipped"
     if (orderId) {
-      await updateEcontTracking(orderId, result.shipmentNumber, result.shipmentNumber);
+      await updateEcontTracking(orderId, result.shipmentNumber, result.shipmentNumber, "shipped", result.pdfURL || undefined);
 
       // Send shipping notification email to customer (fire-and-forget)
       const supabase = createServerClient();

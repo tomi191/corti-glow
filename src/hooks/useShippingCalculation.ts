@@ -44,6 +44,9 @@ export function useShippingCalculation() {
     }
     abortController.current = new AbortController();
 
+    // Timeout after 10 seconds to avoid hanging requests
+    const timeoutId = setTimeout(() => abortController.current?.abort(), 10_000);
+
     setShippingCalculating(true);
 
     try {
@@ -67,6 +70,8 @@ export function useShippingCalculation() {
         }),
         signal: abortController.current.signal,
       });
+
+      clearTimeout(timeoutId);
 
       if (!response.ok) {
         throw new Error("Calculation failed");

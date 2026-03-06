@@ -1,0 +1,21 @@
+/* TEAM */
+Brand: LURA
+Developer: LEVEL 8 (level8.bg) — "ЛЕВЕЛ 8" ЕООД
+EIK: 208697165
+Site: https://luralab.eu
+Phone: +359 895 552 550
+Location: Varna, Bulgaria
+
+/* TECHNOLOGY */
+Framework: Next.js 16 (React 19)
+Language: TypeScript 5
+Styling: Tailwind CSS 4
+Database: Supabase (PostgreSQL)
+Payments: Stripe
+Shipping: Econt Express
+AI Architect: Claude (Anthropic)
+Brand Architect: Gemini (Google)
+Hosting: Vercel
+
+/* THANKS */
+Built with science, low cortisol, and a lot of love.

@@ -1,20 +1,25 @@
 // Econt Cities API - Search/Autocomplete
 
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
 import { searchCities, getAllCities } from "@/lib/econt";
+
+const citiesSchema = z.object({
+  query: z.string().min(2, "Query must be at least 2 characters").max(100),
+  limit: z.number().int().min(1).max(50).optional().default(10),
+});
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { query, limit: rawLimit = 10 } = body;
-    const limit = Math.min(Math.max(1, parseInt(rawLimit) || 10), 50);
-
-    if (!query || query.length < 2) {
+    const parsed = citiesSchema.safeParse(body);
+    if (!parsed.success) {
       return NextResponse.json(
-        { error: "Query must be at least 2 characters" },
+        { error: parsed.error.issues[0]?.message || "Invalid request" },
         { status: 400 }
       );
     }
+    const { query, limit } = parsed.data;
 
     const cities = await searchCities(query, limit);
     return NextResponse.json({ cities });

@@ -22,13 +22,14 @@ export const SHIPPING_THRESHOLD = 80; // EUR for free shipping
 export const DELIVERY_DAYS = "1-2";
 export const CARRIERS = ["Спиди", "Еконт"] as const;
 
-// Company Info
+// Company Info (Legal entity behind the LURA brand)
 export const COMPANY = {
-  name: '"Лура Лаб" ЕООД',
-  address: 'гр. София, бул. "Витоша" 10',
+  name: '"ЛЕВЕЛ 8" ЕООД',
+  nameEn: "LEVEL 8 Ltd.",
+  address: "гр. Варна, 9000, р-н Младост, ж.к. Възраждане, бл. 28, вх. 1, ет. 5, ап. 10",
   email: "contact@luralab.eu",
-  phone: "+359 88 XXX XXXX", // TODO: Replace with real phone number
-  eik: "207712345", // TODO: Replace with real ЕИК
+  phone: "+359 895 552 550",
+  eik: "208697165",
 } as const;
 
 // Social Links

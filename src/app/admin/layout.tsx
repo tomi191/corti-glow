@@ -18,6 +18,8 @@ import {
   Menu,
   X,
   ChevronRight,
+  CreditCard,
+  Mail,
 } from "lucide-react";
 
 const navItems = [
@@ -52,9 +54,19 @@ const navItems = [
     icon: Users,
   },
   {
+    href: "/admin/abonamenti",
+    label: "Абонаменти",
+    icon: CreditCard,
+  },
+  {
     href: "/admin/abonati",
     label: "Waitlist",
     icon: UserPlus,
+  },
+  {
+    href: "/admin/email",
+    label: "Имейли",
+    icon: Mail,
   },
   {
     href: "/admin/analytics",

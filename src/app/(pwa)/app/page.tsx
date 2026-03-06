@@ -457,7 +457,7 @@ export default function AppDashboard() {
             </div>
             <p className="text-sm text-stone-700 leading-relaxed">
               В лутеалната фаза кортизолът е естествено по-висок.{" "}
-              <span className="font-semibold text-brand-forest">KSM-66 Ашваганда</span> е клинично доказана, че го намалява с до 27%.
+              <span className="font-semibold text-brand-forest">Ашваганда (5% витанолиди)</span> е клинично доказана, че го намалява с до 27%.
             </p>
             <div className="flex items-center gap-1 text-xs font-semibold text-brand-forest">
               <span>Виж как работи</span>

@@ -22,6 +22,11 @@ interface PwaUser {
   concerns: string[];
   push_enabled: boolean;
   created_at: string;
+  updated_at: string | null;
+  timezone: string | null;
+  cycle_length: number | null;
+  period_duration: number | null;
+  last_period_date: string | null;
   total_checkins: number;
   last_checkin_date: string | null;
   avg_stress: string | null;
@@ -182,28 +187,31 @@ export default function PwaUsersPage() {
                           </div>
                           <div>
                             <p className="font-medium text-stone-800">
-                              {user.user_name || "Без име"}
+                              {user.user_name || user.email || `ID: ${user.clerk_user_id.slice(-8)}`}
                             </p>
                             <p className="text-xs text-stone-500">
-                              {user.email || "—"}
+                              {user.email || (user.user_name ? "—" : `Clerk: ...${user.clerk_user_id.slice(-12)}`)}
                             </p>
-                            {user.concerns && user.concerns.length > 0 && (
-                              <div className="flex flex-wrap gap-1 mt-1">
-                                {user.concerns.slice(0, 3).map((c) => (
-                                  <span
-                                    key={c}
-                                    className="px-1.5 py-0.5 bg-stone-100 rounded text-[10px] text-stone-500"
-                                  >
-                                    {c}
-                                  </span>
-                                ))}
-                                {user.concerns.length > 3 && (
-                                  <span className="text-[10px] text-stone-400">
-                                    +{user.concerns.length - 3}
-                                  </span>
-                                )}
-                              </div>
-                            )}
+                            <div className="flex flex-wrap gap-1 mt-1">
+                              {user.timezone && (
+                                <span className="px-1.5 py-0.5 bg-blue-50 rounded text-[10px] text-blue-600">
+                                  {user.timezone}
+                                </span>
+                              )}
+                              {user.cycle_length && (
+                                <span className="px-1.5 py-0.5 bg-purple-50 rounded text-[10px] text-purple-600">
+                                  Цикъл: {user.cycle_length}д
+                                </span>
+                              )}
+                              {user.concerns && user.concerns.length > 0 && user.concerns.map((c) => (
+                                <span
+                                  key={c}
+                                  className="px-1.5 py-0.5 bg-stone-100 rounded text-[10px] text-stone-500"
+                                >
+                                  {c}
+                                </span>
+                              ))}
+                            </div>
                           </div>
                         </div>
                       </td>
@@ -262,9 +270,11 @@ export default function PwaUsersPage() {
                       </div>
                       <div>
                         <p className="font-medium text-stone-800">
-                          {user.user_name || "Без име"}
+                          {user.user_name || user.email || `ID: ...${user.clerk_user_id.slice(-8)}`}
                         </p>
-                        <p className="text-xs text-stone-500">{user.email || "—"}</p>
+                        <p className="text-xs text-stone-500">
+                          {user.email || (user.timezone ? user.timezone : `Clerk: ...${user.clerk_user_id.slice(-12)}`)}
+                        </p>
                       </div>
                     </div>
                     <div className="text-right">

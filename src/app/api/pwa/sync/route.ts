@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { auth } from "@clerk/nextjs/server";
+import { auth, currentUser } from "@clerk/nextjs/server";
 import { z } from "zod";
 import { createServerClient } from "@/lib/supabase/server";
 import { computeAdaptiveCycleLength } from "@/lib/pwa-logic";
@@ -58,6 +58,25 @@ export async function POST(request: NextRequest) {
     const supabase = createServerClient();
     const now = new Date().toISOString();
 
+    // Fetch Clerk user info (email, name) as fallback for missing profile data
+    let clerkEmail: string | null = null;
+    let clerkName: string | null = null;
+    try {
+      const user = await currentUser();
+      if (user) {
+        clerkEmail = user.emailAddresses?.[0]?.emailAddress ?? null;
+        clerkName = user.firstName
+          ? `${user.firstName}${user.lastName ? ` ${user.lastName}` : ""}`
+          : null;
+      }
+    } catch {
+      // Non-fatal: Clerk user fetch may fail, continue with client data
+    }
+
+    // Use Clerk data as fallback when client doesn't provide name/email
+    const resolvedEmail = profile.email || clerkEmail;
+    const resolvedName = profile.userName || clerkName;
+
     // --- 1. Sync Profile ---
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const sb = supabase as any;
@@ -78,11 +97,11 @@ export async function POST(request: NextRequest) {
         last_period_date: profile.lastPeriodDate,
         cycle_length: profile.cycleLength,
         period_duration: profile.periodDuration,
-        user_name: profile.userName,
+        user_name: resolvedName,
         age_range: profile.ageRange,
         concerns: profile.concerns,
         contraception: profile.contraception,
-        email: profile.email ?? null,
+        email: resolvedEmail,
         timezone: profile.timezone ?? null,
         has_seen_tour: profile.hasSeenTour,
         push_enabled: profile.pushEnabled,
@@ -111,11 +130,11 @@ export async function POST(request: NextRequest) {
             last_period_date: profile.lastPeriodDate,
             cycle_length: profile.cycleLength,
             period_duration: profile.periodDuration,
-            user_name: profile.userName,
+            user_name: resolvedName,
             age_range: profile.ageRange,
             concerns: profile.concerns,
             contraception: profile.contraception,
-            email: profile.email ?? null,
+            email: resolvedEmail,
             timezone: profile.timezone ?? null,
             has_seen_tour: profile.hasSeenTour,
             push_enabled: profile.pushEnabled,

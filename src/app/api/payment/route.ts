@@ -232,7 +232,7 @@ export async function POST(request: NextRequest) {
         const label = await createShipment(shipmentParams);
         if (label) {
           trackingNumber = label.shipmentNumber;
-          await updateEcontTracking(order.id, label.shipmentNumber, label.shipmentNumber);
+          await updateEcontTracking(order.id, label.shipmentNumber, label.shipmentNumber, "shipped", label.pdfURL || undefined);
           order = { ...order, econt_tracking_number: trackingNumber } as typeof order;
         }
       } catch (err) {

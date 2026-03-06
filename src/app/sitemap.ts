@@ -11,6 +11,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { route: "/magazin", lastmod: "2026-02-15", freq: "weekly", priority: 0.9 },
     { route: "/blog", lastmod: "2026-01-25", freq: "weekly", priority: 0.8 },
     { route: "/nauka", lastmod: "2026-01-15", freq: "monthly", priority: 0.8 },
+    { route: "/glow-guide", lastmod: "2026-02-01", freq: "monthly", priority: 0.8 },
     { route: "/za-nas", lastmod: "2026-01-10", freq: "monthly", priority: 0.7 },
     { route: "/pomosht", lastmod: "2026-01-10", freq: "monthly", priority: 0.7 },
     { route: "/dostavka-i-vrashtane", lastmod: "2026-01-10", freq: "monthly", priority: 0.7 },

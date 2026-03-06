@@ -1,69 +1,76 @@
 import type { Order } from "@/lib/supabase/types";
-import { getEmailTemplate } from "./templates";
-
-// HTML escape to prevent XSS in email templates
-function escapeHtml(str: string): string {
-  return str
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
-}
-
-// Email configuration
-const RESEND_API_KEY = process.env.RESEND_API_KEY;
-const FROM_EMAIL = process.env.EMAIL_FROM || "LURA <noreply@luralab.eu>";
-const SUPPORT_EMAIL = process.env.EMAIL_SUPPORT || "support@luralab.eu";
+import { getResendClient, EMAIL_FROM, SUPPORT_EMAIL, APP_URL } from "@/lib/resend/client";
+import { OrderConfirmation } from "@/emails/order-confirmation";
+import { ShippingNotification } from "@/emails/shipping-notification";
+import { DeliveryConfirmation } from "@/emails/delivery-confirmation";
+import { WaitlistWelcome } from "@/emails/waitlist-welcome";
+import { ContactNotification } from "@/emails/contact-notification";
+import { createElement } from "react";
 
 // Check if email service is configured
 export function isEmailConfigured(): boolean {
-  return !!RESEND_API_KEY;
+  return !!process.env.RESEND_API_KEY;
 }
 
-// Generic send email function
+// Generic send email function (now uses Resend SDK)
 async function sendEmail({
   to,
   subject,
+  react,
   html,
   text,
+  idempotencyKey,
 }: {
   to: string;
   subject: string;
-  html: string;
+  react?: React.ReactElement;
+  html?: string;
   text?: string;
+  idempotencyKey?: string;
 }): Promise<{ success: boolean; error?: string }> {
-  if (!RESEND_API_KEY) {
-    console.log("[Email] Resend not configured. Would send:");
+  const resend = getResendClient();
+
+  if (!resend) {
+    if (process.env.NODE_ENV === "production") {
+      console.error("[Email] RESEND_API_KEY is missing in production! Email not sent to:", to);
+      return { success: false, error: "Email service not configured" };
+    }
+    console.log("[Email] Resend not configured (dev). Would send:");
     console.log(`  To: ${to}`);
     console.log(`  Subject: ${subject}`);
-    return { success: true }; // Pretend success for dev
+    return { success: true };
   }
 
   try {
-    const response = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${RESEND_API_KEY}`,
-      },
-      body: JSON.stringify({
-        from: FROM_EMAIL,
-        to,
-        subject,
-        html,
-        text,
-      }),
-    });
+    // Build the email payload
+    const emailPayload: Record<string, unknown> = {
+      from: EMAIL_FROM,
+      to,
+      subject,
+    };
 
-    if (!response.ok) {
-      const error = await response.text();
-      console.error("[Email] Failed to send:", error);
-      return { success: false, error };
+    // Prefer React component over raw HTML
+    if (react) {
+      emailPayload.react = react;
+    } else if (html) {
+      emailPayload.html = html;
+      if (text) emailPayload.text = text;
     }
 
-    const data = await response.json();
-    console.log("[Email] Sent successfully:", data.id);
+    const headers: Record<string, string> = {};
+    if (idempotencyKey) {
+      headers["Idempotency-Key"] = idempotencyKey;
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data, error } = await resend.emails.send(emailPayload as any, { headers });
+
+    if (error) {
+      console.error("[Email] Failed to send:", error);
+      return { success: false, error: error.message };
+    }
+
+    console.log("[Email] Sent successfully:", data?.id);
     return { success: true };
   } catch (error) {
     console.error("[Email] Error:", error);
@@ -78,17 +85,13 @@ async function sendEmail({
 export async function sendWaitlistWelcomeEmail(
   email: string
 ): Promise<{ success: boolean; error?: string }> {
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://luralab.eu";
-  const template = getEmailTemplate("waitlistWelcome", {
-    PDF_URL: `${appUrl}/pdf/3-sutreshni-navika.pdf`,
-    PWA_URL: `${appUrl}/app`,
-  });
-
   return sendEmail({
     to: email,
-    subject: template.subject,
-    html: template.html,
-    text: `Ти си в списъка! Радваме се, че си една от първите, които ще опитат Corti-Glow.\n\nИзтегли PDF гайда: ${appUrl}/pdf/3-sutreshni-navika.pdf\n\nКато VIP ще получиш 20% отстъпка при старта.\n\nОпитай LURA App: ${appUrl}/app\n\nС грижа, Екипът на LURA`,
+    subject: "✨ Добре дошла в LURA! Твоят PDF гайд е тук",
+    react: createElement(WaitlistWelcome, {
+      pdfUrl: `${APP_URL}/pdf/3-sutreshni-navika.pdf`,
+      pwaUrl: `${APP_URL}/app`,
+    }),
   });
 }
 
@@ -102,27 +105,10 @@ export async function sendContactEmail({
   email: string;
   message: string;
 }): Promise<{ success: boolean; error?: string }> {
-  const safeName = escapeHtml(name);
-  const safeEmail = escapeHtml(email);
-  const safeMessage = escapeHtml(message).replace(/\n/g, "<br>");
-
-  const html = `
-    <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
-      <h2 style="color: #2D4A3E;">Ново съобщение от контактната форма</h2>
-      <p><strong>Име:</strong> ${safeName}</p>
-      <p><strong>Имейл:</strong> ${safeEmail}</p>
-      <p><strong>Съобщение:</strong></p>
-      <div style="background: #F5F2EF; padding: 16px; border-radius: 8px;">
-        ${safeMessage}
-      </div>
-    </div>
-  `;
-
   return sendEmail({
     to: SUPPORT_EMAIL,
-    subject: `Контактна форма: ${safeName}`,
-    html,
-    text: `Ново съобщение от ${name} (${email}):\n\n${message}`,
+    subject: `Контактна форма: ${name}`,
+    react: createElement(ContactNotification, { name, email, message }),
   });
 }
 
@@ -136,124 +122,22 @@ export async function sendOrderConfirmationEmail(
     quantity: number;
   }>;
 
-  const itemsHtml = items
-    .map(
-      (item) => `
-      <tr>
-        <td style="padding: 12px; border-bottom: 1px solid #eee;">${escapeHtml(item.title)}</td>
-        <td style="padding: 12px; border-bottom: 1px solid #eee; text-align: center;">${item.quantity}</td>
-        <td style="padding: 12px; border-bottom: 1px solid #eee; text-align: right;">${(item.price * item.quantity).toFixed(2)} €</td>
-      </tr>
-    `
-    )
-    .join("");
-
-  const html = `
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <meta charset="utf-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    </head>
-    <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
-      <div style="text-align: center; margin-bottom: 30px;">
-        <h1 style="color: #2D4A3E; margin: 0;">LURA</h1>
-        <p style="color: #666; margin: 5px 0;">Благодарим за поръчката!</p>
-      </div>
-
-      <div style="background: #F5F2EF; border-radius: 12px; padding: 24px; margin-bottom: 24px;">
-        <h2 style="color: #2D4A3E; margin: 0 0 16px;">Поръчка ${order.order_number}</h2>
-        <p style="margin: 0; color: #666;">
-          ${new Date(order.created_at).toLocaleDateString("bg-BG", {
-            day: "numeric",
-            month: "long",
-            year: "numeric",
-          })}
-        </p>
-      </div>
-
-      <table style="width: 100%; border-collapse: collapse; margin-bottom: 24px;">
-        <thead>
-          <tr style="background: #2D4A3E; color: white;">
-            <th style="padding: 12px; text-align: left;">Продукт</th>
-            <th style="padding: 12px; text-align: center;">Кол.</th>
-            <th style="padding: 12px; text-align: right;">Цена</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${itemsHtml}
-        </tbody>
-      </table>
-
-      <div style="background: #fff; border: 1px solid #eee; border-radius: 8px; padding: 16px; margin-bottom: 24px;">
-        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-          <span>Междинна сума:</span>
-          <span>${order.subtotal.toFixed(2)} €</span>
-        </div>
-        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-          <span>Доставка:</span>
-          <span>${order.shipping_price === 0 ? "Безплатна" : `${order.shipping_price.toFixed(2)} €`}</span>
-        </div>
-        ${order.discount_amount > 0 ? `
-        <div style="display: flex; justify-content: space-between; margin-bottom: 8px; color: #22c55e;">
-          <span>Отстъпка:</span>
-          <span>-${order.discount_amount.toFixed(2)} €</span>
-        </div>
-        ` : ""}
-        <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 18px; padding-top: 12px; border-top: 2px solid #2D4A3E;">
-          <span>Общо:</span>
-          <span>${order.total.toFixed(2)} €</span>
-        </div>
-      </div>
-
-      ${order.econt_tracking_number ? `
-      <div style="background: #2D4A3E; color: white; border-radius: 12px; padding: 24px; text-align: center; margin-bottom: 24px;">
-        <p style="margin: 0 0 8px; font-size: 14px;">Товарителница:</p>
-        <p style="margin: 0 0 16px; font-size: 22px; font-weight: bold; font-family: monospace;">${order.econt_tracking_number}</p>
-        <a href="https://www.econt.com/services/track-shipment/${order.econt_tracking_number}"
-           style="display: inline-block; background: white; color: #2D4A3E; padding: 12px 24px; border-radius: 50px; text-decoration: none; font-weight: 600;">
-          Проследи в Еконт
-        </a>
-      </div>
-      ` : `
-      <div style="background: linear-gradient(135deg, #B2D8C6 0%, #2D4A3E 100%); color: white; border-radius: 12px; padding: 24px; text-align: center; margin-bottom: 24px;">
-        <p style="margin: 0 0 12px; font-size: 14px;">Проследи поръчката си:</p>
-        <a href="${process.env.NEXT_PUBLIC_APP_URL || "https://luralab.eu"}/prosledi-porachka"
-           style="display: inline-block; background: white; color: #2D4A3E; padding: 12px 24px; border-radius: 50px; text-decoration: none; font-weight: 600;">
-          Проследи Поръчката
-        </a>
-      </div>
-      `}
-
-      <div style="text-align: center; color: #999; font-size: 12px;">
-        <p>Въпроси? Пиши ни на ${SUPPORT_EMAIL}</p>
-        <p>© ${new Date().getFullYear()} LURA. Всички права запазени.</p>
-      </div>
-    </body>
-    </html>
-  `;
-
-  const text = `
-Благодарим за поръчката!
-
-Поръчка: ${order.order_number}
-Дата: ${new Date(order.created_at).toLocaleDateString("bg-BG")}
-
-Продукти:
-${items.map((item) => `- ${item.title} x${item.quantity}: ${(item.price * item.quantity).toFixed(2)} €`).join("\n")}
-
-Общо: ${order.total.toFixed(2)} €
-
-${order.econt_tracking_number ? `Товарителница: ${order.econt_tracking_number}\nПроследи в Еконт: https://www.econt.com/services/track-shipment/${order.econt_tracking_number}` : `Проследи поръчката: ${process.env.NEXT_PUBLIC_APP_URL || "https://luralab.eu"}/prosledi-porachka`}
-
-Въпроси? Пиши ни на ${SUPPORT_EMAIL}
-  `;
-
   return sendEmail({
     to: order.customer_email,
     subject: `Поръчка ${order.order_number} - Потвърждение`,
-    html,
-    text,
+    react: createElement(OrderConfirmation, {
+      orderNumber: order.order_number,
+      createdAt: order.created_at,
+      items,
+      subtotal: order.subtotal,
+      shippingPrice: order.shipping_price,
+      discountAmount: order.discount_amount,
+      total: order.total,
+      econtTrackingNumber: order.econt_tracking_number,
+      supportEmail: SUPPORT_EMAIL,
+    }),
+    // Prevent duplicate sends on webhook retries
+    idempotencyKey: `order-confirmation-${order.id}`,
   });
 }
 
@@ -261,51 +145,14 @@ ${order.econt_tracking_number ? `Товарителница: ${order.econt_track
 export async function sendShippingNotificationEmail(
   order: Order
 ): Promise<{ success: boolean; error?: string }> {
-  const trackingUrl = order.econt_tracking_number
-    ? `https://www.econt.com/services/track-shipment/${order.econt_tracking_number}`
-    : null;
-
-  const html = `
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <meta charset="utf-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    </head>
-    <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
-      <div style="text-align: center; margin-bottom: 30px;">
-        <h1 style="color: #2D4A3E; margin: 0;">LURA</h1>
-        <p style="color: #666; margin: 5px 0;">Поръчката ти е на път!</p>
-      </div>
-
-      <div style="background: #B2D8C6; border-radius: 12px; padding: 24px; margin-bottom: 24px; text-align: center;">
-        <div style="font-size: 48px; margin-bottom: 12px;">📦</div>
-        <h2 style="color: #2D4A3E; margin: 0 0 8px;">Изпратено!</h2>
-        <p style="margin: 0; color: #2D4A3E;">Поръчка ${order.order_number}</p>
-      </div>
-
-      ${trackingUrl ? `
-      <div style="text-align: center; margin-bottom: 24px;">
-        <a href="${trackingUrl}"
-           style="display: inline-block; background: #2D4A3E; color: white; padding: 14px 28px; border-radius: 50px; text-decoration: none; font-weight: 600;">
-          Проследи в Еконт
-        </a>
-        ${order.econt_tracking_number ? `<p style="margin: 12px 0 0; color: #666; font-size: 14px;">Номер: ${order.econt_tracking_number}</p>` : ""}
-      </div>
-      ` : ""}
-
-      <div style="text-align: center; color: #999; font-size: 12px;">
-        <p>Въпроси? Пиши ни на ${SUPPORT_EMAIL}</p>
-        <p>© ${new Date().getFullYear()} LURA. Всички права запазени.</p>
-      </div>
-    </body>
-    </html>
-  `;
-
   return sendEmail({
     to: order.customer_email,
     subject: `Поръчка ${order.order_number} - Изпратена!`,
-    html,
+    react: createElement(ShippingNotification, {
+      orderNumber: order.order_number,
+      econtTrackingNumber: order.econt_tracking_number,
+      supportEmail: SUPPORT_EMAIL,
+    }),
   });
 }
 
@@ -313,44 +160,12 @@ export async function sendShippingNotificationEmail(
 export async function sendDeliveryConfirmationEmail(
   order: Order
 ): Promise<{ success: boolean; error?: string }> {
-  const html = `
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <meta charset="utf-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    </head>
-    <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
-      <div style="text-align: center; margin-bottom: 30px;">
-        <h1 style="color: #2D4A3E; margin: 0;">LURA</h1>
-      </div>
-
-      <div style="background: linear-gradient(135deg, #B2D8C6 0%, #FFC1CC 100%); border-radius: 12px; padding: 24px; margin-bottom: 24px; text-align: center;">
-        <div style="font-size: 48px; margin-bottom: 12px;">✨</div>
-        <h2 style="color: #2D4A3E; margin: 0 0 8px;">Доставено!</h2>
-        <p style="margin: 0; color: #2D4A3E;">Надяваме се да ти хареса!</p>
-      </div>
-
-      <div style="background: #F5F2EF; border-radius: 12px; padding: 24px; margin-bottom: 24px;">
-        <h3 style="color: #2D4A3E; margin: 0 0 12px;">Как да използваш Corti-Glow:</h3>
-        <ol style="margin: 0; padding-left: 20px; color: #666;">
-          <li style="margin-bottom: 8px;">Изсипи едно саше в 250мл студена вода</li>
-          <li style="margin-bottom: 8px;">Разбъркай добре и добави лед</li>
-          <li>Отпивай бавно и се наслади на момента</li>
-        </ol>
-      </div>
-
-      <div style="text-align: center; color: #999; font-size: 12px;">
-        <p>Въпроси? Пиши ни на ${SUPPORT_EMAIL}</p>
-        <p>© ${new Date().getFullYear()} LURA. Всички права запазени.</p>
-      </div>
-    </body>
-    </html>
-  `;
-
   return sendEmail({
     to: order.customer_email,
     subject: `Поръчка ${order.order_number} - Доставена!`,
-    html,
+    react: createElement(DeliveryConfirmation, {
+      orderNumber: order.order_number,
+      supportEmail: SUPPORT_EMAIL,
+    }),
   });
 }

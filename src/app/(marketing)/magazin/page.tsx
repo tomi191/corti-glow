@@ -10,7 +10,7 @@ import { BreadcrumbJsonLd } from "@/components/ui/BreadcrumbJsonLd";
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "Магазин - Премиум Добавки | LURA",
+  title: "Магазин - Премиум Добавки",
   description:
     "Разгледай колекцията от научно доказани добавки на LURA. Формули за хормонален баланс, анти-стрес и цялостно благосъстояние.",
   openGraph: {

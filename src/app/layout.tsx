@@ -10,14 +10,14 @@ import "./globals.css";
 
 const plusJakarta = Plus_Jakarta_Sans({
   variable: "--font-plus-jakarta",
-  subsets: ["latin"],
+  subsets: ["latin", "latin-ext"],
   weight: ["300", "400", "600", "700"],
   display: "swap",
 });
 
 const outfit = Outfit({
   variable: "--font-outfit",
-  subsets: ["latin"],
+  subsets: ["latin", "latin-ext"],
   weight: ["300", "400", "500", "600", "700", "800"],
   display: "swap",
 });
@@ -37,7 +37,7 @@ export const metadata: Metadata = {
     template: "%s | LURA",
   },
   description:
-    "Corti-Glow е вечерният моктейл с KSM-66® Ashwagandha, магнезий и инозитол, който понижава кортизола и връща сиянието на кожата. 7 активни съставки, без захар.",
+    "Corti-Glow е вечерният моктейл с 7 активни съставки — ашваганда, магнезий бисглицинат, мио-инозитол и инулин — за по-нисък кортизол и хормонален баланс. Без захар.",
   keywords: [
     "кортизол",
     "стрес",
@@ -87,7 +87,7 @@ const organizationJsonLd = {
   "@context": "https://schema.org",
   "@type": "Organization",
   name: "LURA",
-  legalName: '"Лура Лаб" ЕООД',
+  legalName: '"ЛЕВЕЛ 8" ЕООД',
   url: "https://luralab.eu",
   logo: "https://luralab.eu/icon-512.png",
   email: "contact@luralab.eu",
@@ -99,8 +99,9 @@ const organizationJsonLd = {
   },
   address: {
     "@type": "PostalAddress",
-    streetAddress: 'бул. "Витоша" 10',
-    addressLocality: "София",
+    streetAddress: "ж.к. Възраждане, бл. 28, вх. 1, ет. 5, ап. 10",
+    addressLocality: "Варна",
+    postalCode: "9000",
     addressCountry: "BG",
   },
   sameAs: [
@@ -168,7 +169,7 @@ export default function RootLayout({
             dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
           />
         </head>
-        <body className={`${plusJakarta.variable} ${outfit.variable} ${cormorant.variable} antialiased font-sans bg-white overflow-x-hidden`}>
+        <body className={`${plusJakarta.variable} ${outfit.variable} ${cormorant.variable} antialiased font-sans bg-[#F7F4F0] overflow-x-hidden`}>
           <GoogleAnalytics />
           <WaitlistProvider>
             <SmoothScrollProvider>{children}</SmoothScrollProvider>

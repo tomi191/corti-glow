@@ -1,0 +1,9 @@
+# LURA Security Policy
+# https://securitytxt.org/
+
+Contact: mailto:security@luralab.eu
+Contact: mailto:contact@luralab.eu
+Expires: 2027-03-01T00:00:00.000Z
+Preferred-Languages: bg, en
+Canonical: https://luralab.eu/.well-known/security.txt
+Policy: https://luralab.eu/poveritelnost

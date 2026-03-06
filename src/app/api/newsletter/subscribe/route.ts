@@ -3,6 +3,7 @@ import { createServerClient } from "@/lib/supabase/server";
 import { z } from "zod";
 import { createRateLimiter, getClientIp } from "@/lib/rate-limit";
 import { sendWaitlistWelcomeEmail } from "@/lib/email";
+import { addContact } from "@/lib/resend/audiences";
 
 // 5 attempts per 5 minutes
 const limiter = createRateLimiter(5, 5 * 60 * 1000);
@@ -68,6 +69,11 @@ export async function POST(request: NextRequest) {
         { status: 500 }
       );
     }
+
+    // Add to Resend audience (fire-and-forget)
+    addContact({ email: normalizedEmail, source: source || "website" }).catch(
+      (err) => console.error("Resend contact error:", err)
+    );
 
     // Send welcome email for new PWA subscribers (fire-and-forget)
     if (isNewSubscriber && source?.includes("pwa")) {

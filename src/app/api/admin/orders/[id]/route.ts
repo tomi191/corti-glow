@@ -1,7 +1,7 @@
 // Admin Order Detail API
 
 import { NextRequest, NextResponse } from "next/server";
-import { getOrder, updateOrder } from "@/lib/actions/orders";
+import { getOrder, updateOrder, cancelOrder } from "@/lib/actions/orders";
 
 export async function GET(
   request: NextRequest,
@@ -35,6 +35,24 @@ export async function PATCH(
   try {
     const { id } = await params;
     const body = await request.json();
+
+    // Handle cancellation via dedicated flow
+    if (body.action === "cancel") {
+      const result = await cancelOrder(id, body.reason);
+      if (!result.success) {
+        return NextResponse.json(
+          { error: result.error },
+          { status: 400 }
+        );
+      }
+      return NextResponse.json({
+        success: true,
+        refundId: result.refundId,
+        message: result.refundId
+          ? "Поръчката е отменена и рефундът е иницииран"
+          : "Поръчката е отменена",
+      });
+    }
 
     const result = await updateOrder(id, body);
 

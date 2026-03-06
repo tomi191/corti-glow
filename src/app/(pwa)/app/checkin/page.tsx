@@ -292,7 +292,7 @@ export default function CheckInPage() {
               <Pill className="w-4 h-4 text-brand-forest flex-shrink-0" />
               <p className="text-xs text-stone-600 leading-relaxed">
                 <span className="font-semibold text-brand-forest">Знаеше ли?</span>{" "}
-                KSM-66 Ашваганда намалява кортизола с до 27%
+                Ашваганда (5% витанолиди) намалява кортизола с до 27%
               </p>
             </Link>
           </motion.div>

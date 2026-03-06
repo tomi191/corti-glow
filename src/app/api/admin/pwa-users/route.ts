@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
     // Query profiles with pagination
     let query = sb
       .from("pwa_profiles")
-      .select("clerk_user_id, user_name, email, age_range, concerns, push_enabled, created_at", {
+      .select("clerk_user_id, user_name, email, age_range, concerns, push_enabled, created_at, timezone, cycle_length, period_duration, last_period_date, updated_at", {
         count: "exact",
       })
       .order("created_at", { ascending: false })
@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
     if (search) {
       const sanitized = search.replace(/[%_,()]/g, "").trim().slice(0, 100);
       if (sanitized) {
-        query = query.or(`user_name.ilike.%${sanitized}%,email.ilike.%${sanitized}%`);
+        query = query.or(`user_name.ilike.%${sanitized}%,email.ilike.%${sanitized}%,clerk_user_id.ilike.%${sanitized}%`);
       }
     }
 
@@ -70,6 +70,11 @@ export async function GET(request: NextRequest) {
           concerns: p.concerns,
           push_enabled: p.push_enabled,
           created_at: p.created_at,
+          updated_at: p.updated_at,
+          timezone: p.timezone,
+          cycle_length: p.cycle_length,
+          period_duration: p.period_duration,
+          last_period_date: p.last_period_date,
           total_checkins: checkinCount || 0,
           last_checkin_date: lastDate,
           avg_stress: avgStress,

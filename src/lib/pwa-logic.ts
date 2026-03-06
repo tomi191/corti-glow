@@ -256,7 +256,7 @@ const DAILY_ACTIONS: Record<CyclePhase, { low: DailyAction[]; high: DailyAction[
     low: [
       { type: "food", title: "Сложни въглехидрати", description: "Овесени ядки, сладки картофи — стабилна енергия, без скокове на кръвна захар." },
       { type: "exercise", title: "Разходка или пилатес", description: "Забави темпото. Тялото обикновено иска по-спокойно движение тези дни." },
-      { type: "supplement", title: "Ашваганда + Магнезий", description: "Съставките в Corti-Glow (KSM-66, Магнезий) са клинично доказани за тази фаза." },
+      { type: "supplement", title: "Ашваганда + Магнезий", description: "Съставките в Corti-Glow (Ашваганда, Магнезий) са клинично доказани за тази фаза." },
     ],
     high: [
       { type: "food", title: "Шоколад и банани", description: "Тъмен шоколад (70%+) и банани — магнезий и триптофан, не са лакомия, а нужда." },
@@ -281,7 +281,7 @@ export interface PhaseRecommendation {
 const PHASE_RECOMMENDATIONS: Record<CyclePhase, PhaseRecommendation> = {
   menstrual: {
     benefit: "Магнезият и L-Теанинът са сред най-изследваните съставки за крампи и сън",
-    ingredients: ["Магнезиев Бисглицинат (300mg)", "L-Теанин (200mg)"],
+    ingredients: ["Магнезиев Бисглицинат (670mg)", "L-Теанин (200mg)"],
   },
   follicular: {
     benefit: "L-Теанинът подкрепя фокуса, а Мио-инозитолът — хормоналния баланс",
@@ -292,8 +292,8 @@ const PHASE_RECOMMENDATIONS: Record<CyclePhase, PhaseRecommendation> = {
     ingredients: ["Мио-инозитол (2000mg)", "Бромелаин (100mg)"],
   },
   luteal: {
-    benefit: "KSM-66 Ашваганда е клинично доказана за намаляване на кортизола при стрес",
-    ingredients: ["Ашваганда KSM-66 (300mg)", "Магнезиев Бисглицинат (300mg)"],
+    benefit: "Ашваганда (5% витанолиди) е клинично доказана за намаляване на кортизола при стрес",
+    ingredients: ["Ашваганда (5% витанолиди) (300mg)", "Магнезиев Бисглицинат (670mg)"],
   },
 };
 
@@ -312,11 +312,11 @@ export interface ConcernRecommendation {
 
 const CONCERN_INGREDIENT_MAP: Record<ConcernOption, ConcernRecommendation[]> = {
   stress: [
-    { concern: "Стрес", ingredient: "Ашваганда KSM-66", dosage: "300mg", claim: "Клинично доказано намаляване на кортизола с до 27%" },
+    { concern: "Стрес", ingredient: "Ашваганда (5% витанолиди)", dosage: "300mg", claim: "Клинично доказано намаляване на кортизола с до 27%" },
     { concern: "Стрес", ingredient: "L-Теанин", dosage: "200mg", claim: "Стимулира алфа вълните за спокоен фокус без сънливост" },
   ],
   sleep: [
-    { concern: "Лош сън", ingredient: "Магнезиев Бисглицинат", dosage: "300mg", claim: "Най-усвоимата форма на магнезий — подобрява качеството на съня" },
+    { concern: "Лош сън", ingredient: "Магнезиев Бисглицинат", dosage: "670mg", claim: "Най-усвоимата форма на магнезий — подобрява качеството на съня" },
     { concern: "Лош сън", ingredient: "L-Теанин", dosage: "200mg", claim: "Помага за по-бързо заспиване без сънливост на сутринта" },
   ],
   skin: [
@@ -324,24 +324,24 @@ const CONCERN_INGREDIENT_MAP: Record<ConcernOption, ConcernRecommendation[]> = {
     { concern: "Кожа и акне", ingredient: "Бромелаин", dosage: "100mg", claim: "Намалява възпалението, което влияе на кожата" },
   ],
   pms: [
-    { concern: "ПМС", ingredient: "Ашваганда KSM-66", dosage: "300mg", claim: "Намалява кортизола, който усилва ПМС симптомите" },
-    { concern: "ПМС", ingredient: "Магнезиев Бисглицинат", dosage: "300mg", claim: "Доказано облекчава крампи, раздразнителност и задържане на вода" },
+    { concern: "ПМС", ingredient: "Ашваганда (5% витанолиди)", dosage: "300mg", claim: "Намалява кортизола, който усилва ПМС симптомите" },
+    { concern: "ПМС", ingredient: "Магнезиев Бисглицинат", dosage: "670mg", claim: "Доказано облекчава крампи, раздразнителност и задържане на вода" },
   ],
   bloating: [
     { concern: "Подуване", ingredient: "Бромелаин", dosage: "100mg", claim: "Ензим от ананас — премахва задържаната вода" },
-    { concern: "Подуване", ingredient: "Магнезиев Бисглицинат", dosage: "300mg", claim: "Помага за нормалния електролитен баланс" },
+    { concern: "Подуване", ingredient: "Магнезиев Бисглицинат", dosage: "670mg", claim: "Помага за нормалния електролитен баланс" },
   ],
   fatigue: [
-    { concern: "Умора", ingredient: "Ашваганда KSM-66", dosage: "300mg", claim: "Адаптоген — помага на тялото да се справя с натоварване" },
-    { concern: "Умора", ingredient: "Магнезиев Бисглицинат", dosage: "300mg", claim: "Участва в 300+ ензимни реакции за енергиен метаболизъм" },
+    { concern: "Умора", ingredient: "Ашваганда (5% витанолиди)", dosage: "300mg", claim: "Адаптоген — помага на тялото да се справя с натоварване" },
+    { concern: "Умора", ingredient: "Магнезиев Бисглицинат", dosage: "670mg", claim: "Участва в 300+ ензимни реакции за енергиен метаболизъм" },
   ],
   anxiety: [
     { concern: "Тревожност", ingredient: "L-Теанин", dosage: "200mg", claim: "Насърчава алфа мозъчни вълни — спокойствие без сънливост" },
-    { concern: "Тревожност", ingredient: "Ашваганда KSM-66", dosage: "300mg", claim: "Клинично доказано намаляване на тревожността с до 56%" },
+    { concern: "Тревожност", ingredient: "Ашваганда (5% витанолиди)", dosage: "300mg", claim: "Клинично доказано намаляване на тревожността с до 56%" },
   ],
   irregular: [
     { concern: "Нередовен цикъл", ingredient: "Мио-инозитол", dosage: "2000mg", claim: "Подкрепя инсулиновата чувствителност и хормоналния баланс" },
-    { concern: "Нередовен цикъл", ingredient: "Ашваганда KSM-66", dosage: "300mg", claim: "Балансира кортизола, който влияе на хормоналната ос" },
+    { concern: "Нередовен цикъл", ingredient: "Ашваганда (5% витанолиди)", dosage: "300mg", claim: "Балансира кортизола, който влияе на хормоналната ос" },
   ],
 };
 
@@ -585,6 +585,27 @@ export function computeAdaptiveCycleLength(
   if (intervals.length === 0) return null;
   const avg = intervals.reduce((a, b) => a + b, 0) / intervals.length;
   return Math.round(clamp(avg, 18, 45));
+}
+
+// ─── Validation Helpers ───
+
+/** Minimum gap (in days) required between period end and ovulation */
+export const MIN_PHASE_GAP = 5;
+
+/**
+ * Returns the maximum allowed periodDuration for a given cycleLength.
+ * Ensures at least MIN_PHASE_GAP days between period end and ovulation.
+ */
+export function getMaxPeriodDuration(cycleLength: number): number {
+  return Math.max(1, cycleLength - MIN_PHASE_GAP);
+}
+
+/**
+ * Clamps periodDuration to a safe range for the given cycleLength.
+ */
+export function clampPeriodDuration(periodDuration: number, cycleLength: number): number {
+  const max = getMaxPeriodDuration(cycleLength);
+  return Math.max(1, Math.min(periodDuration, max));
 }
 
 // ─── Greeting ───
