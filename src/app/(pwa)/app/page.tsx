@@ -56,6 +56,7 @@ export default function AppDashboard() {
   const [mounted, setMounted] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [showTour, setShowTour] = useState(false);
+  const [initialSyncDone, setInitialSyncDone] = useState(false);
 
   const getTodayCheckIn = usePwaStore((s) => s.getTodayCheckIn);
   const getCurrentCycleDay = usePwaStore((s) => s.getCurrentCycleDay);
@@ -68,19 +69,42 @@ export default function AppDashboard() {
   const checkIns = usePwaStore((s) => s.checkIns);
   const hasSeenTour = usePwaStore((s) => s.hasSeenTour);
   const getStreak = usePwaStore((s) => s.getStreak);
+  const syncWithServer = usePwaStore((s) => s.syncWithServer);
 
   useEffect(() => setMounted(true), []);
 
-  // Show onboarding for first-time users (or invalid data), tour after onboarding
+  // Try server sync first — existing users on new device should get their data back
   useEffect(() => {
-    if (mounted && (!lastPeriodDate || !isValidDateString(lastPeriodDate))) {
+    if (!mounted || initialSyncDone) return;
+
+    // If localStorage already has valid data, no need to wait for sync
+    if (lastPeriodDate && isValidDateString(lastPeriodDate)) {
+      setInitialSyncDone(true);
+      return;
+    }
+
+    // No local data — try fetching from server before showing onboarding
+    let cancelled = false;
+    syncWithServer()
+      .catch(() => {}) // sync failure is non-fatal
+      .finally(() => {
+        if (!cancelled) setInitialSyncDone(true);
+      });
+    return () => { cancelled = true; };
+  }, [mounted, initialSyncDone, lastPeriodDate, syncWithServer]);
+
+  // Show onboarding only AFTER initial sync attempt completes
+  useEffect(() => {
+    if (!mounted || !initialSyncDone) return;
+    const currentLastPeriod = usePwaStore.getState().lastPeriodDate;
+    if (!currentLastPeriod || !isValidDateString(currentLastPeriod)) {
       setShowOnboarding(true);
-    } else if (mounted && !hasSeenTour) {
+    } else if (!usePwaStore.getState().hasSeenTour) {
       setShowTour(true);
     }
-  }, [mounted, lastPeriodDate, hasSeenTour]);
+  }, [mounted, initialSyncDone]);
 
-  if (!mounted) {
+  if (!mounted || !initialSyncDone) {
     return (
       <div className="max-w-lg mx-auto space-y-6 py-6">
         <div className="h-8 w-48 bg-white/40 rounded-xl animate-pulse" />
