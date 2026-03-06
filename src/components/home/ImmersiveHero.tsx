@@ -55,27 +55,27 @@ export function ImmersiveHero() {
       {/* Foreground Content */}
       <motion.div
         style={{ y: textY, opacity: opacityText }}
-        className="relative z-10 w-full max-w-[1400px] mx-auto px-6 md:px-12 pt-28 pb-16 flex flex-col lg:flex-row items-center justify-between gap-16"
+        className="relative z-10 w-full max-w-[1400px] mx-auto px-6 md:px-12 flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-16 mt-28 lg:mt-16 pt-0 pb-20"
       >
         {/* Left: Text Content */}
-        <div className="w-full lg:w-[55%] max-w-2xl">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-[#B2D8C6]/30 mb-8 backdrop-blur-md bg-white/5">
-            <Sparkles className="w-4 h-4 text-[#B2D8C6]" />
-            <span className="text-[10px] uppercase tracking-[0.2em] font-bold text-[#B2D8C6]">
+        <div className="w-full lg:w-[55%] max-w-2xl flex flex-col justify-start">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 md:px-4 md:py-2 rounded-full border border-[#B2D8C6]/30 mb-6 lg:mb-8 backdrop-blur-md bg-white/5 w-max">
+            <Sparkles className="w-3 h-3 md:w-4 md:h-4 text-[#B2D8C6]" />
+            <span className="text-[9px] md:text-[10px] uppercase tracking-[0.2em] font-bold text-[#B2D8C6]">
               Кортизолов Детокс
             </span>
           </div>
 
-          <h1 className="font-serif tracking-[-0.02em] mb-6 leading-[0.95]">
-            <span className="block text-[clamp(4.5rem,8vw,8rem)] font-light italic text-[#F7F4F0] drop-shadow-lg pr-4">
+          <h1 className="font-serif tracking-[-0.02em] mb-4 lg:mb-6 leading-[0.95]">
+            <span className="block text-[clamp(3.5rem,12vw,8rem)] font-light italic text-[#F7F4F0] drop-shadow-lg pr-4 line-clamp-1 pb-2">
               Познаваш го.
             </span>
-            <span className="block text-[clamp(1.75rem,3vw,2.5rem)] font-light text-[#F7F4F0] mt-4 not-italic max-w-xl">
-              Вечер мислите ти препускат.<br />Сутрин се събуждаш по-уморена.
+            <span className="block text-[clamp(1.25rem,5vw,2.5rem)] leading-tight font-light text-[#F7F4F0] mt-1 lg:mt-4 not-italic max-w-xl">
+              Вечер мислите ти препускат.<br className="hidden md:block" /> Сутрин се събуждаш по-уморена.
             </span>
           </h1>
 
-          <p className="text-lg md:text-xl text-[#F7F4F0]/70 font-light leading-relaxed max-w-md mb-10">
+          <p className="text-base md:text-xl text-[#F7F4F0]/70 font-light leading-relaxed max-w-md mb-6 lg:mb-10">
             7 активни съставки с клинични дозировки. 1 саше преди сън. За по-нисък кортизол и хормонален баланс.
           </p>
 
@@ -90,62 +90,58 @@ export function ImmersiveHero() {
             ))}
           </div>
 
-          <div className="flex flex-wrap items-center gap-6">
+          <div className="flex flex-wrap items-center gap-4 lg:gap-6 mt-2">
             <button
               onClick={() => IS_PRELAUNCH ? openWaitlist() : scrollToSection("checkout-section")}
-              className="group inline-flex items-center justify-between gap-4 pl-8 pr-2 py-2 bg-[#F7F4F0] text-[#1a2e25] rounded-full text-xs uppercase tracking-[0.2em] font-bold hover:bg-[#B2D8C6] transition-colors duration-500 shadow-xl"
+              className="group inline-flex items-center justify-between gap-4 pl-6 lg:pl-8 pr-2 py-2 bg-[#F7F4F0] text-[#1a2e25] rounded-full text-[10px] lg:text-xs uppercase tracking-[0.2em] font-bold hover:bg-[#B2D8C6] transition-colors duration-500 shadow-xl"
             >
               <span>{IS_PRELAUNCH ? "Запиши се първа" : "Купи Сега"}</span>
-              <div className="w-10 h-10 rounded-full bg-[#1a2e25]/10 flex items-center justify-center group-hover:bg-white/40 transition-colors">
-                <ChevronRight className="w-5 h-5" />
+              <div className="w-8 h-8 lg:w-10 lg:h-10 rounded-full bg-[#1a2e25]/10 flex items-center justify-center group-hover:bg-white/40 transition-colors">
+                <ChevronRight className="w-4 h-4" />
               </div>
             </button>
 
             <button
               onClick={() => scrollToSection("science-section")}
-              className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.2em] font-bold text-[#F7F4F0]/60 hover:text-[#F7F4F0] transition-colors duration-300"
+              className="inline-flex items-center gap-2 text-[10px] lg:text-xs uppercase tracking-[0.2em] font-bold text-[#F7F4F0]/60 hover:text-[#F7F4F0] transition-colors duration-300"
             >
               Формулата
-              <ArrowDown className="w-4 h-4" />
+              <ArrowDown className="w-3 h-3 lg:w-4 lg:h-4" />
             </button>
           </div>
         </div>
 
         {/* Right: Modern 3D/Abstract Animation */}
-        <div className="w-full lg:w-[45%] flex justify-center lg:justify-end relative mt-12 lg:mt-0">
+        <div className="w-full lg:w-[45%] flex justify-center lg:justify-end relative mt-2 lg:mt-0">
 
           {/* Abstract glowing aura */}
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] aspect-square bg-gradient-to-br from-[#B2D8C6]/20 to-transparent rounded-full blur-[80px] opacity-60 mix-blend-screen" />
 
           {/* Central floating mechanism */}
           <motion.div
-            animate={{ y: ["-3%", "3%"] }}
+            animate={{ y: ["-2%", "2%"] }}
             transition={{ duration: 6, ease: "easeInOut", repeat: Infinity, repeatType: "reverse" }}
-            className="relative w-full max-w-[420px] aspect-[4/5] z-10 rounded-[3rem] overflow-hidden border border-white/10 shadow-[0_40px_80px_rgba(0,0,0,0.4)] backdrop-blur-md bg-black/10 flex items-center justify-center group"
+            className="relative w-full max-w-[420px] aspect-[4/3] md:aspect-[4/5] z-10 rounded-[2.5rem] lg:rounded-[3rem] overflow-hidden border border-white/10 shadow-[0_20px_40px_rgba(0,0,0,0.3)] backdrop-blur-md bg-[#1a2e25] flex items-center justify-center group"
           >
-            {/* Spinning subtle gradient behind */}
-            <motion.div
-              animate={{ rotate: 360 }}
-              transition={{ duration: 20, ease: "linear", repeat: Infinity }}
-              className="absolute inset-0 opacity-40 scale-[1.5]"
-              style={{
-                background: "conic-gradient(from 0deg, transparent, rgba(178,216,198,0.2), transparent, rgba(178,216,198,0.05), transparent)"
-              }}
+            {/* MAIN REAL PRODUCT RENDER AS BACKGROUND */}
+            <motion.img
+              animate={{ scale: [1, 1.05] }}
+              transition={{ duration: 10, ease: "easeInOut", repeat: Infinity, repeatType: "reverse" }}
+              src="/images/product-hero-render.png"
+              alt="Corti-Glow Anti-Gravity Render"
+              className="absolute inset-0 w-full h-full object-cover z-0 opacity-90 object-center md:object-center"
             />
 
-            <img
-              src="/images/home/sachet_pouring.png"
-              alt="Corti-glow formula mockup"
-              className="w-full h-full object-cover mix-blend-screen opacity-80 scale-105 group-hover:scale-110 transition-transform duration-[2s]"
-            />
+            {/* Inner subtle gradient overlay to ensure text readability */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20 z-10 pointer-events-none" />
 
             {/* Foreground interactive-like dots / UI elements overlay to look modern */}
-            <div className="absolute top-8 right-8 bg-white/10 backdrop-blur-xl rounded-2xl p-4 border border-white/20 shadow-2xl flex items-center gap-3">
-              <div className="w-2 h-2 rounded-full bg-[#B2D8C6] animate-pulse" />
-              <span className="text-[9px] uppercase tracking-widest text-[#F7F4F0] font-bold">Активна Фаза</span>
+            <div className="absolute top-4 right-4 md:top-8 md:right-8 bg-white/10 backdrop-blur-xl rounded-xl md:rounded-2xl p-3 border border-white/20 shadow-2xl flex items-center gap-2 z-20">
+              <div className="w-1.5 h-1.5 rounded-full bg-[#B2D8C6] animate-pulse" />
+              <span className="text-[8px] uppercase tracking-widest text-[#F7F4F0] font-bold">Активна Фаза</span>
             </div>
 
-            <div className="absolute bottom-8 left-8 bg-[#15241d]/80 backdrop-blur-xl rounded-2xl p-5 border border-white/10 shadow-2xl w-[60%] border-l-2 border-l-[#B2D8C6]">
+            <div className="absolute bottom-4 left-4 md:bottom-8 md:left-8 bg-[#15241d]/90 backdrop-blur-xl rounded-xl md:rounded-2xl p-4 border border-white/10 shadow-2xl w-[70%] md:w-[60%] border-l-2 border-l-[#B2D8C6] z-20">
               <div className="text-[10px] uppercase font-bold tracking-widest text-[#B2D8C6] mb-2">Клетъчна абсорбция</div>
               <div className="h-1.5 w-full bg-white/10 rounded-full overflow-hidden">
                 <motion.div

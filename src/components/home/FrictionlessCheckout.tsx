@@ -10,6 +10,13 @@ import { IS_PRELAUNCH } from "@/lib/constants";
 import { useWaitlist } from "@/components/providers/WaitlistProvider";
 import { productVariants } from "@/data/products";
 import type { ProductVariant } from "@/types";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 
 const BUNDLE_META: Record<string, { subtitle: string; description: string }> = {
   "starter-box": {
@@ -61,9 +68,9 @@ function BundleCard({ variant }: { variant: ProductVariant }) {
 
   return (
     <div
-      className={`relative w-full rounded-[2rem] p-8 md:p-10 flex flex-col justify-between transition-all duration-700 bg-white group ${isPopular
-          ? "border-2 border-[#2D4A3E] shadow-2xl shadow-[#2D4A3E]/10 z-10 md:-mt-8 md:mb-8"
-          : "border border-[#2D4A3E]/10 hover:border-[#2D4A3E]/30"
+      className={`relative w-[85vw] max-w-[360px] shrink-0 snap-center md:max-w-none md:w-auto rounded-[2rem] p-8 md:p-10 flex flex-col justify-between transition-all duration-700 bg-white group ${isPopular
+        ? "border-2 border-[#2D4A3E] shadow-2xl shadow-[#2D4A3E]/10 z-10 md:-mt-8 md:mb-8"
+        : "border border-[#2D4A3E]/10 hover:border-[#2D4A3E]/30"
         }`}
     >
       {/* Label Best Seller */}
@@ -110,10 +117,10 @@ function BundleCard({ variant }: { variant: ProductVariant }) {
         <button
           onClick={handleAdd}
           className={`w-full py-5 rounded-full flex items-center justify-between px-8 transition-all duration-500 font-bold text-xs uppercase tracking-[0.2em] group-hover:shadow-lg ${added
-              ? "bg-[#2D4A3E] text-[#F7F4F0]"
-              : isPopular
-                ? "bg-[#2D4A3E] text-[#F7F4F0] hover:bg-black"
-                : "bg-[#EAE7E1] text-[#2D4A3E] hover:bg-[#2D4A3E] hover:text-[#F7F4F0]"
+            ? "bg-[#2D4A3E] text-[#F7F4F0]"
+            : isPopular
+              ? "bg-[#2D4A3E] text-[#F7F4F0] hover:bg-black"
+              : "bg-[#EAE7E1] text-[#2D4A3E] hover:bg-[#2D4A3E] hover:text-[#F7F4F0]"
             }`}
         >
           <span>{IS_PRELAUNCH ? "Запиши се първа" : added ? "Добавено" : "Добави"}</span>
@@ -140,7 +147,7 @@ export function FrictionlessCheckout({
       <div className="max-w-[1400px] mx-auto px-6 md:px-12">
 
         {/* Header */}
-        <div className="flex flex-col md:flex-row justify-between items-end gap-12 mb-20 md:mb-32">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-8 md:gap-12 mb-16 md:mb-32">
           <div className="max-w-2xl">
             <span className="text-xs font-semibold tracking-[0.2em] uppercase text-[#2D4A3E]/40 mb-6 block border-l-2 border-[#2D4A3E]/20 pl-4">
               Инвестирай в себе си
@@ -160,10 +167,26 @@ export function FrictionlessCheckout({
         </div>
 
         {/* Pricing Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 items-center">
-          {displayVariants.map((variant) => (
-            <BundleCard key={variant.id} variant={variant} />
-          ))}
+        <div className="relative -mx-6 px-6 md:mx-0 md:px-0">
+          <Carousel
+            opts={{
+              align: "center",
+              containScroll: "trimSnaps",
+            }}
+            className="w-full pb-40 md:pb-0"
+          >
+            <CarouselContent className="flex md:grid md:grid-cols-3 md:gap-4 lg:gap-8 ml-0">
+              {displayVariants.map((variant) => (
+                <CarouselItem key={variant.id} className="pl-4 md:pl-0 basis-[85%] sm:basis-[70%] md:basis-auto flex first:pl-0">
+                  <BundleCard variant={variant} />
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <div className="flex justify-center gap-4 mt-6 md:hidden">
+              <CarouselPrevious className="static translate-y-0 translate-x-0 w-12 h-12 bg-white text-[#2D4A3E] border border-[#2D4A3E]/10 shadow-sm hover:bg-[#F7F4F0]" />
+              <CarouselNext className="static translate-y-0 translate-x-0 w-12 h-12 bg-[#2D4A3E] text-white hover:bg-[#1E332B] border-none shadow-lg" />
+            </div>
+          </Carousel>
         </div>
 
       </div>

@@ -4,7 +4,7 @@ import { COMPANY, SOCIAL } from "@/lib/constants";
 
 export function Footer() {
   return (
-    <footer className="bg-[#2D4A3E] text-[#F7F4F0] pt-24 pb-12 w-full overflow-hidden relative">
+    <footer className="bg-[#2D4A3E] text-[#F7F4F0] pt-24 pb-[calc(110px+env(safe-area-inset-bottom))] md:pb-12 w-full overflow-hidden relative">
       <div className="max-w-[1400px] mx-auto px-6 md:px-12 relative z-10">
 
         {/* Top Section */}
@@ -13,9 +13,9 @@ export function Footer() {
         </div>
 
         {/* Middle Navigation & Info */}
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-16 md:gap-8 border-b border-[#F7F4F0]/10 pb-24 mb-12">
+        <div className="grid grid-cols-2 md:grid-cols-12 gap-y-12 gap-x-6 md:gap-8 border-b border-[#F7F4F0]/10 pb-16 md:pb-24 mb-12">
 
-          <div className="col-span-1 md:col-span-5">
+          <div className="col-span-2 md:col-span-5">
             <h3 className="text-3xl md:text-5xl font-serif font-light leading-tight mb-8">
               Научно обоснован <br />
               <span className="italic text-[#B2D8C6]">уелнес.</span>

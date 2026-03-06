@@ -59,6 +59,11 @@ corti-glow-full-bundle.txt
 pwa-source-code.txt
 gemini-*.md
 screenshots/
+generate-images.mjs
+lura-knowledge-*.txt
+lura-full-codebase-knowledge.txt
+homepage-code-for-gemini.txt
+seed-homepage-snapshot.md
 
 # clerk configuration (can include secrets)
 /.clerk/

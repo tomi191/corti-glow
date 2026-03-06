@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Plus_Jakarta_Sans, Outfit, Cormorant_Garamond } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
 import { bgBG } from "@clerk/localizations";
@@ -83,6 +83,14 @@ export const metadata: Metadata = {
   },
 };
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  themeColor: "#1a2e25",
+};
+
 const organizationJsonLd = {
   "@context": "https://schema.org",
   "@type": "Organization",
@@ -157,8 +165,9 @@ export default function RootLayout({
       <html lang="bg">
         <head>
           <link rel="manifest" href="/manifest.json" />
-          <meta name="theme-color" content="#2D4A3E" />
           <meta name="mobile-web-app-capable" content="yes" />
+          <meta name="apple-mobile-web-app-capable" content="yes" />
+          <meta name="apple-mobile-web-app-title" content="LURA" />
           <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
           <script
             type="application/ld+json"
